@@ -3,6 +3,7 @@ module Identity
     register Sinatra::Namespace
 
     configure do
+      set :sessions, true
       set :views, "#{Config.root}/views"
     end
 

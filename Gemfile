@@ -16,6 +16,7 @@ gem "sprockets"
 gem "yui-compressor"
 
 group :test do
+  gem "debugger"
   gem "rack-test"
   gem "rr"
 end

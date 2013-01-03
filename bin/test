@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+# change to inflexible path
+Dir["./test/**/*_test.rb"].each { |test| load test }
