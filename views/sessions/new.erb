@@ -6,6 +6,7 @@
 
 <div id="login" class="dialog">
   <form method="post" class="panel-body">
+    <%= Rack::Csrf.tag(env) %>
     <fieldset>
       <div class="field">
 	<label for="email">Email</label>

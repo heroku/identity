@@ -5,10 +5,15 @@ module Identity
 
     configure do
       set :views, "#{Config.root}/views"
+      Slim::Engine.set_default_options pretty: !Config.production?
+    end
+
+    get "/" do
+      redirect to("/sessions/new")
     end
 
     namespace "/sessions" do
-      get do
+      get "/new" do
         erb :"sessions/new", layout: :"sessions/layout"
       end
 
