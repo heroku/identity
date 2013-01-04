@@ -1,5 +1,6 @@
 module Identity
   class Web < Sinatra::Base
+    include SessionHelpers
     register Sinatra::Namespace
 
     configure do
@@ -13,8 +14,10 @@ module Identity
 
       post do
         user, pass = params[:email], params[:password]
-        @token = perform_oauth_dance(user, pass)
-        session["token"] = MultiJson.encode(@token)
+        token = perform_oauth_dance(user, pass)
+
+        self.access_token            = token["access_token"]
+        self.access_token_expires_at = Time.now + token["expires_in"]
 
         # if we know that we're in the middle of an authorization attempt,
         # continue it; otherwise go to dashboard
@@ -38,7 +41,7 @@ module Identity
 
         # have the user login if we have no session for them or if we know
         # they're past their token's expiry
-        if !token || Time.now > token["expires_at"]
+        if !self.access_token || Time.now > self.access_token_expires_at
           store_authorize_params_and_login(authorize_params)
         end
 
@@ -58,7 +61,7 @@ module Identity
     private
 
     def api
-      @api ||= HerokuAPI.new(user: nil, pass: token["access_token"])
+      @api ||= HerokuAPI.new(user: nil, pass: self.access_token)
     end
 
     def authorize(params)
@@ -67,7 +70,7 @@ module Identity
       store_authorize_params_and_login(params) if res.status == 401
 
       # successful authorization, clear any params in session
-      session["authorize_params"] = nil
+      self.authorize_params = nil
 
       authorization = MultiJson.decode(res.body)
 
@@ -75,11 +78,6 @@ module Identity
       redirect_params.merge!(state: params["state"]) if params["state"]
       base_uri = authorization["client"]["redirect_uri"]
       redirect to(build_uri(base_uri, redirect_params))
-    end
-
-    def authorize_params
-      @authorize_params ||= session["authorize_params"] ?
-        MultiJson.decode(session["authorize_params"]) : nil
     end
 
     # merges extra params into a base URI
@@ -115,21 +113,13 @@ module Identity
       res = api.post(path: "/oauth/token", expects: 200,
         query: { code: code, client_secret: Config.heroku_oauth_secret })
 
-      token = MultiJson.decode(res.body)
-      { "access_token"  => token["access_token"],
-        "expires_at"    => Time.now + token["expires_in"],
-        "refresh_token" => token["refresh_token"],
-        "session_nonce" => token["session_nonce"] }
+      MultiJson.decode(res.body)
     end
 
-    def store_authorize_params_and_login(authoize_params)
-      @authoize_params = authoize_params
-      session["authorize_params"] = MultiJson.encode(@authoize_params)
+    def store_authorize_params_and_login(authorize_params)
+      # store to session
+      self.authorize_params = authorize_params
       redirect to("/sessions")
-    end
-
-    def token
-      @token ||= session["token"] ? MultiJson.decode(session["token"]) : nil
     end
   end
 end
