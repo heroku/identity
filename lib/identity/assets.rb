@@ -28,9 +28,14 @@ module Identity
     end
 
     %w{jpg png}.each do |format|
-      get "/assets/:image.#{format}" do |image|
-        content_type("image/#{format}")
-        respond_with_asset(@assets["#{image}.#{format}"])
+      get "/assets/*.#{format}" do |image|
+        name = "#{image}.#{format}"
+        if @assets[name]
+          content_type("image/#{format}")
+          respond_with_asset(@assets[name])
+        else
+          404
+        end
       end
     end
 

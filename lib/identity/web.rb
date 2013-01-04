@@ -9,7 +9,7 @@ module Identity
 
     namespace "/sessions" do
       get do
-        slim :"sessions/new"
+        erb :"sessions/new", layout: :"sessions/layout"
       end
 
       post do
@@ -103,7 +103,7 @@ module Identity
         query: { client_id: Config.heroku_oauth_id })
 
       if res == 401
-        flash[:notice] = "Login failed!"
+        flash[:error] = "There was a problem with your login."
         redirect to("/sessions")
       end
 

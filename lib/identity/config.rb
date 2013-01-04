@@ -18,8 +18,16 @@ module Identity
       ENV["HEROKU_OAUTH_SECRET"] || raise("missing=HEROKU_OAUTH_SECRET")
     end
 
+    def mixpanel_token
+      ENV["MIXPANEL_TOKEN"]
+    end
+
     def production?
       ENV["RACK_ENV"] == "production"
+    end
+
+    def release
+      @release ||= ENV["RELEASE"] || "1"
     end
 
     def root
