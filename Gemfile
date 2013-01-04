@@ -6,6 +6,7 @@ gem "multi_json"
 gem "oj" # fast json
 gem "puma"
 gem "rack"
+gem "rack-flash3",     require: "rack/flash"
 gem "rack-instruments"
 gem "rack-ssl"
 gem "sinatra",         require: "sinatra/base"
@@ -19,4 +20,5 @@ group :test do
   gem "debugger"
   gem "rack-test"
   gem "rr"
+  gem "webmock"
 end

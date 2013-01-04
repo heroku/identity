@@ -1,14 +1,16 @@
-require 'base64'
+require "base64"
 
 module Identity
-  class HerokuAPI
+  class HerokuAPI < Excon::Connection
     def initialize(options={})
-      authorization = Base64.encode64("#{options[:user]}:#{options[:pass]}")
-      @conn = Excon.new(Config.heroku_api_url,
-        headers: { "Authorization" => "Basic #{authorization}" })
-    end
-
-    def get
+      authorization = Base64.encode64(
+        "#{options[:user] || ''}:#{options[:pass] || ''}")
+      super(
+        Config.heroku_api_url,
+        headers: {
+          "Accept"        => "application/json",
+          "Authorization" => "Basic #{authorization}",
+        })
     end
   end
 end
