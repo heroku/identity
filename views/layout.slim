@@ -2,12 +2,12 @@ doctype 5
 
 html
   head
-    title Heroku | Login
+    title Heroku | #{@title}
     link href="/assets/#{Identity::Config.release}/app.css" media="screen" rel="stylesheet" type="text/css"
     script src="/assets/#{Identity::Config.release}/app.js" type="text/javascript"
     == render :slim, :"_analytics", layout: false
     == render :slim, :"_mixpanel", layout: false
-  body
+  body id=@body_id
     .container
       h1.logo
         a href="http://heroku.com" title="Heroku" Heroku

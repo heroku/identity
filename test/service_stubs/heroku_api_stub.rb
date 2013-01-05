@@ -15,6 +15,9 @@ class HerokuAPIStub < Sinatra::Base
     end
   end
 
+  namespace "/auth" do
+  end
+
   namespace "/oauth" do
     post "/authorize" do
       authorized!

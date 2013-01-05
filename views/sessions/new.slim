@@ -1,3 +1,5 @@
+- @title = "Login"
+
 - if flash[:error]
   div.notice.error
     h3 flash[:error]
@@ -14,7 +16,7 @@
         input#password.text.password type="password" name="password" size="43"
     fieldset.submit
       p
-        a href="#{Identity::Config.heroku_api_url}/auth/reset_password" Reset Password
+        a href="/account/reset-password" Reset Password
       input.submit type="submit" name="commit" value="Log In"
 a href="#{Identity::Config.heroku_api_url}/signup" id="message"
   | Getting started with Heroku is easy. &nbsp; &nbsp; &nbsp;

@@ -12,9 +12,34 @@ module Identity
       redirect to("/sessions/new")
     end
 
+    namespace "/account" do
+      get "/new" do
+      end
+
+      get "/reset-password" do
+        slim :"account/reset_password", layout: :layout
+      end
+
+      post "/reset-password" do
+        api = HerokuAPI.new
+        # @todo: use bare email instead of reset[email] when ready
+        res = api.post(path: "/auth/reset_password", expects: [200, 422],
+          query: { "reset[email]" => params[:email] })
+        json = MultiJson.decode(res.body)
+
+        if res.status == 422
+          flash.now[:error] = json["message"]
+        else
+          flash.now[:notice] = json["message"]
+        end
+
+        slim :"account/reset_password", layout: :layout
+      end
+    end
+
     namespace "/sessions" do
       get "/new" do
-        slim :"sessions/new", layout: :"sessions/layout"
+        slim :"sessions/new", layout: :layout
       end
 
       post do
