@@ -5,7 +5,7 @@
 <% end %>
 
 <div id="login" class="dialog">
-  <form method="post" class="panel-body">
+  <form method="post" action="/sessions" class="panel-body">
     <%= Rack::Csrf.tag(env) %>
     <fieldset>
       <div class="field">
