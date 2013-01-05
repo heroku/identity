@@ -102,12 +102,15 @@ module Identity
       request.env["x-rack.flash"]
     end
 
+    def log(action, data={})
+    end
+
     def perform_oauth_dance(user, pass)
       api = HerokuAPI.new(user: user, pass: pass)
       res = api.post(path: "/oauth/authorize", expects: [200, 401],
-        query: { client_id: Config.heroku_oauth_id })
+        query: { client_id: Config.heroku_oauth_id, response_type: "code" })
 
-      if res == 401
+      if res.status == 401
         flash[:error] = "There was a problem with your login."
         redirect to("/sessions/new")
       end
