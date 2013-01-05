@@ -5,36 +5,8 @@ html
     title Heroku | Login
     link href="/assets/#{Identity::Config.release}/app.css" media="screen" rel="stylesheet" type="text/css"
     script src="/assets/#{Identity::Config.release}/app.js" type="text/javascript"
-
-    javascript:
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-2989055-1']);
-      _gaq.push(['_setDomainName', '.heroku.com']);
-      _gaq.push(['_trackPageview']);
-
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-
-    - if Identity::Config.mixpanel_token
-      javascript:
-        (function(c,a){window.mixpanel=a;var b,d,h,e;b=c.createElement("script");
-        b.type="text/javascript";b.async=!0;b.src=("https:"===c.location.protocol?"https:":"http:")+
-        '//cdn.mxpnl.com/libs/mixpanel-2.2.min.js';d=c.getElementsByTagName("script")[0];
-        d.parentNode.insertBefore(b,d);a._i=[];a.init=function(b,c,f){function d(a,b){
-        var c=b.split(".");2==c.length&&(a=a[c[0]],b=c[1]);a[b]=function(){a.push([b].concat(
-        Array.prototype.slice.call(arguments,0)))}}var g=a;"undefined"!==typeof f?g=a[f]=[]:
-        f="mixpanel";g.people=g.people||[];h=['alias','disable','track','track_pageview','track_links',
-        'track_forms','register','register_once','unregister','identify','name_tag',
-        'set_config','people.identify','people.set','people.increment'];for(e=0;e<h.length;e++)d(g,h[e]);
-        a._i.push([b,c,f])};a.__SV=1.1;})(document,window.mixpanel||[]);
-        mixpanel.init("#{Identity::Config.mixpanel_token}");
-
-        mixpanel.set_config({
-          track_links_timeout: 500
-        });
+    == render :slim, :"_analytics", layout: false
+    == render :slim, :"_mixpanel", layout: false
   body
     .container
       h1.logo
