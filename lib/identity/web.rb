@@ -14,7 +14,7 @@ module Identity
 
     namespace "/sessions" do
       get "/new" do
-        erb :"sessions/new", layout: :"sessions/layout"
+        slim :"sessions/new", layout: :"sessions/layout"
       end
 
       post do
@@ -103,6 +103,8 @@ module Identity
     end
 
     def log(action, data={})
+      data.merge! id: request.env["REQUEST_ID"]
+      Slides.log(action, data.merge(data))
     end
 
     def perform_oauth_dance(user, pass)

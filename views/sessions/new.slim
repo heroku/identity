@@ -1,0 +1,21 @@
+- if flash[:error]
+  div.notice.error
+    h3 flash[:error]
+
+#login.dialog
+  form.panel-body method="post" action="/sessions"
+    input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
+    fieldset
+      .field
+        label for="email" Email
+        input#email.text type="email" name="email" size="43"
+      .field
+        label for="password" Password
+        input#password.text.password type="password" name="password" size="43"
+    fieldset.submit
+      p
+        a href="/account/reset" Reset Password
+      input.submit type="submit" name="commit" value="Log In"
+a href="/account/new" id="message"
+  | Getting started with Heroku is easy. &nbsp; &nbsp; &nbsp;
+  span Sign Up
