@@ -35,7 +35,7 @@ module Identity
 
       delete do
         session.clear
-        redirect to("/sessions")
+        redirect to("/sessions/new")
       end
     end
 
@@ -55,7 +55,7 @@ module Identity
       end
 
       post "/token" do
-        redirect to("/sessions") if !token
+        redirect to("/sessions/new") if !token
         res = api.post(path: "/oauth/token", expects: 200,
           query: { code: params[:code], client_secret: params[:client_secret] })
         content_type(:json)
@@ -109,7 +109,7 @@ module Identity
 
       if res == 401
         flash[:error] = "There was a problem with your login."
-        redirect to("/sessions")
+        redirect to("/sessions/new")
       end
 
       code = MultiJson.decode(res.body)["code"]
@@ -124,7 +124,7 @@ module Identity
     def store_authorize_params_and_login(authorize_params)
       # store to session
       self.authorize_params = authorize_params
-      redirect to("/sessions")
+      redirect to("/sessions/new")
     end
   end
 end
