@@ -14,7 +14,7 @@ module Identity
 
     namespace "/account" do
       post do
-        api = HerokuAPI.new
+        api = HerokuAPI.new(request_id: request_id)
         res = api.post(path: "/signup", expects: [200, 422],
           query: { :email => params[:email] })
         json = MultiJson.decode(res.body)
@@ -22,7 +22,7 @@ module Identity
       end
 
       get "/accept/:id/:hash" do |id, hash|
-        api = HerokuAPI.new
+        api = HerokuAPI.new(request_id: request_id)
         res = api.get(path: "/signup/accept2/#{id}/#{hash}",
           expects: [200, 422])
         json = MultiJson.decode(res.body)
@@ -45,7 +45,7 @@ module Identity
       end
 
       post "/password/reset" do
-        api = HerokuAPI.new
+        api = HerokuAPI.new(request_id: request_id)
         # @todo: use bare email instead of reset[email] when ready
         res = api.post(path: "/auth/reset_password", expects: [200, 422],
           query: { "reset[email]" => params[:email] })
@@ -61,7 +61,7 @@ module Identity
       end
 
       get "/password/reset/:hash" do |hash|
-        api = HerokuAPI.new
+        api = HerokuAPI.new(request_id: request_id)
         res = api.get(path: "/auth/finish_reset_password/#{hash}",
           expects: [200, 404])
 
@@ -74,7 +74,7 @@ module Identity
       end
 
       post "/password/reset/:hash" do |hash|
-        api = HerokuAPI.new
+        api = HerokuAPI.new(request_id: request_id)
         res = api.post(path: "/auth/finish_reset_password/#{hash}",
           expects: [200, 404, 422], query: {
             "user_to_reset[password]"              => params[:password],
@@ -143,6 +143,9 @@ module Identity
 
       post "/token" do
         redirect to("/sessions/new") if !token
+        log :procure_token
+        api = HerokuAPI.new(user: nil, pass: self.access_token,
+          request_id: request_id)
         res = api.post(path: "/oauth/token", expects: 200,
           query: { code: params[:code], client_secret: params[:client_secret] })
         content_type(:json)
@@ -152,11 +155,10 @@ module Identity
 
     private
 
-    def api
-      @api ||= HerokuAPI.new(user: nil, pass: self.access_token)
-    end
-
     def authorize(params)
+      log :authorize, client_id: params["client_id"]
+      api = HerokuAPI.new(user: nil, pass: self.access_token,
+        request_id: request_id)
       res = api.post(path: "/oauth/authorize",
         expects: [200, 401], query: params)
       store_authorize_params_and_login(params) if res.status == 401
@@ -190,12 +192,13 @@ module Identity
     end
 
     def log(action, data={})
-      data.merge! id: request.env["REQUEST_ID"]
+      data.merge! id: request_id
       Slides.log(action, data.merge(data))
     end
 
     def perform_oauth_dance(user, pass)
-      api = HerokuAPI.new(user: user, pass: pass)
+      log :authorize, client: "identity"
+      api = HerokuAPI.new(user: user, pass: pass, request_id: request_id)
       res = api.post(path: "/oauth/authorize", expects: [200, 401],
         query: { client_id: Config.heroku_oauth_id, response_type: "code" })
 
@@ -207,10 +210,15 @@ module Identity
       code = MultiJson.decode(res.body)["code"]
 
       # exchange authorization code for access grant
+      log :procure_token, client: "identity"
       res = api.post(path: "/oauth/token", expects: 200,
         query: { code: code, client_secret: Config.heroku_oauth_secret })
 
       MultiJson.decode(res.body)
+    end
+
+    def request_id
+      request.env["REQUEST_ID"]
     end
 
     def store_authorize_params_and_login(authorize_params)

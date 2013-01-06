@@ -11,7 +11,8 @@ module Identity
           "#{options[:user] || ''}:#{options[:pass] || ''}")
         headers["Authorization"] = "Basic #{authorization}"
       end
-      super(Config.heroku_api_url, headers: headers)
+      super(Config.heroku_api_url, headers: headers,
+        instrumentor: ExconInstrumentor.new(id: options[:request_id]))
     end
   end
 end
