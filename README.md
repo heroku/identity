@@ -12,6 +12,8 @@ foreman start
 # check localhost:5000
 ```
 
+Platform deployment instructions to follow.
+
 ## Test
 
 ``` bash
@@ -33,3 +35,4 @@ To do:
 * Signup finish (i.e. enter a password) -- need to reskin the existing version
 * Signup "slug" logic
 * 404 + 500 pages
+* Platform deployment instructions
