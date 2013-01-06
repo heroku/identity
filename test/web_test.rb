@@ -72,6 +72,13 @@ describe Identity::Web do
     end
   end
 
+  describe "POST /oauth/authorize" do
+    it "responds to GET as well" do
+      get "/oauth/authorize"
+      assert_equal 302, last_response.status
+    end
+  end
+
   describe "GET /sessions" do
     it "shows a login page" do
       get "/sessions/new"

@@ -1,7 +1,6 @@
 module Identity
   class Web < Sinatra::Base
     include SessionHelpers
-    register Sinatra::MultiRoute
     register Sinatra::Namespace
 
     configure do
@@ -123,7 +122,12 @@ module Identity
     end
 
     namespace "/oauth" do
-      route :get, :post, "/authorize" do
+      get "/authorize" do
+        # same as POST
+        call(env.merge("REQUEST_METHOD" => "POST"))
+      end
+
+      post "/authorize" do
         authorize_params =
           filter_params(%w{client_id response_type scope state})
 
