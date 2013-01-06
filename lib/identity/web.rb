@@ -13,16 +13,31 @@ module Identity
     end
 
     namespace "/account" do
-      get "/new" do
-        slim :"account/new"
-      end
-
       post do
         api = HerokuAPI.new
         res = api.post(path: "/signup", expects: [200, 422],
           query: { :email => params[:email] })
         json = MultiJson.decode(res.body)
         slim :"account/finish_new"
+      end
+
+      get "/accept/:id/:hash" do |id, hash|
+        api = HerokuAPI.new
+        res = api.get(path: "/signup/accept2/#{id}/#{hash}",
+          expects: [200, 422])
+        json = MultiJson.decode(res.body)
+
+        if res.status == 422
+          flash.now[:error] = json["message"]
+          slim :"sessions/new"
+        else
+          @user = json
+          slim :"account/accept"
+        end
+      end
+
+      get "/new" do
+        slim :"account/new"
       end
 
       get "/password/reset" do
