@@ -16,6 +16,14 @@ class HerokuAPIStub < Sinatra::Base
   end
 
   namespace "/auth" do
+    post "/reset_password" do
+      MultiJson.encode({
+        message: <<-eos
+Check your inbox for the next steps.
+If you don't receive an email, and it's not in your spam folder, this could mean you signed up with a different address.
+        eos
+      })
+    end
   end
 
   namespace "/oauth" do
