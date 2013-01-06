@@ -1,4 +1,4 @@
-- if Identity::Config.mixpanel_token
+- if Identity::Config.production? && Identity::Config.mixpanel_token
   javascript:
     (function(c,a){window.mixpanel=a;var b,d,h,e;b=c.createElement("script");
     b.type="text/javascript";b.async=!0;b.src=("https:"===c.location.protocol?"https:":"http:")+
