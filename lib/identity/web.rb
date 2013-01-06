@@ -32,7 +32,7 @@ module Identity
           slim :"sessions/new"
         else
           @user = json
-          slim :"account/accept"
+          slim :"account/accept2"
         end
       end
 
