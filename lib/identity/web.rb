@@ -1,6 +1,7 @@
 module Identity
   class Web < Sinatra::Base
     include SessionHelpers
+    register Sinatra::MultiRoute
     register Sinatra::Namespace
 
     configure do
