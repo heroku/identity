@@ -142,7 +142,7 @@ module Identity
       end
 
       post "/token" do
-        redirect to("/sessions/new") if !token
+        redirect to("/sessions/new") if !self.access_token
         log :procure_token
         api = HerokuAPI.new(user: nil, pass: self.access_token,
           request_id: request_id)
