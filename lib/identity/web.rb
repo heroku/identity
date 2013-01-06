@@ -124,7 +124,7 @@ module Identity
     namespace "/oauth" do
       post "/authorize" do
         authorize_params =
-          filter_params(%w{client_id respond_type scope state})
+          filter_params(%w{client_id response_type scope state})
 
         # have the user login if we have no session for them or if we know
         # they're past their token's expiry
