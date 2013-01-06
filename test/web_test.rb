@@ -15,14 +15,14 @@ describe Identity::Web do
     stub_heroku_api
   end
 
-  describe "GET /account/reset-password" do
+  describe "GET /account/password/reset" do
     it "shows a reset password form" do
       get "/account/password/reset"
       assert_equal 200, last_response.status
     end
   end
 
-  describe "POST /account/reset-password" do
+  describe "POST /account/password/reset" do
     it "requests a password reset" do
       stub_heroku_api
       post "/account/password/reset", email: "kerry@heroku.com"
@@ -35,6 +35,24 @@ describe Identity::Web do
       end
       post "/account/password/reset", email: "kerry@heroku.com"
       assert_equal 200, last_response.status
+    end
+  end
+
+  describe "GET /account/password/reset/:hash" do
+    it "renders a password reset form" do
+      stub_heroku_api
+      get "/account/password/reset/c45685917ef644198a0fececa10d479a"
+      assert_equal 200, last_response.status
+    end
+  end
+
+  describe "POST /account/password/reset/:hash" do
+    it "changes a password and redirects to login" do
+      stub_heroku_api
+      post "/account/password/reset/c45685917ef644198a0fececa10d479a",
+        password: "1234567890ab", password_confirmation: "1234567890ab"
+      assert_equal 302, last_response.status
+      assert_match %r{/sessions/new$}, last_response.headers["Location"]
     end
   end
 

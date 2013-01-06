@@ -24,6 +24,14 @@ If you don't receive an email, and it's not in your spam folder, this could mean
         eos
       })
     end
+
+    get "/finish_reset_password/:hash" do |hash|
+      MultiJson.encode({ email: "kerry@heroku.com" })
+    end
+
+    post "/finish_reset_password/:hash" do |hash|
+      MultiJson.encode({ email: "kerry@heroku.com" })
+    end
   end
 
   namespace "/oauth" do
