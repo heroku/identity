@@ -11,7 +11,7 @@ gem "rack-flash3",     require: "rack/flash"
 gem "rack-instruments"
 gem "rack-ssl"
 gem "sinatra",         require: "sinatra/base"
-gem "sinatra-contrib", require: "sinatra/namespace"
+gem "sinatra-contrib", require: ["sinatra/multi_route", "sinatra/namespace"]
 gem "sinatra-router"
 gem "slim"
 gem "sprockets"

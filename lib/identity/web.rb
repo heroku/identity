@@ -122,7 +122,7 @@ module Identity
     end
 
     namespace "/oauth" do
-      post "/authorize" do
+      route :get, :post, "/authorize" do
         authorize_params =
           filter_params(%w{client_id response_type scope state})
 
