@@ -17,7 +17,7 @@ module Identity
       end
 
       get "/password/reset" do
-        slim :"account/password/reset", layout: :layout
+        slim :"account/password/reset"
       end
 
       post "/password/reset" do
@@ -33,7 +33,7 @@ module Identity
           flash.now[:notice] = json["message"]
         end
 
-        slim :"account/password/reset", layout: :layout
+        slim :"account/password/reset"
       end
 
       get "/password/reset/:hash" do |hash|
@@ -42,10 +42,10 @@ module Identity
           expects: [200, 404])
 
         if res.status == 404
-          slim :"account/password/not_found", layout: :layout
+          slim :"account/password/not_found"
         else
           @user = MultiJson.decode(res.body)
-          slim :"account/password/finish_reset", layout: :layout
+          slim :"account/password/finish_reset"
         end
       end
 
@@ -59,10 +59,10 @@ module Identity
           })
 
         if res.status == 404
-          slim :"account/password/not_found", layout: :layout
+          slim :"account/password/not_found"
         elsif res.status == 422
           flash.now[:error] = json["errors"]
-          slim :"account/password/finish_reset", layout: :layout
+          slim :"account/password/finish_reset"
         else
           flash[:success] = "Your password has been changed."
           redirect to("/sessions/new")
@@ -72,7 +72,7 @@ module Identity
 
     namespace "/sessions" do
       get "/new" do
-        slim :"sessions/new", layout: :layout
+        slim :"sessions/new"
       end
 
       post do
