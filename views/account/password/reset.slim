@@ -16,7 +16,7 @@
     form.panel-body method="post"
       input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
       fieldset
-        div.field
+        .field
           input#reset_email.text type="text" name="email" size="46" value="email address"
       fieldset.submit
         p
