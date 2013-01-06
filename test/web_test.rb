@@ -17,7 +17,7 @@ describe Identity::Web do
 
   describe "GET /account/reset-password" do
     it "shows a reset password form" do
-      get "/account/reset-password"
+      get "/account/password/reset"
       assert_equal 200, last_response.status
     end
   end
@@ -25,7 +25,7 @@ describe Identity::Web do
   describe "POST /account/reset-password" do
     it "requests a password reset" do
       stub_heroku_api
-      post "/account/reset-password", email: "kerry@heroku.com"
+      post "/account/password/reset", email: "kerry@heroku.com"
       assert_equal 200, last_response.status
     end
 
@@ -33,7 +33,7 @@ describe Identity::Web do
       stub_heroku_api do
         post("/auth/reset_password") { 422 }
       end
-      post "/account/reset-password", email: "kerry@heroku.com"
+      post "/account/password/reset", email: "kerry@heroku.com"
       assert_equal 200, last_response.status
     end
   end

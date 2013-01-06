@@ -16,11 +16,11 @@ module Identity
       get "/new" do
       end
 
-      get "/reset-password" do
-        slim :"account/reset_password", layout: :layout
+      get "/password/reset" do
+        slim :"account/password/reset", layout: :layout
       end
 
-      post "/reset-password" do
+      post "/password/reset" do
         api = HerokuAPI.new
         # @todo: use bare email instead of reset[email] when ready
         res = api.post(path: "/auth/reset_password", expects: [200, 422],
@@ -33,7 +33,40 @@ module Identity
           flash.now[:notice] = json["message"]
         end
 
-        slim :"account/reset_password", layout: :layout
+        slim :"account/password/reset", layout: :layout
+      end
+
+      get "/password/reset/:hash" do |hash|
+        api = HerokuAPI.new
+        res = api.get(path: "/auth/finish_reset_password/#{hash}",
+          expects: [200, 404])
+
+        if res.status == 404
+          slim :"account/password/not_found", layout: :layout
+        else
+          @user = MultiJson.decode(res.body)
+          slim :"account/password/finish_reset", layout: :layout
+        end
+      end
+
+      post "/password/reset/:hash" do |hash|
+        api = HerokuAPI.new
+        res = api.post(path: "/auth/finish_reset_password/#{hash}",
+          expects: [200, 404, 422], query: {
+            "user_to_reset[password]"              => params[:password],
+            "user_to_reset[password_confirmation]" =>
+              params[:password_confirmation],
+          })
+
+        if res.status == 404
+          slim :"account/password/not_found", layout: :layout
+        elsif res.status == 422
+          flash.now[:error] = json["errors"]
+          slim :"account/password/finish_reset", layout: :layout
+        else
+          flash[:success] = "Your password has been changed."
+          redirect to("/sessions/new")
+        end
       end
     end
 

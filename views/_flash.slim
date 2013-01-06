@@ -1,0 +1,9 @@
+- if flash[:success]
+  div.notice.success
+    h3= flash[:success]
+- if flash[:notice]
+  div.notice
+    h3= flash[:notice]
+- if flash[:error]
+  div.notice.error
+    h3= flash[:error]

@@ -1,7 +1,13 @@
 - @title = "Reset Password"
 - @body_id = "reset_password"
 
-== render :slim, :"_flash", layout: false
+- if flash[:notice]
+  div.notice
+    h3= flash[:notice]
+- if flash[:error]
+  div.notice.error
+    h3= flash[:error]
+
 - if !flash[:notice]
   div#reset_password.dialog
     h2 Reset Password

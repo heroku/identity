@@ -1,0 +1,18 @@
+- @title = "Reset Password"
+- @bodyid = "reset_password"
+
+== render :slim, :"_flash", layout: false
+#reset_password.dialog
+  h2 Reset Password
+  p.overview Resetting password for <strong>#{@user["email"]}</strong>.
+  form.panel-body method="post"
+    input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
+    fieldset
+      .field
+        label for="password" Password
+        input.text type="password" name="password"
+      .field
+        label for="password_confirmation" Confirm Password
+        input.text type="password" name="password_confirmation"
+    fieldset.submit
+      input.submit type="submit" value="Save"

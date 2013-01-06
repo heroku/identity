@@ -1,9 +1,6 @@
 - @title = "Login"
 
-- if flash[:error]
-  div.notice.error
-    h3 flash[:error]
-
+== render :slim, :"_flash", layout: false
 #login.dialog
   form.panel-body method="post" action="/sessions"
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
@@ -16,7 +13,7 @@
         input#password.text.password type="password" name="password" size="43"
     fieldset.submit
       p
-        a href="/account/reset-password" Reset Password
+        a href="/account/password/reset" Reset Password
       input.submit type="submit" name="commit" value="Log In"
 a href="#{Identity::Config.heroku_api_url}/signup" id="message"
   | Getting started with Heroku is easy. &nbsp; &nbsp; &nbsp;
