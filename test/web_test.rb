@@ -15,6 +15,22 @@ describe Identity::Web do
     stub_heroku_api
   end
 
+  describe "GET /account/new" do
+    it "shows a new account page" do
+      get "/account/new"
+      assert_equal 200, last_response.status
+    end
+  end
+
+  describe "POST /account" do
+    it "creates an account and renders a notice" do
+      stub_heroku_api
+      post "/account", email: "kerry@heroku.com"
+      assert_equal 200, last_response.status
+      assert_match %{Confirmation email sent}, last_response.body
+    end
+  end
+
   describe "GET /account/password/reset" do
     it "shows a reset password form" do
       get "/account/password/reset"

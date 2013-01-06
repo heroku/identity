@@ -1,0 +1,21 @@
+- @title = "Sign up"
+- @bodyclass = "signup"
+
+== render :slim, :"_flash", layout: false
+#signup.dialog
+  h2 Sign Up
+  p.overview Signing up for Heroku is easy. Just enter your email below, and you'll be up and running in a minute.
+  form#signup-form.panel-body action="/account" method="post"
+    input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
+    fieldset
+      div.field
+        input#invitation_email.text type="text" name="email" size="43" value="email address"
+    fieldset.submit
+      p#terms Signing up signifies that you have read and agree to the <a href="http://legal.heroku.com/tos">Terms of Service</a> and <a href="http://legal.heroku.com/privacy">Privacy Policy</a>.
+      input.submit type="submit" value="Sign Up"
+a#message.signup href="/sessions/new" 
+  | Already have an account? &nbsp; &nbsp; &nbsp;
+  span Log In
+coffee:
+  if typeof(mixpanel) != 'undefined'
+    mixpanel.track('viewed signup page')

@@ -15,6 +15,10 @@ class HerokuAPIStub < Sinatra::Base
     end
   end
 
+  post "/signup" do
+    MultiJson.encode({ email: "kerry@heroku.com" })
+  end
+
   namespace "/auth" do
     post "/reset_password" do
       MultiJson.encode({

@@ -14,6 +14,15 @@ module Identity
 
     namespace "/account" do
       get "/new" do
+        slim :"account/new"
+      end
+
+      post do
+        api = HerokuAPI.new
+        res = api.post(path: "/signup", expects: [200, 422],
+          query: { :email => params[:email] })
+        json = MultiJson.decode(res.body)
+        slim :"account/finish_new"
       end
 
       get "/password/reset" do
