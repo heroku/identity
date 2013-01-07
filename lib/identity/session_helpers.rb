@@ -28,7 +28,7 @@ module Identity
 
     def authorize_params=(params)
       @authorize_params = params
-      session["authorize_params"] = MultiJson.encode(params)
+      session["authorize_params"] = params ? MultiJson.encode(params) : nil
     end
   end
 end
