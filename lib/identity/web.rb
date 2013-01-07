@@ -142,8 +142,8 @@ module Identity
       end
 
       post "/token" do
-        redirect to("/sessions/new") if !self.access_token
-        log :procure_token
+        return 401 if !self.access_token
+        log :procure_token, by_proxy: true
         api = HerokuAPI.new(user: nil, pass: self.access_token,
           request_id: request_id)
         res = api.post(path: "/oauth/token", expects: 200,
@@ -156,7 +156,7 @@ module Identity
     private
 
     def authorize(params)
-      log :authorize, client_id: params["client_id"]
+      log :authorize, by_proxy: true, client_id: params["client_id"]
       api = HerokuAPI.new(user: nil, pass: self.access_token,
         request_id: request_id)
       res = api.post(path: "/oauth/authorize",
