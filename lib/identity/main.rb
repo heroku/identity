@@ -5,7 +5,7 @@ module Identity
     use Rack::Session::Cookie, path: '/',
                                expire_after: 2592000,
                                secret: Config.secure_key
-    use Rack::Csrf
+    use Rack::Csrf, skip: ["POST:/oauth/.*"]
     use Rack::Flash
 
     run Sinatra::Router.new {
