@@ -15,6 +15,13 @@ describe Identity::Web do
     stub_heroku_api
   end
 
+  describe "GET /account" do
+    it "responds with 401 without a session" do
+      get "/account"
+      assert_equal 401, last_response.status
+    end
+  end
+
   describe "GET /account/new" do
     it "shows a new account page" do
       get "/account/new"
