@@ -13,6 +13,17 @@ module Identity
     end
 
     namespace "/account" do
+      # the omniauth strategy makes a call to /account after a successful
+      # authentication, so proxy this through to core
+      get do
+        return 401 if !self.access_token
+        api = HerokuAPI.new(user: nil, pass: self.access_token,
+          request_id: request_id)
+        res = api.get(path: "/account", expects: 200)
+        content_type(:json)
+        res.body
+      end
+
       post do
         api = HerokuAPI.new(request_id: request_id)
         res = api.post(path: "/signup", expects: [200, 422],
