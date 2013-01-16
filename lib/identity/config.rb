@@ -2,6 +2,10 @@ module Identity
   module Config
     extend self
 
+    def cookie_domain
+      ENV["COOKIE_DOMAIN"]
+    end
+
     def dashboard_url
       ENV["DASHBOARD_URL"] || raise("missing=DASHBOARD_URL")
     end
