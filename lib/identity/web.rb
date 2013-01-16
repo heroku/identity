@@ -142,10 +142,8 @@ module Identity
       end
 
       post "/token" do
-        return 401 if !self.access_token
         log :procure_token, by_proxy: true
-        api = HerokuAPI.new(user: nil, pass: self.access_token,
-          request_id: request_id)
+        api = HerokuAPI.new(user: nil, request_id: request_id)
         res = api.post(path: "/oauth/token", expects: 200,
           query: { code: params[:code], client_secret: params[:client_secret] })
         content_type(:json)
