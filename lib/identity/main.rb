@@ -2,7 +2,7 @@ module Identity
   Main = Rack::Builder.new do
     use Rack::Instruments
     use Rack::SSL if Config.production?
-    use Rack::Session::Cookie, domain: Config.cookie_domain,
+    use Rack::Session::Cookie, #domain: Config.cookie_domain,
                                path: '/',
                                expire_after: 2592000,
                                secret: Config.secure_key
