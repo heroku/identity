@@ -1,8 +1,14 @@
+require "multi_json"
 require "sinatra/base"
 require "sinatra/namespace"
 
 class HerokuAPIStub < Sinatra::Base
   register Sinatra::Namespace
+
+  configure do
+    set :raise_errors,    true
+    set :show_exceptions, false
+  end
 
   helpers do
     def auth
@@ -75,5 +81,5 @@ end
 
 if __FILE__ == $0
   $stdout.sync = $stderr.sync = true
-  HerokuAPIStub.run!
+  HerokuAPIStub.run! port: ENV["PORT"]
 end
