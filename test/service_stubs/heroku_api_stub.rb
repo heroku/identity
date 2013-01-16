@@ -1,3 +1,6 @@
+require "sinatra/base"
+require "sinatra/namespace"
+
 class HerokuAPIStub < Sinatra::Base
   register Sinatra::Namespace
 
@@ -11,7 +14,7 @@ class HerokuAPIStub < Sinatra::Base
     end
 
     def authorized!
-      raise APIError.new(401, "Unauthorized") unless auth_credentials
+      halt(401, "Unauthorized") unless auth_credentials
     end
   end
 
@@ -68,4 +71,9 @@ If you don't receive an email, and it's not in your spam folder, this could mean
       })
     end
   end
+end
+
+if __FILE__ == $0
+  $stdout.sync = $stderr.sync = true
+  HerokuAPIStub.run!
 end
