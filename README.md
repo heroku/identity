@@ -12,7 +12,18 @@ foreman start
 # check localhost:5000
 ```
 
-Platform deployment instructions to follow.
+## Platform Install
+
+```
+# should be the running domain of your app for cookies to work
+heroku config:add COOKIE_DOMAIN="id-staging.herokuapp.com"
+heroku config:add DASHBOARD="https://dashboard.heroku.com"
+heroku config:add HEROKU_API_URL="https://api.heroku.com"
+heroku config:add HEROKU_OAUTH_ID=...
+heroku config:add HEROKU_OAUTH_SECRET=...
+heroku config:add SECURE_KEY=...
+git push heroku master
+```
 
 ## Test
 
@@ -35,4 +46,4 @@ To do:
 * Signup finish (i.e. enter a password) -- need to reskin the existing version
 * Signup "slug" logic
 * 404 + 500 pages
-* Platform deployment instructions
+* Display maintenance mode page when API is down
