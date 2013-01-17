@@ -10,8 +10,18 @@ module Identity
     use Rack::Flash
 
     run Sinatra::Router.new {
+      mount Identity::Account
       mount Identity::Assets
-      run Identity::Web
+      mount Identity::Auth
+      run Sinatra.new {
+        get "/" do
+          redirect to("/sessions/new")
+        end
+
+        not_found do
+          "fml"
+        end
+      }
     }
   end
 end
