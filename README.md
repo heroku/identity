@@ -43,6 +43,8 @@ Implemented:
 
 To do:
 
+* Store nonce to session
+* Solve two hour re-login problem
 * Signup finish (i.e. enter a password) -- need to reskin the existing version
 * Signup "slug" logic
 * 404 + 500 pages
