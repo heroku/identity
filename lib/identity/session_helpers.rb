@@ -30,5 +30,14 @@ module Identity
       @authorize_params = params
       session["authorize_params"] = params ? MultiJson.encode(params) : nil
     end
+
+    def refresh_token(token)
+      @refresh_token ||= session["refresh_token"]
+    end
+
+    def refresh_token=(token)
+      @refresh_token = token
+      session["refresh_token"] = token
+    end
   end
 end

@@ -13,18 +13,21 @@ module Identity
       end
 
       post do
-        user, pass = params[:email], params[:password]
-        token = perform_oauth_dance(user, pass)
+        begin
+          user, pass = params[:email], params[:password]
+          perform_oauth_dance(user, pass)
 
-        self.access_token            = token["access_token"]
-        self.access_token_expires_at = Time.now + token["expires_in"]
-
-        # if we know that we're in the middle of an authorization attempt,
-        # continue it; otherwise go to dashboard
-        if authorize_params
-          authorize(authorize_params)
-        else
-          redirect to(Config.dashboard_url)
+          # if we know that we're in the middle of an authorization attempt,
+          # continue it; otherwise go to dashboard
+          if authorize_params
+            authorize(authorize_params)
+          else
+            redirect to(Config.dashboard_url)
+          end
+        # oauth dance or post-dance authorization was unsuccessful
+        rescue Excon::Errors::Forbidden
+          flash[:error] = "There was a problem with your login."
+          redirect to("/sessions/new")
         end
       end
 
@@ -43,15 +46,23 @@ module Identity
       post "/authorize" do
         authorize_params =
           filter_params(%w{client_id response_type scope state})
+        begin
+          # have the user login if we have no session for them
+          if !self.access_token
+            store_authorize_params_and_login(authorize_params)
+          end
 
-        # have the user login if we have no session for them or if we know
-        # they're past their token's expiry
-        if !self.access_token || Time.now > self.access_token_expires_at
+          # try to perform an access token refresh if we know it's expired
+          if Time.now > self.access_token_expires_at
+            perform_oauth_refresh_dance
+          end
+
+          # redirects back to the oauth client on success
+          authorize(authorize_params)
+        # refresh token dance was unsuccessful
+        rescue Excon::Errors::Forbidden
           store_authorize_params_and_login(authorize_params)
         end
-
-        # redirects back to the oauth client on success
-        authorize(authorize_params)
       end
 
       post "/token" do
@@ -72,9 +83,7 @@ module Identity
       log :authorize, by_proxy: true, client_id: params["client_id"]
       api = HerokuAPI.new(user: nil, pass: self.access_token,
         request_id: request_id)
-      res = api.post(path: "/oauth/authorizations",
-        expects: [200, 401], query: params)
-      store_authorize_params_and_login(params) if res.status == 401
+      res = api.post(path: "/oauth/authorizations", expects: 200, query: params)
 
       # successful authorization, clear any params in session
       self.authorize_params = nil
@@ -104,33 +113,59 @@ module Identity
       request.env["x-rack.flash"]
     end
 
-    def log(action, data={})
+    def log(action, data={}, &block)
       data.merge! id: request_id
-      Slides.log(action, data.merge(data))
+      Slides.log(action, data.merge(data), &block)
     end
 
     # Performs the complete OAuth dance against the Heroku API in order to
     # provision a user token that can be used by Identity to manage the user's
     # client identities.
     def perform_oauth_dance(user, pass)
-      log :authorize, client: "identity"
-      api = HerokuAPI.new(user: user, pass: pass, request_id: request_id)
-      res = api.post(path: "/oauth/authorizations", expects: [200, 401],
-        query: { client_id: Config.heroku_oauth_id, response_type: "code" })
+      log :oauth_dance do
+        api = HerokuAPI.new(user: user, pass: pass, request_id: request_id)
+        res = log :create_authorization do
+          api.post(path: "/oauth/authorizations", expects: 200,
+            query: { client_id: Config.heroku_oauth_id, response_type: "code" })
+        end
 
-      if res.status == 401
-        flash[:error] = "There was a problem with your login."
-        redirect to("/sessions/new")
+        code = MultiJson.decode(res.body)["code"]
+
+        # exchange authorization code for access grant
+        res = log :create_token do
+          api.post(path: "/oauth/tokens", expects: 200,
+            query: {
+              code:          code,
+              client_secret: Config.heroku_oauth_secret,
+              grant_type:    "authorization_code",
+            })
+        end
+
+        # store appropriate tokens to session
+        token = MultiJson.decode(res.body)
+        self.access_token            = token["access_token"]["access_token"]
+        self.access_token_expires_at = Time.now + token["expires_in"]
+        self.refresh_token           = token["refresh_token"]["refresh_token"]
       end
+    end
 
-      code = MultiJson.decode(res.body)["code"]
+    # Attempts to refresh a user's access token using a known refresh token.
+    def perform_oauth_refresh_dance
+      log :oauth_refresh_dance do
+        res = log :refresh_token do
+          api.post(path: "/oauth/tokens", expects: 200,
+            query: {
+              client_secret: Config.heroku_oauth_secret,
+              grant_type:    "refresh_token",
+              refresh_token: refresh_token,
+            })
+        end
 
-      # exchange authorization code for access grant
-      log :procure_token, client: "identity"
-      res = api.post(path: "/oauth/tokens", expects: 200,
-        query: { code: code, client_secret: Config.heroku_oauth_secret })
-
-      MultiJson.decode(res.body)
+        # store appropriate tokens to session
+        token = MultiJson.decode(res.body)
+        self.access_token            = token["access_token"]["access_token"]
+        self.access_token_expires_at = Time.now + token["expires_in"]
+      end
     end
 
     def request_id
