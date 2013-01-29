@@ -68,12 +68,24 @@ module Identity
       end
 
       post "/token" do
-        log :procure_token, by_proxy: true
+        log :create_token, by_proxy: true
         api = HerokuAPI.new(user: nil, request_id: request_id)
-        res = api.post(path: "/oauth/token", expects: 200,
+        res = api.post(path: "/oauth/tokens", expects: 200,
           query: { code: params[:code], client_secret: params[:client_secret] })
+        token = MultiJson.decode(res.body)
+
         content_type(:json)
-        [200, res.body]
+        status(200)
+        MultiJson.encode({
+          # core spec response
+          "access_token"  => token["access_token"]["access_token"],
+          "expires_in"    => token["access_token"]["expires_in"],
+          "refresh_token" => token["refresh_token"]["refresh_token"],
+          "token_type"    => "Bearer",
+
+          # heroku extra response
+          "session_nonce" => token["session_nonce"],
+        })
       end
     end
 
@@ -82,7 +94,7 @@ module Identity
     # Performs the authorization step of the OAuth dance against the Heroku
     # API.
     def authorize(params)
-      log :authorize, by_proxy: true, client_id: params["client_id"]
+      log :create_authorization, by_proxy: true, client_id: params["client_id"]
       api = HerokuAPI.new(user: nil, pass: self.access_token,
         request_id: request_id)
       res = api.post(path: "/oauth/authorizations", expects: 200, query: params)
