@@ -66,11 +66,13 @@ module Identity
 
     private
 
+    # Performs the authorization step of the OAuth dance against the Heroku
+    # API.
     def authorize(params)
       log :authorize, by_proxy: true, client_id: params["client_id"]
       api = HerokuAPI.new(user: nil, pass: self.access_token,
         request_id: request_id)
-      res = api.post(path: "/oauth/authorize",
+      res = api.post(path: "/oauth/authorizations",
         expects: [200, 401], query: params)
       store_authorize_params_and_login(params) if res.status == 401
 
@@ -107,10 +109,13 @@ module Identity
       Slides.log(action, data.merge(data))
     end
 
+    # Performs the complete OAuth dance against the Heroku API in order to
+    # provision a user token that can be used by Identity to manage the user's
+    # client identities.
     def perform_oauth_dance(user, pass)
       log :authorize, client: "identity"
       api = HerokuAPI.new(user: user, pass: pass, request_id: request_id)
-      res = api.post(path: "/oauth/authorize", expects: [200, 401],
+      res = api.post(path: "/oauth/authorizations", expects: [200, 401],
         query: { client_id: Config.heroku_oauth_id, response_type: "code" })
 
       if res.status == 401
@@ -122,7 +127,7 @@ module Identity
 
       # exchange authorization code for access grant
       log :procure_token, client: "identity"
-      res = api.post(path: "/oauth/token", expects: 200,
+      res = api.post(path: "/oauth/tokens", expects: 200,
         query: { code: code, client_secret: Config.heroku_oauth_secret })
 
       MultiJson.decode(res.body)
