@@ -55,6 +55,7 @@ If you don't receive an email, and it's not in your spam folder, this could mean
         id:         "authorization123@heroku.com",
         code:       "454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
         scope:      "all",
+        tokens:     nil,
         created_at: Time.now,
         updated_at: Time.now,
         client: {
@@ -68,12 +69,18 @@ If you don't receive an email, and it's not in your spam folder, this could mean
     post "/token" do
       status(200)
       MultiJson.encode({
-        access_token:  "e51e8a64-29f1-4bbf-997e-391d84aa12a9",
-        refresh_token: "faa180e4-5844-42f2-ad66-0c574a1dbed2",
-        token_type:    "Bearer",
-        expires_in:    1234,
-        scope:         "all",
         session_nonce: "0a80ac35-b9d8-4fab-9261-883bea77ad3a",
+        authorization: {
+          id: "authorization123@heroku.com",
+        },
+        access_token: {
+          access_token: "e51e8a64-29f1-4bbf-997e-391d84aa12a9",
+          expires_in:    7200,
+        },
+        refresh_token: {
+          refresh_token: "faa180e4-5844-42f2-ad66-0c574a1dbed2",
+          expires_in:    2592000,
+        },
       })
     end
   end
