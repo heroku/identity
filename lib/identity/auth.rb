@@ -52,7 +52,9 @@ module Identity
             store_authorize_params_and_login(authorize_params)
           end
 
-          # try to perform an access token refresh if we know it's expired
+          # Try to perform an access token refresh if we know it's expired. At
+          # the time of this writing, refresh tokens last 30 days (much longer
+          # than the short-lived 2 hour access tokens).
           if Time.now > self.access_token_expires_at
             perform_oauth_refresh_dance
           end
