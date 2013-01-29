@@ -48,7 +48,7 @@ If you don't receive an email, and it's not in your spam folder, this could mean
   end
 
   namespace "/oauth" do
-    post "/authorize" do
+    post "/authorizations" do
       authorized!
       status(200)
       MultiJson.encode({
@@ -66,7 +66,7 @@ If you don't receive an email, and it's not in your spam folder, this could mean
       })
     end
 
-    post "/token" do
+    post "/tokens" do
       status(200)
       MultiJson.encode({
         session_nonce: "0a80ac35-b9d8-4fab-9261-883bea77ad3a",
