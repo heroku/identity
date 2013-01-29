@@ -53,16 +53,22 @@ If you don't receive an email, and it's not in your spam folder, this could mean
       status(200)
       MultiJson.encode({
         id:         "authorization123@heroku.com",
-        code:       "454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
         scope:      "all",
-        tokens:     nil,
         created_at: Time.now,
         updated_at: Time.now,
+        access_tokens: [],
         client: {
           id:           123,
           name:         "dashboard",
           redirect_uri: "https://dashboard.heroku.com/oauth/callback/heroku",
-        }
+        },
+        grants: [
+          {
+            code:       "454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
+            expires_in: 300,
+          }
+        ],
+        refresh_tokens: []
       })
     end
 

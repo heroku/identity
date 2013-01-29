@@ -68,10 +68,11 @@ module Identity
       end
 
       post "/token" do
-        log :create_token, by_proxy: true
-        api = HerokuAPI.new(user: nil, request_id: request_id)
-        res = api.post(path: "/oauth/tokens", expects: 200,
-          query: { code: params[:code], client_secret: params[:client_secret] })
+        res = log :create_token, by_proxy: true do
+          api = HerokuAPI.new(user: nil, request_id: request_id)
+          api.post(path: "/oauth/tokens", expects: 200,
+            query: { code: params[:code], client_secret: params[:client_secret] })
+        end
         token = MultiJson.decode(res.body)
 
         content_type(:json)
@@ -94,17 +95,19 @@ module Identity
     # Performs the authorization step of the OAuth dance against the Heroku
     # API.
     def authorize(params)
-      log :create_authorization, by_proxy: true, client_id: params["client_id"]
-      api = HerokuAPI.new(user: nil, pass: self.access_token,
-        request_id: request_id)
-      res = api.post(path: "/oauth/authorizations", expects: 200, query: params)
+      res = log :create_authorization, by_proxy: true,
+        client_id: params["client_id"] do
+          api = HerokuAPI.new(user: nil, pass: self.access_token,
+            request_id: request_id)
+          api.post(path: "/oauth/authorizations", expects: 200, query: params)
+      end
 
       # successful authorization, clear any params in session
       self.authorize_params = nil
 
       authorization = MultiJson.decode(res.body)
 
-      redirect_params = { code: authorization["code"] }
+      redirect_params = { code: authorization["grants"][0]["code"] }
       redirect_params.merge!(state: params["state"]) if params["state"]
       base_uri = authorization["client"]["redirect_uri"]
       redirect to(build_uri(base_uri, redirect_params))
@@ -143,7 +146,7 @@ module Identity
             query: { client_id: Config.heroku_oauth_id, response_type: "code" })
         end
 
-        code = MultiJson.decode(res.body)["code"]
+        code = MultiJson.decode(res.body)["grants"][0]["code"]
 
         # exchange authorization code for access grant
         res = log :create_token do
