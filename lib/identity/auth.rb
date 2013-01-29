@@ -157,10 +157,10 @@ module Identity
 
         # store appropriate tokens to session
         token = MultiJson.decode(res.body)
-        self.access_token            = token["access_token"]["access_token"]
+        self.access_token            = token["access_token"]["token"]
         self.access_token_expires_at =
           Time.now + token["access_token"]["expires_in"]
-        self.refresh_token           = token["refresh_token"]["refresh_token"]
+        self.refresh_token           = token["refresh_token"]["token"]
       end
     end
 
@@ -178,7 +178,7 @@ module Identity
 
         # store appropriate tokens to session
         token = MultiJson.decode(res.body)
-        self.access_token            = token["access_token"]["access_token"]
+        self.access_token            = token["access_token"]["token"]
         self.access_token_expires_at =
           Time.now + token["access_token"]["expires_in"]
       end
