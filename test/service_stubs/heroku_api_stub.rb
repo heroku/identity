@@ -83,7 +83,7 @@ If you don't receive an email, and it's not in your spam folder, this could mean
         id:           id,
         name:         "An OAuth Client",
         redirect_uri: "https://example.com/oauth/callback/heroku",
-        trusted:      false,
+        trusted:      true,
       })
     end
 
