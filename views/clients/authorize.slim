@@ -1,0 +1,6 @@
+- @title = "Login"
+
+p Authorize client "#{@client["name"]}" for your account under the scope "#{@authorize_params["scope"]}"?
+form method="post" action="/oauth/authorize"
+  input type="submit" name="authorize" value="Authorize"
+  input type="submit" name="authorize" value="Nope"

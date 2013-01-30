@@ -28,6 +28,12 @@ module Identity
         rescue Excon::Errors::Forbidden
           flash[:error] = "There was a problem with your login."
           redirect to("/sessions/new")
+        # client not yet authorized; show the user a confirmation dialog
+        rescue Identity::Errors::UnauthorizedClient => e
+          @client = e.client
+          @authorize_params = authorize_params
+          self.authorize_params = authorize_params
+          slim :"clients/authorize"
         end
       end
 
@@ -49,7 +55,8 @@ module Identity
         begin
           # have the user login if we have no session for them
           if !self.access_token
-            store_authorize_params_and_login(authorize_params)
+            self.authorize_params = authorize_params
+            redirect to("/sessions/new")
           end
 
           # Try to perform an access token refresh if we know it's expired. At
@@ -60,10 +67,17 @@ module Identity
           end
 
           # redirects back to the oauth client on success
-          authorize(authorize_params)
+          authorize(authorize_params, params[:authorize] == "Authorize")
         # refresh token dance was unsuccessful
         rescue Excon::Errors::Forbidden
-          store_authorize_params_and_login(authorize_params)
+          self.authorize_params = authorize_params
+          redirect to("/sessions/new")
+        # client not yet authorized; show the user a confirmation dialog
+        rescue Identity::Errors::UnauthorizedClient => e
+          @client = e.client
+          @params = authorize_params
+          self.authorize_params = authorize_params
+          slim :"clients/authorize"
         end
       end
 
@@ -94,11 +108,35 @@ module Identity
 
     # Performs the authorization step of the OAuth dance against the Heroku
     # API.
-    def authorize(params)
+    def authorize(params, confirm=false)
+      api = HerokuAPI.new(user: nil, pass: self.access_token,
+        request_id: request_id)
+
+      res = log :get_client, client_id: params["client_id"] do
+        api.get(path: "/oauth/clients/#{params["client_id"]}", expects: 200)
+      end
+      client = MultiJson.decode(res.body)
+
+      # if the client is not trusted, then see if the user has already
+      # authorized it
+      if !client["trusted"]
+        res = log :get_authorizations do
+          api.get(path: "/oauth/authorizations", expects: 200)
+        end
+        authorizations = MultiJson.decode(res.body)
+
+        authorization = authorizations.
+          detect { |a| a["client"]["id"] == params["client_id"] }
+
+        # if there is no authorization raise an error so that we can show a
+        # confirmation dialog to the user
+        if !authorization && !confirm
+          raise Identity::Errors::UnauthorizedClient.new(client) 
+        end
+      end
+
       res = log :create_authorization, by_proxy: true,
         client_id: params["client_id"] do
-          api = HerokuAPI.new(user: nil, pass: self.access_token,
-            request_id: request_id)
           api.post(path: "/oauth/authorizations", expects: 200, query: params)
       end
 
@@ -189,12 +227,6 @@ module Identity
 
     def request_id
       request.env["REQUEST_ID"]
-    end
-
-    def store_authorize_params_and_login(authorize_params)
-      # store to session
-      self.authorize_params = authorize_params
-      redirect to("/sessions/new")
     end
   end
 end

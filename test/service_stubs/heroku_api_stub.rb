@@ -48,6 +48,11 @@ If you don't receive an email, and it's not in your spam folder, this could mean
   end
 
   namespace "/oauth" do
+    get "/authorizations" do
+      status(200)
+      MultiJson.encode([])
+    end
+
     post "/authorizations" do
       authorized!
       status(200)
@@ -69,6 +74,16 @@ If you don't receive an email, and it's not in your spam folder, this could mean
           }
         ],
         refresh_tokens: []
+      })
+    end
+
+    get "/clients/:id" do |id|
+      status(200)
+      MultiJson.encode({
+        id:           id,
+        name:         "An OAuth Client",
+        redirect_uri: "https://example.com/oauth/callback/heroku",
+        trusted:      false,
       })
     end
 
