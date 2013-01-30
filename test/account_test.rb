@@ -54,7 +54,9 @@ describe Identity::Account do
 
     it "renders when the api responded with an error" do
       stub_heroku_api do
-        post("/auth/reset_password") { 422 }
+        post("/auth/reset_password") {
+          [422, MultiJson.encode({ message: "Password too short." })]
+        }
       end
       post "/account/password/reset", email: "kerry@heroku.com"
       assert_equal 200, last_response.status
