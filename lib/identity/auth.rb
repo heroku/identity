@@ -39,6 +39,7 @@ module Identity
 
       delete do
         session.clear
+        heroku_session.clear
         redirect to("/sessions/new")
       end
     end
@@ -186,7 +187,7 @@ module Identity
 
         code = MultiJson.decode(res.body)["grants"][0]["code"]
 
-        # exchange authorization code for access grant
+        # exchange authorization grant code for an access/refresh token set
         res = log :create_token do
           api.post(path: "/oauth/tokens", expects: 200,
             query: {
@@ -201,6 +202,7 @@ module Identity
         self.access_token            = token["access_token"]["token"]
         self.access_token_expires_at =
           Time.now + token["access_token"]["expires_in"]
+        self.heroku_session_nonce    = token["session_nonce"]
         self.refresh_token           = token["refresh_token"]["token"]
       end
     end

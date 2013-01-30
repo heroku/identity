@@ -5,7 +5,8 @@ describe Identity::Auth do
 
   def app
     Rack::Builder.new do
-      use Rack::Session::Cookie
+      use Rack::Session::Cookie, domain: "example.org"
+      use Rack::Session::Cookie, domain: "org", key: "rack.session.heroku"
       use Rack::Flash
       run Identity::Auth
     end
@@ -102,6 +103,12 @@ describe Identity::Auth do
       post "/sessions", email: "kerry@heroku.com", password: "abcdefgh"
       assert_equal 302, last_response.status
       assert_match %r{/sessions/new$}, last_response.headers["Location"]
+    end
+
+    it "sets a heroku-wide session nonce in the cookie" do
+      post "/sessions", email: "kerry@heroku.com", password: "abcdefgh"
+      assert_equal "0a80ac35-b9d8-4fab-9261-883bea77ad3a",
+        last_request.env["rack.session.heroku"]["heroku_session_nonce"]
     end
   end
 

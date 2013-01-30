@@ -39,5 +39,18 @@ module Identity
       @refresh_token = token
       session["refresh_token"] = token
     end
+
+    #
+    # Heroku
+    #
+
+    # session that's scoped to all Heroku domains
+    def heroku_session
+      env["rack.session.heroku"] ||= {}
+    end
+
+    def heroku_session_nonce=(nonce)
+      heroku_session["heroku_session_nonce"] = nonce
+    end
   end
 end

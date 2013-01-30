@@ -2,8 +2,14 @@ module Identity
   module Config
     extend self
 
+    # domain that cookies will be scoped to, should be this app's dns only
     def cookie_domain
       ENV["COOKIE_DOMAIN"]
+    end
+
+    # domain that a cookie-based session nonce will be made available to
+    def heroku_cookie_domain
+      ENV["HEROKU_COOKIE_DOMAIN"]
     end
 
     def dashboard_url
