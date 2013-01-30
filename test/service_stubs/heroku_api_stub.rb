@@ -55,7 +55,7 @@ If you don't receive an email, and it's not in your spam folder, this could mean
 
     post "/authorizations" do
       authorized!
-      status(200)
+      status(201)
       MultiJson.encode({
         id:         "authorization123@heroku.com",
         scope:      "all",
