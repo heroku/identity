@@ -20,6 +20,61 @@ describe Identity::Auth do
       get "/oauth/authorize"
       assert_equal 302, last_response.status
     end
+
+    it "an be called by a user who is logged in" do
+      post "/sessions", email: "kerry@heroku.com", password: "abcdefgh"
+      assert_equal 302, last_response.status
+      assert_equal "https://dashboard.heroku.com",
+        last_response.headers["Location"]
+
+      follow_redirect!
+      post "/oauth/authorize", client_id: "abcdef"
+      assert_equal 302, last_response.status
+      assert_equal "https://dashboard.heroku.com/oauth/callback/heroku" +
+        "?code=454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
+        last_response.headers["Location"]
+    end
+
+    it "stores and replays an authorization attempt when not logged in" do
+      post "/oauth/authorize", client_id: "abcdef"
+      assert_equal 302, last_response.status
+      assert_match %r{/sessions/new$}, last_response.headers["Location"]
+
+      follow_redirect!
+      post "/sessions", email: "kerry@heroku.com", password: "abcdefgh"
+      assert_equal 302, last_response.status
+      assert_equal "https://dashboard.heroku.com/oauth/callback/heroku" +
+        "?code=454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
+        last_response.headers["Location"]
+    end
+
+    describe "for an untrusted client" do
+      before do
+        stub_heroku_api do
+          get("/oauth/clients/:id") {
+            MultiJson.encode({
+              trusted: false
+            })
+          }
+        end
+      end
+
+      it "confirms with the user before authorizing" do
+        post "/sessions", email: "kerry@heroku.com", password: "abcdefgh"
+        post "/oauth/authorize", client_id: "untrusted"
+        assert_equal 200, last_response.status
+        assert_match /Authorize/, last_response.body
+      end
+
+      it "creates an authorization after a user confirms" do
+        post "/sessions", email: "kerry@heroku.com", password: "abcdefgh"
+        post "/oauth/authorize", client_id: "untrusted", authorize: "Authorize"
+        assert_equal 302, last_response.status
+        assert_equal "https://dashboard.heroku.com/oauth/callback/heroku" +
+          "?code=454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
+          last_response.headers["Location"]
+      end
+    end
   end
 
   describe "GET /sessions" do
@@ -55,61 +110,6 @@ describe Identity::Auth do
       delete "/sessions"
       assert_equal 302, last_response.status
       assert_match %r{/sessions/new$}, last_response.headers["Location"]
-    end
-  end
-
-  it "stores and replays /oauth/authorize attempt when not logged in" do
-    post "/oauth/authorize", client_id: "abcdef"
-    assert_equal 302, last_response.status
-    assert_match %r{/sessions/new$}, last_response.headers["Location"]
-
-    follow_redirect!
-    post "/sessions", email: "kerry@heroku.com", password: "abcdefgh"
-    assert_equal 302, last_response.status
-    assert_equal "https://dashboard.heroku.com/oauth/callback/heroku" +
-      "?code=454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
-      last_response.headers["Location"]
-  end
-
-  it "is able to call /oauth/authorize after logging in" do
-    post "/sessions", email: "kerry@heroku.com", password: "abcdefgh"
-    assert_equal 302, last_response.status
-    assert_equal "https://dashboard.heroku.com",
-      last_response.headers["Location"]
-
-    follow_redirect!
-    post "/oauth/authorize", client_id: "abcdef"
-    assert_equal 302, last_response.status
-    assert_equal "https://dashboard.heroku.com/oauth/callback/heroku" +
-      "?code=454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
-      last_response.headers["Location"]
-  end
-
-  describe "untrusted client" do
-    before do
-      stub_heroku_api do
-        get("/oauth/clients/:id") {
-          MultiJson.encode({
-            trusted: false
-          })
-        }
-      end
-    end
-
-    it "confirms with the user before authorizing" do
-      post "/sessions", email: "kerry@heroku.com", password: "abcdefgh"
-      post "/oauth/authorize", client_id: "untrusted"
-      assert_equal 200, last_response.status
-      assert_match /Authorize/, last_response.body
-    end
-
-    it "creates an authorization after a user confirms" do
-      post "/sessions", email: "kerry@heroku.com", password: "abcdefgh"
-      post "/oauth/authorize", client_id: "untrusted", authorize: "Authorize"
-      assert_equal 302, last_response.status
-      assert_equal "https://dashboard.heroku.com/oauth/callback/heroku" +
-        "?code=454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
-        last_response.headers["Location"]
     end
   end
 end
