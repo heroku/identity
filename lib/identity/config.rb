@@ -41,5 +41,9 @@ module Identity
     def secure_key
       ENV["SECURE_KEY"] || raise("missing=SECURE_KEY")
     end
+
+    def ssl_verify_peer?
+      ENV["SSL_VERIFY_PEER"] != "false"
+    end
   end
 end
