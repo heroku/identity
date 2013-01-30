@@ -63,8 +63,6 @@ describe Identity::Auth do
     assert_equal 302, last_response.status
     assert_match %r{/sessions/new$}, last_response.headers["Location"]
 
-    stub_heroku_api
-
     follow_redirect!
     post "/sessions", email: "kerry@heroku.com", password: "abcdefgh"
     assert_equal 302, last_response.status
