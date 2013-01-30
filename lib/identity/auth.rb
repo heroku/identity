@@ -131,13 +131,13 @@ module Identity
         # if there is no authorization raise an error so that we can show a
         # confirmation dialog to the user
         if !authorization && !confirm
-          raise Identity::Errors::UnauthorizedClient.new(client) 
+          raise Identity::Errors::UnauthorizedClient.new(client)
         end
       end
 
       res = log :create_authorization, by_proxy: true,
         client_id: params["client_id"] do
-          api.post(path: "/oauth/authorizations", expects: 200, query: params)
+          api.post(path: "/oauth/authorizations", expects: 201, query: params)
       end
 
       # successful authorization, clear any params in session
@@ -180,7 +180,7 @@ module Identity
       log :oauth_dance do
         api = HerokuAPI.new(user: user, pass: pass, request_id: request_id)
         res = log :create_authorization do
-          api.post(path: "/oauth/authorizations", expects: 200,
+          api.post(path: "/oauth/authorizations", expects: 201,
             query: { client_id: Config.heroku_oauth_id, response_type: "code" })
         end
 
