@@ -13,10 +13,12 @@ module Identity
     # cookie with a domain scoped to all heroku domains, used to set a session
     # nonce value so that consumers can recognize when the logged in user has
     # changed
-    use Rack::Session::Cookie, domain: Config.heroku_cookie_domain,
-                               expire_after: 2592000,
-                               key: 'rack.session.heroku',
-                               secret: Config.secure_key
+    if Config.heroku_cookie_domain
+      use Rack::Session::Cookie, domain: Config.heroku_cookie_domain,
+                                 expire_after: 2592000,
+                                 key: 'rack.session.heroku',
+                                 secret: Config.secure_key
+    end
 
     use Rack::Csrf, skip: ["POST:/oauth/.*"]
     use Rack::Flash
