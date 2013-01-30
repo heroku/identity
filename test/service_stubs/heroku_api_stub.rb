@@ -24,86 +24,82 @@ class HerokuAPIStub < Sinatra::Base
     end
   end
 
-  post "/signup" do
+  post "/auth/reset_password" do
+    MultiJson.encode({
+      message: <<-eos
+Check your inbox for the next steps.
+If you don't receive an email, and it's not in your spam folder, this could mean you signed up with a different address.
+      eos
+    })
+  end
+
+  get "/auth/finish_reset_password/:hash" do |hash|
     MultiJson.encode({ email: "kerry@heroku.com" })
   end
 
-  namespace "/auth" do
-    post "/reset_password" do
-      MultiJson.encode({
-        message: <<-eos
-Check your inbox for the next steps.
-If you don't receive an email, and it's not in your spam folder, this could mean you signed up with a different address.
-        eos
-      })
-    end
-
-    get "/finish_reset_password/:hash" do |hash|
-      MultiJson.encode({ email: "kerry@heroku.com" })
-    end
-
-    post "/finish_reset_password/:hash" do |hash|
-      MultiJson.encode({ email: "kerry@heroku.com" })
-    end
+  post "/auth/finish_reset_password/:hash" do |hash|
+    MultiJson.encode({ email: "kerry@heroku.com" })
   end
 
-  namespace "/oauth" do
-    get "/authorizations" do
-      status(200)
-      MultiJson.encode([])
-    end
+  get "/oauth/authorizations" do
+    status(200)
+    MultiJson.encode([])
+  end
 
-    post "/authorizations" do
-      authorized!
-      status(201)
-      MultiJson.encode({
-        id:         "authorization123@heroku.com",
-        scope:      "all",
-        created_at: Time.now,
-        updated_at: Time.now,
-        access_tokens: [],
-        client: {
-          id:           123,
-          name:         "dashboard",
-          redirect_uri: "https://dashboard.heroku.com/oauth/callback/heroku",
-        },
-        grants: [
-          {
-            code:       "454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
-            expires_in: 300,
-          }
-        ],
-        refresh_tokens: []
-      })
-    end
+  post "/oauth/authorizations" do
+    authorized!
+    status(201)
+    MultiJson.encode({
+      id:         "authorization123@heroku.com",
+      scope:      "all",
+      created_at: Time.now,
+      updated_at: Time.now,
+      access_tokens: [],
+      client: {
+        id:           123,
+        name:         "dashboard",
+        redirect_uri: "https://dashboard.heroku.com/oauth/callback/heroku",
+      },
+      grants: [
+        {
+          code:       "454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
+          expires_in: 300,
+        }
+      ],
+      refresh_tokens: []
+    })
+  end
 
-    get "/clients/:id" do |id|
-      status(200)
-      MultiJson.encode({
-        id:           id,
-        name:         "An OAuth Client",
-        redirect_uri: "https://example.com/oauth/callback/heroku",
-        trusted:      true,
-      })
-    end
+  get "/oauth/clients/:id" do |id|
+    status(200)
+    MultiJson.encode({
+      id:           id,
+      name:         "An OAuth Client",
+      redirect_uri: "https://example.com/oauth/callback/heroku",
+      trusted:      true,
+    })
+  end
 
-    post "/tokens" do
-      status(200)
-      MultiJson.encode({
-        session_nonce: "0a80ac35-b9d8-4fab-9261-883bea77ad3a",
-        authorization: {
-          id: "authorization123@heroku.com",
-        },
-        access_token: {
-          token:      "e51e8a64-29f1-4bbf-997e-391d84aa12a9",
-          expires_in: 7200,
-        },
-        refresh_token: {
-          token:      "faa180e4-5844-42f2-ad66-0c574a1dbed2",
-          expires_in: 2592000,
-        },
-      })
-    end
+  post "/oauth/tokens" do
+    status(200)
+    MultiJson.encode({
+      session_nonce: "0a80ac35-b9d8-4fab-9261-883bea77ad3a",
+      authorization: {
+        id: "authorization123@heroku.com",
+      },
+      access_token: {
+        token:      "e51e8a64-29f1-4bbf-997e-391d84aa12a9",
+        expires_in: 7200,
+      },
+      refresh_token: {
+        token:      "faa180e4-5844-42f2-ad66-0c574a1dbed2",
+        expires_in: 2592000,
+      },
+    })
+  end
+
+  post "/signup" do
+    MultiJson.encode({ email: "kerry@heroku.com" })
   end
 end
 
