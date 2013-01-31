@@ -51,7 +51,9 @@ module Identity
       end
 
       post "/authorize" do
-        authorize_params =
+        # if the user is submitting a confirmation form, pull from session,
+        # otherwise get params from the request
+        authorize_params = params[:authorize] ? (self.authorize_params || {}) :
           filter_params(%w{client_id response_type scope state})
         begin
           # have the user login if we have no session for them
