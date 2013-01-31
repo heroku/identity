@@ -87,8 +87,11 @@ module Identity
       post "/token" do
         res = log :create_token, by_proxy: true do
           api = HerokuAPI.new(user: nil, request_id: request_id)
-          api.post(path: "/oauth/tokens", expects: 201,
-            query: { code: params[:code], client_secret: params[:client_secret] })
+          api.post(path: "/oauth/tokens", expects: 201, query: {
+            code:          params[:code],
+            client_secret: params[:client_secret],
+            grant_type:    "authorization_code"
+          })
         end
         token = MultiJson.decode(res.body)
 
