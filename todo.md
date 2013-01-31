@@ -1,16 +1,17 @@
 # @todo
 
-* Store nonce to session
-* Solve two hour re-login problem
+* Untrusted clients
+* Logout functionality, i.e. single sign-off
 * Signup finish (i.e. enter a password) -- need to reskin the existing version
 * Signup "slug" logic
 * 404 + 500 pages
 * Display maintenance mode page when API is down
-* Signup source / flow
 * Remove Slides
 
 ## Done
 
+* Store nonce to session
+* Solve two hour re-login problem
 * Login
 * OAuth provider APIs
 * Reset password start (i.e. enter an e-mail)
