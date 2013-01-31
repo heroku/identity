@@ -25,7 +25,7 @@ module Identity
             redirect to(Config.dashboard_url)
           end
         # oauth dance or post-dance authorization was unsuccessful
-        rescue Excon::Errors::Forbidden
+        rescue Excon::Errors::Unauthorized
           flash[:error] = "There was a problem with your login."
           redirect to("/sessions/new")
         # client not yet authorized; show the user a confirmation dialog
@@ -70,7 +70,7 @@ module Identity
           # redirects back to the oauth client on success
           authorize(authorize_params, params[:authorize] == "Authorize")
         # refresh token dance was unsuccessful
-        rescue Excon::Errors::Forbidden
+        rescue Excon::Errors::Unauthorized
           self.authorize_params = authorize_params
           redirect to("/sessions/new")
         # client not yet authorized; show the user a confirmation dialog

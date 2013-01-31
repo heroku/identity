@@ -98,7 +98,7 @@ describe Identity::Auth do
         #post("/oauth/authorizations") { 401 }
         # webmock doesn't handle Excon's :expects, so raise error directly
         # until it does
-        post("/oauth/authorizations") { raise(Excon::Errors::Forbidden, "Forbidden") }
+        post("/oauth/authorizations") { raise(Excon::Errors::Unauthorized, "Unauthorized") }
       end
       post "/sessions", email: "kerry@heroku.com", password: "abcdefgh"
       assert_equal 302, last_response.status
