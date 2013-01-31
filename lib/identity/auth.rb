@@ -127,7 +127,7 @@ module Identity
         authorizations = MultiJson.decode(res.body)
 
         authorization = authorizations.
-          detect { |a| a["client"]["id"] == params["client_id"] }
+          detect { |a| a["client"] && a["client"]["id"] == params["client_id"] }
 
         # if there is no authorization raise an error so that we can show a
         # confirmation dialog to the user
