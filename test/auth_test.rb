@@ -29,7 +29,7 @@ describe Identity::Auth do
         last_response.headers["Location"]
 
       follow_redirect!
-      post "/oauth/authorize", client_id: "abcdef"
+      post "/oauth/authorize", client_id: "dashboard"
       assert_equal 302, last_response.status
       assert_equal "https://dashboard.heroku.com/oauth/callback/heroku" +
         "?code=454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
@@ -37,7 +37,7 @@ describe Identity::Auth do
     end
 
     it "stores and replays an authorization attempt when not logged in" do
-      post "/oauth/authorize", client_id: "abcdef"
+      post "/oauth/authorize", client_id: "dashboard"
       assert_equal 302, last_response.status
       assert_match %r{/sessions/new$}, last_response.headers["Location"]
 
@@ -80,6 +80,19 @@ describe Identity::Auth do
           "?code=454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
           last_response.headers["Location"]
       end
+    end
+  end
+
+  describe "POST /oauth/token" do
+    it "renders access and refresh tokens" do
+      post "/sessions", email: "kerry@heroku.com", password: "abcdefgh"
+      post "/oauth/authorize", client_id: "dashboard"
+      post "/oauth/token"
+      assert_equal 200, last_response.status
+      tokens = MultiJson.decode(last_response.body)
+      assert_equal "e51e8a64-29f1-4bbf-997e-391d84aa12a9", tokens["access_token"]
+      assert_equal "faa180e4-5844-42f2-ad66-0c574a1dbed2", tokens["refresh_token"]
+      assert_equal 7200, tokens["expires_in"]
     end
   end
 
