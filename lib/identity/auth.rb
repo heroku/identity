@@ -122,7 +122,7 @@ module Identity
       # authorized it
       if !client["trusted"]
         res = log :get_authorizations do
-          api.get(path: "/oauth/authorizations", expects: 201)
+          api.get(path: "/oauth/authorizations", expects: 200)
         end
         authorizations = MultiJson.decode(res.body)
 
