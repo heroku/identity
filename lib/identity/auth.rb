@@ -97,18 +97,16 @@ module Identity
 
         content_type(:json)
         status(200)
-        x = MultiJson.encode({
+        MultiJson.encode({
           # core spec response
-          "access_token"  => token["access_token"]["access_token"],
+          "access_token"  => token["access_token"]["token"],
           "expires_in"    => token["access_token"]["expires_in"],
-          "refresh_token" => token["refresh_token"]["refresh_token"],
+          "refresh_token" => token["refresh_token"]["token"],
           "token_type"    => "Bearer",
 
           # heroku extra response
           "session_nonce" => token["session_nonce"],
         })
-        p x
-        x
       end
     end
 
