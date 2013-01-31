@@ -77,7 +77,7 @@ describe Identity::Account do
       post "/account/password/reset/c45685917ef644198a0fececa10d479a",
         password: "1234567890ab", password_confirmation: "1234567890ab"
       assert_equal 302, last_response.status
-      assert_match %r{/sessions/new$}, last_response.headers["Location"]
+      assert_match %r{/login$}, last_response.headers["Location"]
     end
   end
 end

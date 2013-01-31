@@ -29,7 +29,7 @@ module Identity
       mount Identity::Auth
       run Sinatra.new {
         get "/" do
-          redirect to("/sessions/new")
+          redirect to("/login")
         end
 
         not_found do

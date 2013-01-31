@@ -23,7 +23,7 @@ describe Identity::Auth do
     end
 
     it "an be called by a user who is logged in" do
-      post "/sessions", email: "kerry@heroku.com", password: "abcdefgh"
+      post "/login", email: "kerry@heroku.com", password: "abcdefgh"
       assert_equal 302, last_response.status
       assert_equal "https://dashboard.heroku.com",
         last_response.headers["Location"]
@@ -39,10 +39,10 @@ describe Identity::Auth do
     it "stores and replays an authorization attempt when not logged in" do
       post "/oauth/authorize", client_id: "dashboard"
       assert_equal 302, last_response.status
-      assert_match %r{/sessions/new$}, last_response.headers["Location"]
+      assert_match %r{/login$}, last_response.headers["Location"]
 
       follow_redirect!
-      post "/sessions", email: "kerry@heroku.com", password: "abcdefgh"
+      post "/login", email: "kerry@heroku.com", password: "abcdefgh"
       assert_equal 302, last_response.status
       assert_equal "https://dashboard.heroku.com/oauth/callback/heroku" +
         "?code=454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
@@ -61,14 +61,14 @@ describe Identity::Auth do
       end
 
       it "confirms with the user before authorizing" do
-        post "/sessions", email: "kerry@heroku.com", password: "abcdefgh"
+        post "/login", email: "kerry@heroku.com", password: "abcdefgh"
         post "/oauth/authorize", client_id: "untrusted"
         assert_equal 200, last_response.status
         assert_match /Authorize/, last_response.body
       end
 
       it "creates an authorization after a user confirms" do
-        post "/sessions", email: "kerry@heroku.com", password: "abcdefgh"
+        post "/login", email: "kerry@heroku.com", password: "abcdefgh"
 
         # post once to get parameters stored to session
         post "/oauth/authorize", client_id: "untrusted"
@@ -85,7 +85,7 @@ describe Identity::Auth do
 
   describe "POST /oauth/token" do
     it "renders access and refresh tokens" do
-      post "/sessions", email: "kerry@heroku.com", password: "abcdefgh"
+      post "/login", email: "kerry@heroku.com", password: "abcdefgh"
       post "/oauth/authorize", client_id: "dashboard"
       post "/oauth/token"
       assert_equal 200, last_response.status
@@ -96,16 +96,16 @@ describe Identity::Auth do
     end
   end
 
-  describe "GET /sessions" do
+  describe "GET /login" do
     it "shows a login page" do
-      get "/sessions/new"
+      get "/login"
       assert_equal 200, last_response.status
     end
   end
 
-  describe "POST /sessions" do
+  describe "POST /login" do
     it "logs a user in and redirects to dashboard" do
-      post "/sessions", email: "kerry@heroku.com", password: "abcdefgh"
+      post "/login", email: "kerry@heroku.com", password: "abcdefgh"
       assert_equal 302, last_response.status
       assert_equal Identity::Config.dashboard_url,
         last_response.headers["Location"]
@@ -118,23 +118,23 @@ describe Identity::Auth do
         # until it does
         post("/oauth/authorizations") { raise(Excon::Errors::Unauthorized, "Unauthorized") }
       end
-      post "/sessions", email: "kerry@heroku.com", password: "abcdefgh"
+      post "/login", email: "kerry@heroku.com", password: "abcdefgh"
       assert_equal 302, last_response.status
-      assert_match %r{/sessions/new$}, last_response.headers["Location"]
+      assert_match %r{/login$}, last_response.headers["Location"]
     end
 
     it "sets a heroku-wide session nonce in the cookie" do
-      post "/sessions", email: "kerry@heroku.com", password: "abcdefgh"
+      post "/login", email: "kerry@heroku.com", password: "abcdefgh"
       assert_equal "0a80ac35-b9d8-4fab-9261-883bea77ad3a",
         last_request.env["rack.session.heroku"]["heroku_session_nonce"]
     end
   end
 
-  describe "DELETE /sessions" do
+  describe "DELETE /logout" do
     it "clears session and redirects to login" do
-      delete "/sessions"
+      delete "/logout"
       assert_equal 302, last_response.status
-      assert_match %r{/sessions/new$}, last_response.headers["Location"]
+      assert_match %r{/login$}, last_response.headers["Location"]
     end
   end
 end

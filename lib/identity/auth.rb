@@ -7,9 +7,9 @@ module Identity
       set :views, "#{Config.root}/views"
     end
 
-    namespace "/sessions" do
-      get "/new" do
-        slim :"sessions/new"
+    namespace "/login" do
+      get do
+        slim :login
       end
 
       post do
@@ -27,7 +27,7 @@ module Identity
         # oauth dance or post-dance authorization was unsuccessful
         rescue Excon::Errors::Unauthorized
           flash[:error] = "There was a problem with your login."
-          redirect to("/sessions/new")
+          redirect to("/login")
         # client not yet authorized; show the user a confirmation dialog
         rescue Identity::Errors::UnauthorizedClient => e
           @client = e.client
@@ -36,11 +36,18 @@ module Identity
           slim :"clients/authorize"
         end
       end
+    end
+
+    namespace "/logout" do
+      get do
+        # same as DELETE
+        call(env.merge("REQUEST_METHOD" => "DELETE"))
+      end
 
       delete do
         session.clear
         heroku_session.clear
-        redirect to("/sessions/new")
+        redirect to("/login")
       end
     end
 
@@ -59,7 +66,7 @@ module Identity
           # have the user login if we have no session for them
           if !self.access_token
             self.authorize_params = authorize_params
-            redirect to("/sessions/new")
+            redirect to("/login")
           end
 
           # Try to perform an access token refresh if we know it's expired. At
@@ -74,7 +81,7 @@ module Identity
         # refresh token dance was unsuccessful
         rescue Excon::Errors::Unauthorized
           self.authorize_params = authorize_params
-          redirect to("/sessions/new")
+          redirect to("/login")
         # client not yet authorized; show the user a confirmation dialog
         rescue Identity::Errors::UnauthorizedClient => e
           @client = e.client

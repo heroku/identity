@@ -36,7 +36,7 @@ module Identity
 
         if res.status == 422
           flash.now[:error] = json["message"]
-          slim :"sessions/new"
+          slim :login
         else
           @user = json
           slim :"account/accept2"
@@ -96,7 +96,7 @@ module Identity
           slim :"account/password/finish_reset"
         else
           flash[:success] = "Your password has been changed."
-          redirect to("/sessions/new")
+          redirect to("/login")
         end
       end
     end
