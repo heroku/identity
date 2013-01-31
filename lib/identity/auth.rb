@@ -85,7 +85,7 @@ module Identity
       post "/token" do
         res = log :create_token, by_proxy: true do
           api = HerokuAPI.new(user: nil, request_id: request_id)
-          api.post(path: "/oauth/tokens", expects: 200,
+          api.post(path: "/oauth/tokens", expects: 201,
             query: { code: params[:code], client_secret: params[:client_secret] })
         end
         token = MultiJson.decode(res.body)
@@ -189,7 +189,7 @@ module Identity
 
         # exchange authorization grant code for an access/refresh token set
         res = log :create_token do
-          api.post(path: "/oauth/tokens", expects: 200,
+          api.post(path: "/oauth/tokens", expects: 201,
             query: {
               code:          code,
               client_secret: Config.heroku_oauth_secret,
@@ -211,7 +211,7 @@ module Identity
     def perform_oauth_refresh_dance
       log :oauth_refresh_dance do
         res = log :refresh_token do
-          api.post(path: "/oauth/tokens", expects: 200,
+          api.post(path: "/oauth/tokens", expects: 201,
             query: {
               client_secret: Config.heroku_oauth_secret,
               grant_type:    "refresh_token",

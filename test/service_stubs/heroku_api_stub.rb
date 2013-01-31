@@ -81,7 +81,7 @@ If you don't receive an email, and it's not in your spam folder, this could mean
   end
 
   post "/oauth/tokens" do
-    status(200)
+    status(201)
     MultiJson.encode({
       session_nonce: "0a80ac35-b9d8-4fab-9261-883bea77ad3a",
       authorization: {
