@@ -88,10 +88,12 @@ If you don't receive an email, and it's not in your spam folder, this could mean
         id: "authorization123@heroku.com",
       },
       access_token: {
+        id:         "access-token123@heroku.com",
         token:      "e51e8a64-29f1-4bbf-997e-391d84aa12a9",
         expires_in: 7200,
       },
       refresh_token: {
+        id:         "refresh-token123@heroku.com",
         token:      "faa180e4-5844-42f2-ad66-0c574a1dbed2",
         expires_in: 2592000,
       },
