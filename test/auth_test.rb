@@ -131,6 +131,11 @@ describe Identity::Auth do
   end
 
   describe "DELETE /logout" do
+    it "responds to GET as well" do
+      get "/logout"
+      assert_equal 302, last_response.status
+    end
+
     it "clears session and redirects to login" do
       delete "/logout"
       assert_equal 302, last_response.status
