@@ -31,7 +31,7 @@ module Identity
         # client not yet authorized; show the user a confirmation dialog
         rescue Identity::Errors::UnauthorizedClient => e
           @client = e.client
-          @authorize_params = authorize_params
+          @authorize_params = { "scope" => "all" }.merge(authorize_params)
           self.authorize_params = authorize_params
           slim :"clients/authorize"
         end
@@ -180,8 +180,8 @@ module Identity
     end
 
     # Performs the complete OAuth dance against the Heroku API in order to
-    # provision a user token that can be used by Identity to manage the user's
-    # client identities.
+    # provision an identity client token that can be used by Identity to manage
+    # the user's client identities.
     def perform_oauth_dance(user, pass)
       log :oauth_dance do
         api = HerokuAPI.new(user: user, pass: pass, request_id: request_id)
