@@ -25,7 +25,7 @@ module Identity
         res = api.post(path: "/signup", expects: [200, 422],
           query: { email: params[:email], slug: self.signup_source })
         json = MultiJson.decode(res.body)
-        slim :"account/finish_new"
+        slim :"account/finish_new", layout: :"layouts/zen_backdrop"
       end
 
       get "/accept/:id/:hash" do |id, hash|
@@ -36,20 +36,20 @@ module Identity
 
         if res.status == 422
           flash.now[:error] = json["message"]
-          slim :login
+          slim :login, layout: :"layouts/zen_backdrop"
         else
           @user = json
-          slim :"account/accept2"
+          slim :"account/accept", layout: :"layouts/classic"
         end
       end
 
       get "/new" do
         self.signup_source = params[:slug]
-        slim :"account/new"
+        slim :"account/new", layout: :"layouts/zen_backdrop"
       end
 
       get "/password/reset" do
-        slim :"account/password/reset"
+        slim :"account/password/reset", layout: :"layouts/zen_backdrop"
       end
 
       post "/password/reset" do
@@ -65,7 +65,7 @@ module Identity
           flash.now[:notice] = json["message"]
         end
 
-        slim :"account/password/reset"
+        slim :"account/password/reset", layout: :"layouts/zen_backdrop"
       end
 
       get "/password/reset/:hash" do |hash|
@@ -74,10 +74,10 @@ module Identity
           expects: [200, 404])
 
         if res.status == 404
-          slim :"account/password/not_found"
+          slim :"account/password/not_found", layout: :"layouts/zen_backdrop"
         else
           @user = MultiJson.decode(res.body)
-          slim :"account/password/finish_reset"
+          slim :"account/password/finish_reset", layout: :"layouts/zen_backdrop"
         end
       end
 
@@ -91,10 +91,10 @@ module Identity
           })
 
         if res.status == 404
-          slim :"account/password/not_found"
+          slim :"account/password/not_found", layout: :"layouts/zen_backdrop"
         elsif res.status == 422
           flash.now[:error] = json["errors"]
-          slim :"account/password/finish_reset"
+          slim :"account/password/finish_reset", layout: :"layouts/zen_backdrop"
         else
           flash[:success] = "Your password has been changed."
           redirect to("/login")

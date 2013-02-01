@@ -1,35 +1,36 @@
+- @title = "Welcome"
 - @bodyclass = "invitation"
 
-== render :slim, :"_flash", layout: false
 .panel.panel-small
   h2 Welcome to Heroku
-  form.panel-body method="post"
+  form method="post"
+    input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
     .overview
-    /- if @user["invited_by"]["email"]
-      p You were invited to try Heroku by #{@user["invited_by"]["email"]}.
-    p Enter a password and you'll be up and running right away.
+      - if @user["invited_by"] && @user["invited_by"]["email"]
+        p You were invited to try Heroku by #{@user["invited_by"]["email"]}.
+      p Enter a password and you'll be up and running right away.
     fieldset
       .field
         label Email
-        input.text type="text" disabled="true" value=@user["email"]
+        input.text type="text" disabled="true" value=@user["email"] size="30"
       .field.password
-        label for="password" Password
-        input.text type="password" name="password"
+        label for="user_password" Password
+        input#user_password.text type="password" name="password" size="30"
         span.hint minimum 6 characters letters,<br>numbers, and symbols
       .field
-        label for="password_confirmation" Password Confirmation
-        input.text type="password" name="password_confirmation"
+        label for="user_password_confirmation" Confirm Password
+        input#user_password_confirmation.text type="password" name="password_confirmation" size="30"
       .field.newsletter
-        input type="checkbox" name="receive_newsletter" checked="true"
-        label for="receive_newsletter" Send me a monthly newsletter featuring Heroku news, tips, and events.
+        input#receive_newsletter type="checkbox" name="receive_newsletter" checked="true"
+        label for="receive_newsletter" Sign me up for Heroku email – we'll send you our latest updates, newsletters, events and more.
     fieldset.submit
-      #terms Signing up signifies that you have read and agree to the <a href="http://legal.heroku.com/tos">Terms of Service</a> and <a href="http://legal.heroku.com/privacy">Privacy Policy</a>.
+      p#terms Signing up signifies that you have read and agree to the <a href="https://legal.heroku.com/tos">Terms of Service</a> and <a href="https://legal.heroku.com/privacy">Privacy Policy</a>.
       input#change_passwd.submit.disabled type="submit" value="Save"
 coffee:
   if typeof(mixpanel) != 'undefined'
-    mixpanel.alias('#{@user["id"]')
+    mixpanel.alias('#{@user["id"]}')
     mixpanel.track('viewed password page')
-    mixpanel.people.identify('#{@user["id"]')
+    mixpanel.people.identify('#{@user["id"]}')
     mixpanel.people.set
       '$email': '#{@user["email"]}',
       '$created': '#{@user["created_at"]}'

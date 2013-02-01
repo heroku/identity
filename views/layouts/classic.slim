@@ -1,0 +1,15 @@
+doctype 5
+html
+  head
+    meta http-equiv="Content-type" content="text/html; charset=utf-8"
+    title Heroku | #{@title}
+    link href="/assets/#{Identity::Config.release}/classic.css" media="screen" rel="stylesheet" type="text/css"
+    script src="/assets/#{Identity::Config.release}/classic.js" type="text/javascript"
+    == render :slim, :"_analytics", layout: false
+    == render :slim, :"_mixpanel", layout: false
+  body class="#{@bodyclass}"
+    #background
+      == render :slim, :"_classic_header"
+      == render :slim, :"_flash", layout: false
+      #content.myapps
+        == yield

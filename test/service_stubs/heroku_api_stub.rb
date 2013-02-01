@@ -103,6 +103,17 @@ If you don't receive an email, and it's not in your spam folder, this could mean
   post "/signup" do
     MultiJson.encode({ email: "kerry@heroku.com" })
   end
+
+  get "/signup/accept2/:id/:hash" do
+    MultiJson.encode({
+      created_at: Time.now.iso8601,
+      email:      "kerry@heroku.com",
+      id:         123,
+      invited_by: {
+        email: "anna@heroku.com",
+      }
+    })
+  end
 end
 
 if __FILE__ == $0

@@ -2,9 +2,10 @@ doctype 5
 
 html
   head
+    meta http-equiv="Content-type" content="text/html; charset=utf-8"
     title Heroku | #{@title}
-    link href="/assets/#{Identity::Config.release}/app.css" media="screen" rel="stylesheet" type="text/css"
-    script src="/assets/#{Identity::Config.release}/app.js" type="text/javascript"
+    link href="/assets/#{Identity::Config.release}/zen-backdrop.css" media="screen" rel="stylesheet" type="text/css"
+    script src="/assets/#{Identity::Config.release}/zen-backdrop.js" type="text/javascript"
     == render :slim, :"_analytics", layout: false
     == render :slim, :"_mixpanel", layout: false
   body id=@body_id

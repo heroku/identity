@@ -9,7 +9,7 @@ module Identity
 
     namespace "/login" do
       get do
-        slim :login
+        slim :login, layout: :"layouts/zen_backdrop"
       end
 
       post do
@@ -33,7 +33,7 @@ module Identity
           @client = e.client
           @authorize_params = { "scope" => "all" }.merge(authorize_params)
           self.authorize_params = authorize_params
-          slim :"clients/authorize"
+          slim :"clients/authorize", layout: :"layouts/zen_backdrop"
         end
       end
     end
@@ -87,7 +87,7 @@ module Identity
           @client = e.client
           @params = authorize_params
           self.authorize_params = authorize_params
-          slim :"clients/authorize"
+          slim :"clients/authorize", layout: :"layouts/zen_backdrop"
         end
       end
 

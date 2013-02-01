@@ -6,6 +6,7 @@ module Identity
       @assets = Sprockets::Environment.new do |env|
         Slides.log :assets, path: path
 
+        env.append_path(path + "/fonts")
         env.append_path(path + "/images")
         env.append_path(path + "/javascripts")
         env.append_path(path + "/stylesheets")
@@ -17,17 +18,27 @@ module Identity
       end
     end
 
-    get "/assets/:release/app.css" do
+    get "/assets/:release/classic.css" do
       content_type("text/css")
-      respond_with_asset(@assets["app.css"])
+      respond_with_asset(@assets["classic.css"])
     end
 
-    get "/assets/:release/app.js" do
+    get "/assets/:release/classic.js" do
       content_type("application/javascript")
-      respond_with_asset(@assets["app.js"])
+      respond_with_asset(@assets["classic.js"])
     end
 
-    %w{jpg png}.each do |format|
+    get "/assets/:release/zen-backdrop.css" do
+      content_type("text/css")
+      respond_with_asset(@assets["zen_backdrop.css"])
+    end
+
+    get "/assets/:release/zen-backdrop.js" do
+      content_type("application/javascript")
+      respond_with_asset(@assets["zen_backdrop.js"])
+    end
+
+    (%w{ico jpg png} + %w{eot svg ttf woff}).each do |format|
       get "/assets/*.#{format}" do |image|
         name = "#{image}.#{format}"
         if @assets[name]
