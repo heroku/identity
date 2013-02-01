@@ -31,13 +31,22 @@ module Identity
       session["authorize_params"] = params ? MultiJson.encode(params) : nil
     end
 
-    def refresh_token(token)
+    def refresh_token
       @refresh_token ||= session["refresh_token"]
     end
 
     def refresh_token=(token)
       @refresh_token = token
       session["refresh_token"] = token
+    end
+
+    def signup_source
+      @signup_source ||= session["signup_source"]
+    end
+
+    def signup_source=(slug)
+      @signup_source = slug
+      session["signup_source"] = slug
     end
 
     #
