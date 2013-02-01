@@ -31,10 +31,31 @@ describe Identity::Account do
 
   describe "POST /account" do
     it "creates an account and renders a notice" do
-      stub_heroku_api
       post "/account", email: "kerry@heroku.com"
       assert_equal 200, last_response.status
       assert_match %{Confirmation email sent}, last_response.body
+    end
+
+    it "forwards a signup_source slug" do
+      stub_heroku_api do
+        post("/signup") {
+          raise("need a slug") unless params[:slug]
+          pass
+        }
+      end
+      get "/account/new", slug: "facebook"
+      post "/account", email: "kerry@heroku.com"
+    end
+
+    it "doesn't forward a signup_source slug if none given" do
+      stub_heroku_api do
+        post("/signup") {
+          raise("given a slug") if params[:slug]
+          pass
+        }
+      end
+      get "/account/new"
+      post "/account", email: "kerry@heroku.com"
     end
   end
 

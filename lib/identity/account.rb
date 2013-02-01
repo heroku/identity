@@ -23,7 +23,7 @@ module Identity
       post do
         api = HerokuAPI.new(request_id: request_id)
         res = api.post(path: "/signup", expects: [200, 422],
-          query: { :email => params[:email] })
+          query: { email: params[:email], slug: self.signup_source })
         json = MultiJson.decode(res.body)
         slim :"account/finish_new"
       end
@@ -44,6 +44,7 @@ module Identity
       end
 
       get "/new" do
+        self.signup_source = params[:slug]
         slim :"account/new"
       end
 
