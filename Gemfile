@@ -1,5 +1,6 @@
 source :rubygems
 
+gem "airbrake"
 gem "coffee-script"
 gem "excon"
 gem "multi_json"

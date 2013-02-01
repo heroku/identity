@@ -1,6 +1,7 @@
 module Identity
   class Account < Sinatra::Base
     include SessionHelpers
+    register Identity::ErrorHandling
     register Sinatra::Namespace
 
     configure do

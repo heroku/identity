@@ -1,6 +1,7 @@
 module Identity
   class Auth < Sinatra::Base
     include SessionHelpers
+    register Identity::ErrorHandling
     register Sinatra::Namespace
 
     configure do

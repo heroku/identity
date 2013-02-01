@@ -2,6 +2,10 @@ module Identity
   module Config
     extend self
 
+    def airbrake_api_key
+      ENV["AIRBRAKE_API_KEY"]
+    end
+
     # domain that cookies will be scoped to, should be this app's dns only
     def cookie_domain
       ENV["COOKIE_DOMAIN"]

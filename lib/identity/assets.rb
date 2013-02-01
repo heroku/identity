@@ -1,5 +1,7 @@
 module Identity
   class Assets < Sinatra::Base
+    register Identity::ErrorHandling
+
     def initialize(*args)
       super
       path = "#{Config.root}/assets"

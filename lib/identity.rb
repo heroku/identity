@@ -1,4 +1,5 @@
 require_relative "identity/config"
+require_relative "identity/error_handling"
 require_relative "identity/errors"
 require_relative "identity/excon_instrumentor"
 require_relative "identity/heroku_api"
