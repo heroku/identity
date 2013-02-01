@@ -1,6 +1,16 @@
-- @title = "Login"
+- @title = "Authorize #{@client["name"]}"
 
-p style="color: #fff" Authorize client "#{@client["name"]}" for your account under the scope "#{@authorize_params["scope"]}"?
-form method="post" action="/oauth/authorize"
-  input type="submit" name="authorize" value="Authorize"
-  input type="submit" name="authorize" value="Nope"
+#login.dialog
+  form.panel-body method="post" action="/oauth/authorize"
+    input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
+    fieldset
+      .field
+        div style="margin-bottom: 29px;" Authorize third-party application:
+        div style="margin-left: 54px; margin-bottom: 12px;"
+          label for="email" style="color: white; font-size: 16px; font-weight: bold;" #{@client["name"]}
+          p style="font-size: 13px; margin-top: 4px;" #{@client["description"]}
+        p style="font-size: 13px;" <strong>#{@client["name"]}</strong> is requesting read and write access to your apps, your account, your other authorizations, your config vars, your payment histories, and your soul.
+    fieldset.submit
+      p
+        a href=Identity::Config.dashboard_url Deny Access
+      input.submit type="submit" name="authorize" value="Allow Access"

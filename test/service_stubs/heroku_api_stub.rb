@@ -75,6 +75,7 @@ If you don't receive an email, and it's not in your spam folder, this could mean
     MultiJson.encode({
       id:           id,
       name:         "An OAuth Client",
+      description:  "This is a sample OAuth client rendered by the API stub.",
       redirect_uri: "https://example.com/oauth/callback/heroku",
       trusted:      true,
     })
