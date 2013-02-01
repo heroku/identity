@@ -43,6 +43,32 @@ module Identity
         end
       end
 
+      post "/accept/:id/:hash" do |id, hash|
+        api = HerokuAPI.new(request_id: request_id)
+        res = api.post(path: "/invitation2/save", expects: [200, 422],
+          query: {
+            "id"                          => id,
+            "token"                       => hash,
+            "user[password]"              => params[:password],
+            "user[password_confirmation]" => params[:password_confirmation],
+            "user[receive_newsletter]"    => params[:receive_newsletter],
+          })
+        json = MultiJson.decode(res.body)
+
+        if res.status == 422
+          flash.now[:error] = json["message"]
+          slim :"account/accept", layout: :"layouts/classic"
+        else
+          # users who signed up from a particular source may have a specialized
+          # redirect location; otherwise go to Dashboard
+          if json["signup_source"]
+            redirect to(json["signup_source"]["redirect_uri"])
+          else
+            redirect to("#{Config.dashboard_url}/signup/finished")
+          end
+        end
+      end
+
       get "/new" do
         self.signup_source = params[:slug]
         slim :"account/new", layout: :"layouts/zen_backdrop"

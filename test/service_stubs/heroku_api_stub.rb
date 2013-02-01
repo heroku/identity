@@ -114,6 +114,14 @@ If you don't receive an email, and it's not in your spam folder, this could mean
       }
     })
   end
+
+	post "/invitation2/save" do
+    MultiJson.encode({
+		  signup_source: {
+				redirect_uri: "https://dashboard.heroku.com"
+      }
+		})
+	end
 end
 
 if __FILE__ == $0
