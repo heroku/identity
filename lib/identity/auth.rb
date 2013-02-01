@@ -78,7 +78,7 @@ module Identity
           end
 
           # redirects back to the oauth client on success
-          authorize(authorize_params, params[:authorize] == "Authorize")
+          authorize(authorize_params, params[:authorize] == "Allow Access")
         # refresh token dance was unsuccessful
         rescue Excon::Errors::Unauthorized
           self.authorize_params = authorize_params
