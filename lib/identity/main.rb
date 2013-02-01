@@ -27,15 +27,7 @@ module Identity
       mount Identity::Account
       mount Identity::Assets
       mount Identity::Auth
-      run Sinatra.new {
-        get "/" do
-          redirect to("/login")
-        end
-
-        not_found do
-          "fml"
-        end
-      }
+      run   Identity::Default # index + error handlers
     }
   end
 end

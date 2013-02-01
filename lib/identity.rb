@@ -8,5 +8,6 @@ require_relative "identity/session_helpers"
 require_relative "identity/account"
 require_relative "identity/assets"
 require_relative "identity/auth"
+require_relative "identity/default"
 
 require_relative "identity/main"
