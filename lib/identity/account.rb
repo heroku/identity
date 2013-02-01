@@ -69,11 +69,6 @@ module Identity
         end
       end
 
-      get "/new" do
-        self.signup_source = params[:slug]
-        slim :"account/new", layout: :"layouts/zen_backdrop"
-      end
-
       get "/password/reset" do
         slim :"account/password/reset", layout: :"layouts/zen_backdrop"
       end
@@ -126,6 +121,11 @@ module Identity
           redirect to("/login")
         end
       end
+    end
+
+    get "/signup" do
+      self.signup_source = params[:slug]
+      slim :signup, layout: :"layouts/zen_backdrop"
     end
 
     private

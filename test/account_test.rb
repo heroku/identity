@@ -22,13 +22,6 @@ describe Identity::Account do
     end
   end
 
-  describe "GET /account/new" do
-    it "shows a new account page" do
-      get "/account/new"
-      assert_equal 200, last_response.status
-    end
-  end
-
   describe "POST /account" do
     it "creates an account and renders a notice" do
       post "/account", email: "kerry@heroku.com"
@@ -43,7 +36,7 @@ describe Identity::Account do
           pass
         }
       end
-      get "/account/new", slug: "facebook"
+      get "/signup", slug: "facebook"
       post "/account", email: "kerry@heroku.com"
     end
 
@@ -54,7 +47,7 @@ describe Identity::Account do
           pass
         }
       end
-      get "/account/new"
+      get "/signup"
       post "/account", email: "kerry@heroku.com"
     end
   end
@@ -115,6 +108,13 @@ describe Identity::Account do
         password: "1234567890ab", password_confirmation: "1234567890ab"
       assert_equal 302, last_response.status
       assert_match %r{/login$}, last_response.headers["Location"]
+    end
+  end
+
+  describe "GET /signup" do
+    it "shows a new account page" do
+      get "/signup"
+      assert_equal 200, last_response.status
     end
   end
 end
