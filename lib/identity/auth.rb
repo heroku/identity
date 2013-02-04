@@ -97,11 +97,6 @@ module Identity
         end
       end
 
-      get "/test" do
-        @client = { "name" => "Helloer", "description" => "Auto-scale your web processes." }
-        slim :"clients/authorize", layout: :"layouts/zen_backdrop"
-      end
-
       post "/token" do
         res = log :create_token, by_proxy: true do
           api = HerokuAPI.new(user: nil, request_id: request_id)
