@@ -48,6 +48,8 @@ module Identity
       delete do
         api = HerokuAPI.new(user: nil, pass: self.access_token,
           request_id: request_id)
+        # tells API to destroy the session for Identity's current tokens, and
+        # all the tokens that were provisioned through this session
         log :destroy_session do
           api.delete(path: "/oauth/sessions/#{self.session_id}", expects: 200)
         end
@@ -103,7 +105,8 @@ module Identity
           api.post(path: "/oauth/tokens", expects: 201, query: {
             code:          params[:code],
             client_secret: params[:client_secret],
-            grant_type:    "authorization_code"
+            grant_type:    "authorization_code",
+            session_id:    self.session_id,
           })
         end
         token = MultiJson.decode(res.body)
