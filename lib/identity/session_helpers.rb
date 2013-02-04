@@ -40,6 +40,15 @@ module Identity
       session["refresh_token"] = token
     end
 
+    def session_id
+      @session_id ||= session["session_id"]
+    end
+
+    def session_id=(id)
+      @session_id = id
+      session["session_id"] = id
+    end
+
     def signup_source
       @signup_source ||= session["signup_source"]
     end

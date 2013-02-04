@@ -81,6 +81,15 @@ If you don't receive an email, and it's not in your spam folder, this could mean
     })
   end
 
+  delete "/oauth/sessions/:id" do |id|
+    status(200)
+    MultiJson.encode({
+      id: id,
+      description: "Session @ 127.0.0.1",
+      expires_in: 2592000,
+    })
+  end
+
   post "/oauth/tokens" do
     status(201)
     MultiJson.encode({
@@ -98,6 +107,9 @@ If you don't receive an email, and it's not in your spam folder, this could mean
         token:      "faa180e4-5844-42f2-ad66-0c574a1dbed2",
         expires_in: 2592000,
       },
+      session: {
+        id:         "session123@heroku.com",
+      }
     })
   end
 

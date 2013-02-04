@@ -46,6 +46,11 @@ module Identity
       end
 
       delete do
+        api = HerokuAPI.new(user: nil, pass: self.access_token,
+          request_id: request_id)
+        log :destroy_session do
+          api.delete(path: "/oauth/sessions/#{self.session_id}", expects: 200)
+        end
         session.clear
         heroku_session.clear
         redirect to("/login")
@@ -90,6 +95,11 @@ module Identity
           self.authorize_params = authorize_params
           slim :"clients/authorize", layout: :"layouts/zen_backdrop"
         end
+      end
+
+      get "/test" do
+        @client = { "name" => "Helloer", "description" => "Auto-scale your web processes." }
+        slim :"clients/authorize", layout: :"layouts/zen_backdrop"
       end
 
       post "/token" do
@@ -217,6 +227,7 @@ module Identity
           Time.now + token["access_token"]["expires_in"]
         self.heroku_session_nonce    = token["session_nonce"]
         self.refresh_token           = token["refresh_token"]["token"]
+        self.session_id              = token["session"]["id"]
       end
     end
 
