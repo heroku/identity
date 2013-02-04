@@ -93,7 +93,6 @@ If you don't receive an email, and it's not in your spam folder, this could mean
   post "/oauth/tokens" do
     status(201)
     MultiJson.encode({
-      session_nonce: "0a80ac35-b9d8-4fab-9261-883bea77ad3a",
       authorization: {
         id: "authorization123@heroku.com",
       },
@@ -109,6 +108,9 @@ If you don't receive an email, and it's not in your spam folder, this could mean
       },
       session: {
         id:         "session123@heroku.com",
+      },
+      user: {
+        session_nonce: "0a80ac35-b9d8-4fab-9261-883bea77ad3a",
       }
     })
   end
