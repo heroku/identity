@@ -235,6 +235,8 @@ module Identity
     def perform_oauth_refresh_dance
       log :oauth_refresh_dance do
         res = log :refresh_token do
+          api = HerokuAPI.new(user: nil, pass: self.access_token,
+            request_id: request_id)
           api.post(path: "/oauth/tokens", expects: 201,
             query: {
               client_secret: Config.heroku_oauth_secret,
