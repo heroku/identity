@@ -226,6 +226,9 @@ module Identity
         self.heroku_session_nonce    = token["user"]["session_nonce"]
         self.refresh_token           = token["refresh_token"]["token"]
         self.session_id              = token["session"]["id"]
+
+        log :oauth_dance_complete, session_id: self.session_id,
+          nonce: self.heroku_session_nonce
       end
     end
 
