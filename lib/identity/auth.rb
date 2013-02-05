@@ -100,7 +100,7 @@ module Identity
       end
 
       post "/token" do
-        res = log :create_token, by_proxy: true do
+        res = log :create_token, by_proxy: true, session_id: self.session_id do
           api = HerokuAPI.new(user: nil, request_id: request_id)
           api.post(path: "/oauth/tokens", expects: 201, query: {
             code:          params[:code],
@@ -158,7 +158,7 @@ module Identity
       end
 
       res = log :create_authorization, by_proxy: true,
-        client_id: params["client_id"] do
+        client_id: params["client_id"], session_id: self.session_id do
           api.post(path: "/oauth/authorizations", expects: 201, query: params)
       end
 
