@@ -41,12 +41,14 @@ module Identity
     end
 
     def session_id
-      @session_id ||= session["session_id"]
+      # session_id is a reserved key
+      @session_id ||= session["oauth_session_id"]
     end
 
     def session_id=(id)
       @session_id = id
-      session["session_id"] = id
+      # session_id is a reserved key
+      session["oauth_session_id"] = id
     end
 
     def signup_source
