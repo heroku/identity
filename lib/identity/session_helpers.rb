@@ -67,7 +67,12 @@ module Identity
       env["rack.session.heroku"] ||= {}
     end
 
+    def heroku_session_nonce
+      @heroku_session_nonce ||= heroku_session["heroku_session_nonce"]
+    end
+
     def heroku_session_nonce=(nonce)
+      @heroku_session_nonce = nonce
       heroku_session["heroku_session_nonce"] = nonce
     end
   end
