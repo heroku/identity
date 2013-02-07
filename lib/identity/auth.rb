@@ -52,7 +52,8 @@ module Identity
           # tells API to destroy the session for Identity's current tokens, and
           # all the tokens that were provisioned through this session
           log :destroy_session, session_id: self.session_id do
-            api.delete(path: "/oauth/sessions/#{self.session_id}", expects: [200, 401])
+            api.delete(path: "/oauth/sessions/#{self.session_id}",
+              expects: [200, 401])
           end
         ensure
           session.clear
