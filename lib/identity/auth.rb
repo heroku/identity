@@ -56,10 +56,8 @@ module Identity
               expects: [200, 401])
           end
         ensure
-          session.clear
-          heroku_session.clear
+          logout
         end
-        redirect to("/login")
       end
     end
 
@@ -106,26 +104,30 @@ module Identity
       post "/token" do
         res = log :create_token, by_proxy: true, session_id: self.session_id do
           api = HerokuAPI.new(user: nil, request_id: request_id)
-          api.post(path: "/oauth/tokens", expects: 201, query: {
+          api.post(path: "/oauth/tokens", expects: [201, 401], query: {
             code:          params[:code],
             client_secret: params[:client_secret],
             grant_type:    "authorization_code",
             session_id:    self.session_id,
           })
         end
+
+        # somehow our credentials have expired, restart the auth process
+        logout if res.status == 401
+
         token = MultiJson.decode(res.body)
 
         content_type(:json)
         status(200)
         MultiJson.encode({
           # core spec response
-          "access_token"  => token["access_token"]["token"],
-          "expires_in"    => token["access_token"]["expires_in"],
-          "refresh_token" => token["refresh_token"]["token"],
-          "token_type"    => "Bearer",
+          access_token:  token["access_token"]["token"],
+          expires_in:    token["access_token"]["expires_in"],
+          refresh_token: token["refresh_token"]["token"],
+          token_type:    "Bearer",
 
           # heroku extra response
-          "session_nonce" => token["session_nonce"],
+          session_nonce: token["session_nonce"],
         })
       end
     end
@@ -147,8 +149,10 @@ module Identity
       # authorized it
       if !client["trusted"]
         res = log :get_authorizations do
-          api.get(path: "/oauth/authorizations", expects: 200)
+          api.get(path: "/oauth/authorizations", expects: [200, 401])
         end
+
+        logout if res.status == 401
         authorizations = MultiJson.decode(res.body)
 
         authorization = authorizations.
@@ -163,8 +167,11 @@ module Identity
 
       res = log :create_authorization, by_proxy: true,
         client_id: params["client_id"], session_id: self.session_id do
-          api.post(path: "/oauth/authorizations", expects: 201, query: params)
+          api.post(path: "/oauth/authorizations", expects: [201, 401],
+            query: params)
       end
+
+      logout if res.status == 401
 
       # successful authorization, clear any params in session
       self.authorize_params = nil
@@ -197,6 +204,12 @@ module Identity
     def log(action, data={}, &block)
       data.merge! id: request_id
       Slides.log(action, data.merge(data), &block)
+    end
+
+    def logout
+      session.clear
+      heroku_session.clear
+      redirect to("/login")
     end
 
     # Performs the complete OAuth dance against the Heroku API in order to
