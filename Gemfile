@@ -2,6 +2,7 @@ source :rubygems
 
 gem "airbrake"
 gem "coffee-script"
+gem "encrypted_cookie"
 gem "excon"
 gem "multi_json"
 gem "oj" # fast json

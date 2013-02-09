@@ -25,6 +25,7 @@ GEM
     debugger-linecache (1.1.2)
       debugger-ruby_core_source (>= 1.1.1)
     debugger-ruby_core_source (1.1.5)
+    encrypted_cookie (0.0.4)
     eventmachine (1.0.0)
     excon (0.16.10)
     execjs (1.4.0)
@@ -92,6 +93,7 @@ DEPENDENCIES
   airbrake
   coffee-script
   debugger
+  encrypted_cookie
   excon
   multi_json
   oj

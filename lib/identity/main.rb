@@ -5,10 +5,8 @@ module Identity
 
     # general cookie storing information of the logged in user; should be
     # scoped to the app's specific domain
-    use Rack::Session::Cookie, domain: Config.cookie_domain,
-                               path: '/',
-                               expire_after: 2592000,
-                               secret: Config.secure_key
+    use Rack::Session::EncryptedCookie, secret: Config.secure_key,
+                                        domain: Config.cookie_domain
 
     # cookie with a domain scoped to all heroku domains, used to set a session
     # nonce value so that consumers can recognize when the logged in user has
