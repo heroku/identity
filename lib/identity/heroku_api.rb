@@ -5,7 +5,7 @@ module Identity
     def initialize(options={})
       headers = {
         "Accept" => "application/vnd.heroku+json; version=3"
-      }
+      }.merge(options[:headers] || {})
       if options[:user] || options[:pass]
         authorization = Base64.urlsafe_encode64(
           "#{options[:user] || ''}:#{options[:pass] || ''}")

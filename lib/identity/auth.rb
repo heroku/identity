@@ -13,10 +13,19 @@ module Identity
         slim :login, layout: :"layouts/zen_backdrop"
       end
 
+      get "/two-factor" do
+        slim :"two-factor", layout: :"layouts/zen_backdrop"
+      end
+
       post do
         begin
-          user, pass = params[:email], params[:password]
-          perform_oauth_dance(user, pass)
+          if code = params[:code]
+            user, pass = session[:email], session[:password]
+          else
+            user, pass = params[:email], params[:password]
+          end
+
+          perform_oauth_dance(user, pass, code)
 
           # if we know that we're in the middle of an authorization attempt,
           # continue it; otherwise go to dashboard
@@ -215,12 +224,23 @@ module Identity
     # Performs the complete OAuth dance against the Heroku API in order to
     # provision an identity client token that can be used by Identity to manage
     # the user's client identities.
-    def perform_oauth_dance(user, pass)
+    def perform_oauth_dance(user, pass, code)
       log :oauth_dance do
-        api = HerokuAPI.new(user: user, pass: pass, request_id: request_id)
+        options = { user: user, pass: pass, request_id: request_id }
+        if code
+          options.merge!(headers: { "Heroku-Two-Factor-Code" => code })
+        end
+        api = HerokuAPI.new(options)
         res = log :create_authorization do
-          api.post(path: "/oauth/authorizations", expects: 201,
-            query: { client_id: Config.heroku_oauth_id, response_type: "code" })
+          begin
+            api.post(path: "/oauth/authorizations", expects: 201,
+              query: { client_id: Config.heroku_oauth_id, response_type: "code" })
+          rescue Excon::Errors::Forbidden => e
+            raise e unless e.response.headers.has_key?("Heroku-Two-Factor-Required")
+            session[:email]    = user
+            session[:password] = pass
+            redirect "/login/two-factor"
+          end
         end
 
         code = MultiJson.decode(res.body)["grants"][0]["code"]
