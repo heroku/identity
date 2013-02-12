@@ -47,7 +47,7 @@ module Identity
 
       delete do
         begin
-          api = HerokuAPI.new(user: nil, pass: self.access_token,
+          api = HerokuAPI.new(access_token: self.access_token,
             request_id: request_id)
           # tells API to destroy the session for Identity's current tokens, and
           # all the tokens that were provisioned through this session
@@ -104,16 +104,15 @@ module Identity
       post "/token" do
         res = log :create_token, by_proxy: true, session_id: self.session_id do
           api = HerokuAPI.new(user: nil, request_id: request_id)
-          api.post(path: "/oauth/tokens", expects: [201, 401], query: {
-            code:          params[:code],
-            client_secret: params[:client_secret],
-            grant_type:    "authorization_code",
-            session_id:    self.session_id,
-          })
+          safe_api_call do
+            api.post(path: "/oauth/tokens", expects: [201, 401], query: {
+              code:          params[:code],
+              client_secret: params[:client_secret],
+              grant_type:    "authorization_code",
+              session_id:    self.session_id,
+            })
+          end
         end
-
-        # somehow our credentials have expired, restart the auth process
-        logout if res.status == 401
 
         token = MultiJson.decode(res.body)
 
@@ -137,11 +136,13 @@ module Identity
     # Performs the authorization step of the OAuth dance against the Heroku
     # API.
     def authorize(params, confirm=false)
-      api = HerokuAPI.new(user: nil, pass: self.access_token,
+      api = HerokuAPI.new(access_token: self.access_token,
         request_id: request_id)
 
       res = log :get_client, client_id: params["client_id"] do
-        api.get(path: "/oauth/clients/#{params["client_id"]}", expects: 200)
+        safe_api_call do
+          api.get(path: "/oauth/clients/#{params["client_id"]}", expects: 200)
+        end
       end
       client = MultiJson.decode(res.body)
 
@@ -149,10 +150,11 @@ module Identity
       # authorized it
       if !client["trusted"]
         res = log :get_authorizations do
-          api.get(path: "/oauth/authorizations", expects: [200, 401])
+          safe_api_call do
+            api.get(path: "/oauth/authorizations", expects: [200, 401])
+          end
         end
 
-        logout if res.status == 401
         authorizations = MultiJson.decode(res.body)
 
         authorization = authorizations.
@@ -167,11 +169,11 @@ module Identity
 
       res = log :create_authorization, by_proxy: true,
         client_id: params["client_id"], session_id: self.session_id do
-          api.post(path: "/oauth/authorizations", expects: [201, 401],
-            query: params)
+          safe_api_call do
+            api.post(path: "/oauth/authorizations", expects: [201, 401],
+              query: params)
+          end
       end
-
-      logout if res.status == 401
 
       # successful authorization, clear any params in session
       self.authorize_params = nil
@@ -253,7 +255,7 @@ module Identity
     def perform_oauth_refresh_dance
       log :oauth_refresh_dance do
         res = log :refresh_token do
-          api = HerokuAPI.new(user: nil, pass: self.access_token,
+          api = HerokuAPI.new(access_token: self.access_token,
             request_id: request_id)
           api.post(path: "/oauth/tokens", expects: 201,
             query: {

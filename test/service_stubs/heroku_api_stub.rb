@@ -16,7 +16,7 @@ class HerokuAPIStub < Sinatra::Base
     end
 
     def auth_credentials
-      auth.provided? && auth.basic? ? auth.credentials : nil
+      auth.provided? ? auth.credentials : nil
     end
 
     def authorized!
