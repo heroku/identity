@@ -128,6 +128,36 @@ describe Identity::Auth do
       assert_equal "0a80ac35-b9d8-4fab-9261-883bea77ad3a",
         last_request.env["rack.session.heroku"]["heroku_session_nonce"]
     end
+
+    describe "For accounts with two-factor enabled" do
+      before do
+        stub_heroku_api do
+          post("/oauth/authorizations") {
+            # two-factor challenge!
+            pass if env["HTTP_HEROKU_TWO_FACTOR_CODE"] == "123456"
+
+            # raise a 401 with a header telling the client to ask for the code
+            response = OpenStruct.new(:headers => { "Heroku-Two-Factor-Required" => "true" })
+            raise Excon::Errors::Forbidden.new("Forbidden", nil, response)
+          }
+        end
+      end
+
+      it "redirects to /login/two-factor to prompt for the code" do
+        post "/login", email: "kerry@heroku.com", password: "abcdefgh"
+        assert_equal 302, last_response.status
+        assert_match %r{/login/two-factor$}, last_response.headers["Location"]
+      end
+
+      it "and then posts the authorization again, using the two-factor code" do
+        post "/login", email: "kerry@heroku.com", password: "abcdefgh"
+        follow_redirect!
+        post "/login", :code => "123456"
+        assert_equal 302, last_response.status
+        assert_equal Identity::Config.dashboard_url,
+          last_response.headers["Location"]
+      end
+    end
   end
 
   describe "DELETE /logout" do
