@@ -29,6 +29,7 @@ GEM
     excon (0.16.10)
     execjs (1.4.0)
       multi_json (~> 1.0)
+    fernet (1.5)
     girl_friday (0.11.1)
       connection_pool (~> 0.9.0)
       rubinius-actor
@@ -93,6 +94,7 @@ DEPENDENCIES
   coffee-script
   debugger
   excon
+  fernet
   multi_json
   oj
   puma
