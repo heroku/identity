@@ -3,6 +3,7 @@ source :rubygems
 gem "airbrake"
 gem "coffee-script"
 gem "excon"
+gem "fernet"
 gem "multi_json"
 gem "oj" # fast json
 gem "puma"
