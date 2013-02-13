@@ -8,7 +8,9 @@ module Identity
     use Rack::Session::Cookie, domain: Config.cookie_domain,
                                path: '/',
                                expire_after: 2592000,
-                               secret: Config.secure_key
+                               secret: Config.secure_key,
+                               coder: FernetCookieCoder.new(Config.cookie_encryption_key),
+                               http_only: true
 
     # cookie with a domain scoped to all heroku domains, used to set a session
     # nonce value so that consumers can recognize when the logged in user has

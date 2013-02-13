@@ -52,6 +52,10 @@ module Identity
       ENV["SECURE_KEY"] || raise("missing=SECURE_KEY")
     end
 
+    def cookie_encryption_key
+      ENV["COOKIE_ENCRYPTION_KEY"] || raise("missing=COOKIE_ENCRYPTION_KEY")
+    end
+
     # useful for staging environments with less-than-valid certs
     #   e.g. api.staging.herokudev.com
     def ssl_verify_peer?
