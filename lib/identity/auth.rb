@@ -34,6 +34,12 @@ module Identity
           else
             redirect to(Config.dashboard_url)
           end
+        # two-factor auth is required
+        rescue Excon::Errors::Forbidden => e
+          raise e unless e.response.headers.has_key?("Heroku-Two-Factor-Required")
+          session[:email]    = user
+          session[:password] = pass
+          redirect to("/login/two-factor")
         # oauth dance or post-dance authorization was unsuccessful
         rescue Excon::Errors::Unauthorized
           flash[:error] = "There was a problem with your login."
@@ -232,15 +238,8 @@ module Identity
         end
         api = HerokuAPI.new(options)
         res = log :create_authorization do
-          begin
-            api.post(path: "/oauth/authorizations", expects: 201,
-              query: { client_id: Config.heroku_oauth_id, response_type: "code" })
-          rescue Excon::Errors::Forbidden => e
-            raise e unless e.response.headers.has_key?("Heroku-Two-Factor-Required")
-            session[:email]    = user
-            session[:password] = pass
-            redirect "/login/two-factor"
-          end
+          api.post(path: "/oauth/authorizations", expects: 201,
+            query: { client_id: Config.heroku_oauth_id, response_type: "code" })
         end
 
         code = MultiJson.decode(res.body)["grants"][0]["code"]
