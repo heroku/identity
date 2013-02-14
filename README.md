@@ -17,6 +17,7 @@ foreman start
 ```
 # should be the running domain of your app for cookies to work
 heroku config:add COOKIE_DOMAIN="id.heroku.com" # domain of your app
+heroku config:add COOKIE_ENCRYPTION_KEY=...
 heroku config:add DASHBOARD="https://dashboard.heroku.com"
 heroku config:add HEROKU_API_URL="https://api.heroku.com"
 heroku config:add HEROKU_COOKIE_DOMAIN="heroku.com" # domain where consumers live

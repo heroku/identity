@@ -11,6 +11,10 @@ module Identity
       ENV["COOKIE_DOMAIN"]
     end
 
+    def cookie_encryption_key
+      ENV["COOKIE_ENCRYPTION_KEY"] || raise("missing=COOKIE_ENCRYPTION_KEY")
+    end
+
     # domain that a cookie-based session nonce will be made available to
     def heroku_cookie_domain
       ENV["HEROKU_COOKIE_DOMAIN"]
@@ -46,10 +50,6 @@ module Identity
 
     def root
       @root ||= File.expand_path("../../../", __FILE__)
-    end
-
-    def cookie_encryption_key
-      ENV["COOKIE_ENCRYPTION_KEY"] || raise("missing=COOKIE_ENCRYPTION_KEY")
     end
 
     # useful for staging environments with less-than-valid certs
