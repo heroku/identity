@@ -48,10 +48,6 @@ module Identity
       @root ||= File.expand_path("../../../", __FILE__)
     end
 
-    def secure_key
-      ENV["SECURE_KEY"] || raise("missing=SECURE_KEY")
-    end
-
     def cookie_encryption_key
       ENV["COOKIE_ENCRYPTION_KEY"] || raise("missing=COOKIE_ENCRYPTION_KEY")
     end

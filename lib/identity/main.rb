@@ -10,8 +10,7 @@ module Identity
       domain: Config.cookie_domain,
       http_only: true,
       path: '/',
-      expire_after: 2592000,
-      secret: Config.secure_key
+      expire_after: 2592000
 
     # cookie with a domain scoped to all heroku domains, used to set a session
     # nonce value so that consumers can recognize when the logged in user has
