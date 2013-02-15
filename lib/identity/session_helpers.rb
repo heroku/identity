@@ -70,7 +70,7 @@ module Identity
     end
 
     # still used by Devcenter to determine whether the user is logged in
-    def heroku_session(value)
+    def heroku_session=(value)
       heroku_cookie["heroku_session"] = value
     end
 
