@@ -20,7 +20,7 @@ module Identity
         domain: Config.heroku_cookie_domain,
         expire_after: 2592000,
         http_only: true,
-        key: 'rack.session.heroku'
+        key: 'rack.session.heroku',
         secret: Config.cookie_encryption_key
     end
 
