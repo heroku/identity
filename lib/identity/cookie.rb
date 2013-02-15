@@ -43,7 +43,7 @@ module Identity
       @email ||= @session["email"]
     end
 
-    def email=(password)
+    def email=(email)
       @email = @session["email"]
       @session["email"] = email
     end
