@@ -199,8 +199,9 @@ module Identity
 
       redirect_params = { code: authorization["grants"][0]["code"] }
       redirect_params.merge!(state: params["state"]) if params["state"]
-      base_uri = authorization["client"]["redirect_uri"]
-      redirect to(build_uri(base_uri, redirect_params))
+      uri = build_uri(authorization["client"]["redirect_uri"], redirect_params)
+      log :redirecting, uri: uri
+      redirect to(uri)
     end
 
     # merges extra params into a base URI
