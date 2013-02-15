@@ -7,7 +7,11 @@ module Identity
     end
 
     get "/" do
-      redirect to("/login")
+      if @cookie.access_token
+        redirect to(Config.dashboard_url)
+      else
+        redirect to("/login")
+      end
     end
 
     not_found do
