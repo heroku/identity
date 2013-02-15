@@ -223,7 +223,7 @@ module Identity
 
     def logout
       session.clear
-      heroku_session.clear
+      heroku_cookie.clear
       redirect to("/login")
     end
 
