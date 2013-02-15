@@ -1,3 +1,4 @@
+require "base64"
 require "rack/session/cookie"
 
 class FernetCookieCoder
@@ -8,8 +9,11 @@ class FernetCookieCoder
   end
 
   def encode(raw)
+    data = Base64.urlsafe_encode64(Marshal.dump(raw))
     Fernet.generate(key) do |generator|
-      generator.data = { "session" => raw }
+      # use Marshal instead of JSON to avoid trouble with string/symbol
+      # conversions
+      generator.data = { "session" => data }
     end
   end
 
@@ -17,9 +21,11 @@ class FernetCookieCoder
     verifier = Fernet.verifier(key, token)
     verifier.enforce_ttl = false
     verifier.verify_token(token)
-    return unless verifier.valid?
-    verifier.data["session"]
+    raise "signature invalid" unless verifier.valid?
+    Marshal.load(Base64.urlsafe_decode64(verifier.data["session"]))
   # fernet throws random exceptions :{ eat it for now
   rescue Exception => e
+    Slides.log(:exception, class: e.class.name, message: e.message)
+    {}
   end
 end
