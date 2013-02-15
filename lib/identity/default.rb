@@ -6,6 +6,10 @@ module Identity
       set :views, "#{Config.root}/views"
     end
 
+    before do
+      @cookie = Cookie.new(session)
+    end
+
     get "/" do
       if @cookie.access_token
         redirect to(Config.dashboard_url)
