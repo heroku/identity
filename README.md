@@ -31,3 +31,8 @@ git push heroku master
 ``` bash
 bin/test
 ```
+
+### Installations
+
+* `id-production`: https://id.heroku.com
+* `id-staging`: https://id-staging.herokuapp.com
