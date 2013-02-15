@@ -65,17 +65,21 @@ module Identity
     #
 
     # session that's scoped to all Heroku domains
-    def heroku_session
+    def heroku_cookie
       env["rack.session.heroku"] ||= {}
     end
 
+    def heroku_session(value)
+      heroku_cookie["heroku_session"] = value
+    end
+
     def heroku_session_nonce
-      @heroku_session_nonce ||= heroku_session["heroku_session_nonce"]
+      @heroku_session_nonce ||= heroku_cookie["heroku_session_nonce"]
     end
 
     def heroku_session_nonce=(nonce)
       @heroku_session_nonce = nonce
-      heroku_session["heroku_session_nonce"] = nonce
+      heroku_cookie["heroku_session_nonce"] = nonce
     end
   end
 end

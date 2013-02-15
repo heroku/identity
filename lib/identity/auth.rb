@@ -259,6 +259,7 @@ module Identity
         self.access_token            = token["access_token"]["token"]
         self.access_token_expires_at =
           Time.now + token["access_token"]["expires_in"]
+        self.heroku_session          = 1
         self.heroku_session_nonce    = token["user"]["session_nonce"]
         self.refresh_token           = token["refresh_token"]["token"]
         self.session_id              = token["session"]["id"]
