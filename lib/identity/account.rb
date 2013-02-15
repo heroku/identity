@@ -1,11 +1,14 @@
 module Identity
   class Account < Sinatra::Base
-    include SessionHelpers
     register Identity::ErrorHandling
     register Sinatra::Namespace
 
     configure do
       set :views, "#{Config.root}/views"
+    end
+
+    before do
+      @cookie = Cookie.new(session)
     end
 
     namespace "/account" do
@@ -28,7 +31,7 @@ module Identity
       post do
         api = HerokuAPI.new(request_id: request_id)
         res = api.post(path: "/signup", expects: [200, 422],
-          query: { email: params[:email], slug: self.signup_source })
+          query: { email: params[:email], slug: @cookie.signup_source })
         json = MultiJson.decode(res.body)
         slim :"account/finish_new", layout: :"layouts/zen_backdrop"
       end
@@ -129,7 +132,7 @@ module Identity
     end
 
     get "/signup" do
-      self.signup_source = params[:slug]
+      @cookie.signup_source = params[:slug]
       slim :signup, layout: :"layouts/zen_backdrop"
     end
 

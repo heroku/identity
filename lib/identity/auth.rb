@@ -1,11 +1,15 @@
 module Identity
   class Auth < Sinatra::Base
-    include SessionHelpers
     register Identity::ErrorHandling
     register Sinatra::Namespace
 
     configure do
       set :views, "#{Config.root}/views"
+    end
+
+    before do
+      @cookie        = Cookie.new(session)
+      @heroku_cookie = HerokuCookie.new(env["rack.session.heroku"] ||= {})
     end
 
     namespace "/login" do
@@ -20,7 +24,7 @@ module Identity
       post do
         begin
           if code = params[:code]
-            user, pass = session[:email], session[:password]
+            user, pass = @cookie.email, @cookie.password
           else
             user, pass = params[:email], params[:password]
           end
@@ -29,16 +33,16 @@ module Identity
 
           # if we know that we're in the middle of an authorization attempt,
           # continue it; otherwise go to dashboard
-          if authorize_params
-            authorize(authorize_params)
+          if @cookie.authorize_params
+            authorize(@cookie.authorize_params)
           else
             redirect to(Config.dashboard_url)
           end
         # two-factor auth is required
         rescue Excon::Errors::Forbidden => e
           raise e unless e.response.headers.has_key?("Heroku-Two-Factor-Required")
-          session[:email]    = user
-          session[:password] = pass
+          @cookie.email    = user
+          @cookie.password = pass
           redirect to("/login/two-factor")
         # oauth dance or post-dance authorization was unsuccessful
         rescue Excon::Errors::Unauthorized
@@ -48,7 +52,7 @@ module Identity
         rescue Identity::Errors::UnauthorizedClient => e
           @client = e.client
           @authorize_params = { "scope" => "all" }.merge(authorize_params)
-          self.authorize_params = authorize_params
+          @cookie.authorize_params = authorize_params
           slim :"clients/authorize", layout: :"layouts/zen_backdrop"
         end
       end
@@ -62,12 +66,12 @@ module Identity
 
       delete do
         begin
-          api = HerokuAPI.new(user: nil, pass: self.access_token,
+          api = HerokuAPI.new(user: nil, pass: @cookie.access_token,
             request_id: request_id)
           # tells API to destroy the session for Identity's current tokens, and
           # all the tokens that were provisioned through this session
-          log :destroy_session, session_id: self.session_id do
-            api.delete(path: "/oauth/sessions/#{self.session_id}",
+          log :destroy_session, session_id: @cookie.session_id do
+            api.delete(path: "/oauth/sessions/#{@cookie.session_id}",
               expects: [200, 401])
           end
         ensure
@@ -85,19 +89,19 @@ module Identity
       post "/authorize" do
         # if the user is submitting a confirmation form, pull from session,
         # otherwise get params from the request
-        authorize_params = params[:authorize] ? (self.authorize_params || {}) :
+        authorize_params = params[:authorize] ? (@cookie.authorize_params || {}) :
           filter_params(%w{client_id response_type scope state})
         begin
           # have the user login if we have no session for them
-          if !self.access_token
-            self.authorize_params = authorize_params
+          if !@cookie.access_token
+            @cookie.authorize_params = authorize_params
             redirect to("/login")
           end
 
           # Try to perform an access token refresh if we know it's expired. At
           # the time of this writing, refresh tokens last 30 days (much longer
           # than the short-lived 2 hour access tokens).
-          if Time.now > self.access_token_expires_at
+          if Time.now > @cookie.access_token_expires_at
             perform_oauth_refresh_dance
           end
 
@@ -105,25 +109,25 @@ module Identity
           authorize(authorize_params, params[:authorize] == "Allow Access")
         # refresh token dance was unsuccessful
         rescue Excon::Errors::Unauthorized
-          self.authorize_params = authorize_params
+          @cookie.authorize_params = authorize_params
           redirect to("/login")
         # client not yet authorized; show the user a confirmation dialog
         rescue Identity::Errors::UnauthorizedClient => e
           @client = e.client
           @params = authorize_params
-          self.authorize_params = authorize_params
+          @cookie.authorize_params = authorize_params
           slim :"clients/authorize", layout: :"layouts/zen_backdrop"
         end
       end
 
       post "/token" do
-        res = log :create_token, by_proxy: true, session_id: self.session_id do
+        res = log :create_token, by_proxy: true, session_id: @cookie.session_id do
           api = HerokuAPI.new(user: nil, request_id: request_id)
           api.post(path: "/oauth/tokens", expects: [201, 401], query: {
             code:          params[:code],
             client_secret: params[:client_secret],
             grant_type:    "authorization_code",
-            session_id:    self.session_id,
+            session_id:    @cookie.session_id,
           })
         end
 
@@ -152,7 +156,7 @@ module Identity
     # Performs the authorization step of the OAuth dance against the Heroku
     # API.
     def authorize(params, confirm=false)
-      api = HerokuAPI.new(user: nil, pass: self.access_token,
+      api = HerokuAPI.new(user: nil, pass: @cookie.access_token,
         request_id: request_id)
 
       res = log :get_client, client_id: params["client_id"] do
@@ -181,7 +185,7 @@ module Identity
       end
 
       res = log :create_authorization, by_proxy: true,
-        client_id: params["client_id"], session_id: self.session_id do
+        client_id: params["client_id"], session_id: @cookie.session_id do
           api.post(path: "/oauth/authorizations", expects: [201, 401],
             query: params)
       end
@@ -189,7 +193,7 @@ module Identity
       logout if res.status == 401
 
       # successful authorization, clear any params in session
-      self.authorize_params = nil
+      @cookie.authorize_params = nil
 
       authorization = MultiJson.decode(res.body)
 
@@ -222,8 +226,8 @@ module Identity
     end
 
     def logout
-      session.clear
-      heroku_cookie.clear
+      @cookie.clear
+      @heroku_cookie.clear
       redirect to("/login")
     end
 
@@ -256,16 +260,18 @@ module Identity
 
         # store appropriate tokens to session
         token = MultiJson.decode(res.body)
-        self.access_token            = token["access_token"]["token"]
-        self.access_token_expires_at =
+        @cookie.access_token            = token["access_token"]["token"]
+        @cookie.access_token_expires_at =
           Time.now + token["access_token"]["expires_in"]
-        self.heroku_session          = 1
-        self.heroku_session_nonce    = token["user"]["session_nonce"]
-        self.refresh_token           = token["refresh_token"]["token"]
-        self.session_id              = token["session"]["id"]
+        @cookie.refresh_token           = token["refresh_token"]["token"]
+        @cookie.session_id              = token["session"]["id"]
 
-        log :oauth_dance_complete, session_id: self.session_id,
-          nonce: self.heroku_session_nonce
+        # scoped to all Heroku apps
+        @heroku_cookie.active = 1
+        @heroku_cookie.nonce  = token["user"]["session_nonce"]
+
+        log :oauth_dance_complete, session_id: @cookie.session_id,
+          nonce: @heroku_cookie.nonce
       end
     end
 
@@ -273,7 +279,7 @@ module Identity
     def perform_oauth_refresh_dance
       log :oauth_refresh_dance do
         res = log :refresh_token do
-          api = HerokuAPI.new(user: nil, pass: self.access_token,
+          api = HerokuAPI.new(user: nil, pass: @cookie.access_token,
             request_id: request_id)
           api.post(path: "/oauth/tokens", expects: 201,
             query: {
@@ -285,8 +291,8 @@ module Identity
 
         # store appropriate tokens to session
         token = MultiJson.decode(res.body)
-        self.access_token            = token["access_token"]["token"]
-        self.access_token_expires_at =
+        @cookie.access_token            = token["access_token"]["token"]
+        @cookie.access_token_expires_at =
           Time.now + token["access_token"]["expires_in"]
       end
     end
