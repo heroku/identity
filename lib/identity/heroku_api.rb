@@ -14,7 +14,6 @@ module Identity
       elsif options[:authorization]
         headers["Authorization"] = options[:authorization]
       end
-      Slides.log :ACTION, headers
       super(Config.heroku_api_url, headers: headers,
         instrumentor: ExconInstrumentor.new(id: options[:request_id]))
     end
