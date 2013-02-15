@@ -4,7 +4,8 @@ module Identity
   class HerokuAPI < Excon::Connection
     def initialize(options={})
       headers = {
-        "Accept" => "application/vnd.heroku+json; version=3"
+        "Accept"          => "application/vnd.heroku+json; version=3",
+        "Heroku-Group-ID" => options[:request_id],
       }.merge(options[:headers] || {})
       if options[:user] || options[:pass]
         authorization = ["#{options[:user] || ''}:#{options[:pass] || ''}"].
