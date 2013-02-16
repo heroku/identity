@@ -1,18 +1,6 @@
 require "base64"
 require "rack/session/cookie"
 
-class PrintCoder
-  def encode(raw)
-  p "ENCODING = #{raw}"
-    raw
-  end
-
-  def decode(token)
-  p "DECODING = #{token}"
-    token
-  end
-end
-
 class FernetCookieCoder
   attr_accessor :key
 
