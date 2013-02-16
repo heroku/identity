@@ -273,6 +273,8 @@ module Identity
         # scoped to all Heroku apps
         @heroku_cookie.active = "1"
         @heroku_cookie.nonce  = token["user"]["session_nonce"]
+p "DEBUG"
+p env["rack.session.heroku"]
 
         log :oauth_dance_complete, session_id: @cookie.session_id,
           nonce: @heroku_cookie.nonce
