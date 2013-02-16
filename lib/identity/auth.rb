@@ -278,7 +278,7 @@ module Identity
         env["heroku_session_nonce"] = token["user"]["session_nonce"]
 
         log :oauth_dance_complete, session_id: @cookie.session_id,
-          nonce: @heroku_cookie.nonce
+          nonce: token["user"]["session_nonce"]
       end
     end
 
