@@ -271,7 +271,7 @@ module Identity
         @cookie.session_id              = token["session"]["id"]
 
         # scoped to all Heroku apps
-        @heroku_cookie.active = 1
+        @heroku_cookie.active = "1"
         @heroku_cookie.nonce  = token["user"]["session_nonce"]
 
         log :oauth_dance_complete, session_id: @cookie.session_id,
