@@ -21,7 +21,8 @@ module Identity
           domain: Config.heroku_cookie_domain,
           expire_after: 2592000,
           http_only: true,
-          key: key
+          key: key,
+          coder: PrintCoder
       end
     end
 
