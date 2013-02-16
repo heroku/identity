@@ -16,7 +16,7 @@ module Identity
     # nonce value so that consumers can recognize when the logged in user has
     # changed
     if Config.heroku_cookie_domain
-      %{heroku_session heroku_session_nonce}.each do |key|
+      %w{heroku_session heroku_session_nonce}.each do |key|
         use Rack::Session::Cookie,
           domain: Config.heroku_cookie_domain,
           expire_after: 2592000,
