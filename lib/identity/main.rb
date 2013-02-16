@@ -22,7 +22,7 @@ module Identity
           expire_after: 2592000,
           http_only: true,
           key: key,
-          coder: PrintCoder
+          coder: PrintCoder.new
       end
     end
 
