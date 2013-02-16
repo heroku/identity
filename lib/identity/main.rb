@@ -18,6 +18,7 @@ module Identity
     if Config.heroku_cookie_domain
       %w{heroku_session heroku_session_nonce}.each do |key|
         use Rack::Session::Cookie,
+          coder: Rack::Session::Cookie::Identity,
           domain: Config.heroku_cookie_domain,
           expire_after: 2592000,
           http_only: true,

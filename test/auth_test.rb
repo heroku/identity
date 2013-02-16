@@ -126,7 +126,7 @@ describe Identity::Auth do
     it "sets a heroku-wide session nonce in the cookie" do
       post "/login", email: "kerry@heroku.com", password: "abcdefgh"
       assert_equal "0a80ac35-b9d8-4fab-9261-883bea77ad3a",
-        last_request.env["rack.session.heroku"]["heroku_session_nonce"]
+        last_request.env["heroku_session_nonce"]
     end
 
     describe "For accounts with two-factor enabled" do
