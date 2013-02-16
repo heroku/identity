@@ -26,7 +26,7 @@ module Identity
       end
     end
 
-    use Rack::Csrf, skip: ["POST:/oauth/.*"]
+    #use Rack::Csrf, skip: ["POST:/oauth/.*"]
     use Rack::Flash
 
     run Sinatra::Router.new {
