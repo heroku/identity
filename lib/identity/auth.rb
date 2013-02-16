@@ -291,7 +291,7 @@ p env["rack.session.heroku"]
             query: {
               client_secret: Config.heroku_oauth_secret,
               grant_type:    "refresh_token",
-              refresh_token: refresh_token,
+              refresh_token: @cookie.refresh_token,
             })
         end
 
