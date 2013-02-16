@@ -8,8 +8,8 @@ class PrintCoder
   end
 
   def decode(token)
-  p "DECODING = #{raw}"
-    raw
+  p "DECODING = #{token}"
+    token
   end
 end
 
