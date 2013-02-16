@@ -8,8 +8,7 @@ module Identity
     end
 
     before do
-      @cookie        = Cookie.new(session)
-      @heroku_cookie = HerokuCookie.new(env["rack.session.heroku"] ||= {})
+      @cookie = Cookie.new(session)
     end
 
     get "/blank-target" do
@@ -231,7 +230,11 @@ module Identity
 
     def logout
       @cookie.clear
-      @heroku_cookie.clear
+
+      # clear heroku globally-scoped cookies
+      env["heroku_session"]       = nil
+      env["heroku_session_nonce"] = nil
+
       redirect to("/login")
     end
 
@@ -271,10 +274,8 @@ module Identity
         @cookie.session_id              = token["session"]["id"]
 
         # scoped to all Heroku apps
-        @heroku_cookie.active = "1"
-        @heroku_cookie.nonce  = token["user"]["session_nonce"]
-p "DEBUG"
-p env["rack.session.heroku"]
+        env["heroku_session"]       = "1"
+        env["heroku_session_nonce"] = token["user"]["session_nonce"]
 
         log :oauth_dance_complete, session_id: @cookie.session_id,
           nonce: @heroku_cookie.nonce
