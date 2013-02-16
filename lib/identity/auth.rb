@@ -12,6 +12,9 @@ module Identity
       @heroku_cookie = HerokuCookie.new(env["rack.session.heroku"] ||= {})
     end
 
+    get "/blank-target" do
+    end
+
     namespace "/login" do
       get do
         slim :login, layout: :"layouts/zen_backdrop"
