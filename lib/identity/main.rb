@@ -12,6 +12,9 @@ module Identity
       path: '/',
       expire_after: 2592000
 
+    use Rack::Csrf, skip: ["POST:/oauth/.*"]
+    use Rack::Flash
+
     # cookies with a domain scoped to all heroku domains, used to set a session
     # nonce value so that consumers can recognize when the logged in user has
     # changed
@@ -25,9 +28,6 @@ module Identity
           key: key
       end
     end
-
-    #use Rack::Csrf, skip: ["POST:/oauth/.*"]
-    use Rack::Flash
 
     run Sinatra::Router.new {
       mount Identity::Account
