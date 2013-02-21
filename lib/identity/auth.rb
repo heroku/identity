@@ -223,6 +223,13 @@ module Identity
       request.env["x-rack.flash"]
     end
 
+    def heroku_cookie_domain
+      domain = request.host.split(".")[1..-1].join(".")
+
+      # for something like "localhost", just use the base domain
+      domain != "" ? domain : request.host
+    end
+
     def log(action, data={}, &block)
       data.merge! id: request_id
       Slides.log(action, data.merge(data), &block)
@@ -314,13 +321,6 @@ module Identity
 
     def request_id
       request.env["REQUEST_ID"]
-    end
-
-    def heroku_cookie_domain
-      domain = request.host.split(".")[1..-1].join(".")
-
-      # for something like "localhost", just use the base domain
-      domain != "" ? domain : request.host
     end
 
     def safe_redirect?(url)
