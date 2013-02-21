@@ -130,7 +130,7 @@ describe Identity::Auth do
         rack_mock_session.cookie_jar["heroku_session_nonce"]
     end
 
-    describe "For accounts with two-factor enabled" do
+    describe "for accounts with two-factor enabled" do
       before do
         stub_heroku_api do
           post("/oauth/authorizations") {
@@ -169,6 +169,19 @@ describe Identity::Auth do
 
     it "clears session and redirects to login" do
       delete "/logout"
+      assert_equal 302, last_response.status
+      assert_match %r{/login$}, last_response.headers["Location"]
+    end
+
+    it "redirects to a given url if it's safe" do
+      delete "/logout", url: "https://devcenter.heroku.com"
+      assert_equal 302, last_response.status
+      assert_match "https://devcenter.heroku.com",
+        last_response.headers["Location"]
+    end
+
+    it "doesn't redirect to a given url if it's not safe" do
+      delete "/logout", url: "https://example.com"
       assert_equal 302, last_response.status
       assert_match %r{/login$}, last_response.headers["Location"]
     end

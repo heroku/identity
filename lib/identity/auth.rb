@@ -235,7 +235,12 @@ module Identity
       response.delete_cookie("heroku_session")
       response.delete_cookie("heroku_session_nonce")
 
-      redirect to("/login")
+      url = if params[:url] && safe_redirect?(params[:url])
+        params[:url]
+      else
+        "/login"
+      end
+      redirect to(url)
     end
 
     # Performs the complete OAuth dance against the Heroku API in order to
@@ -316,6 +321,16 @@ module Identity
 
       # for something like "localhost", just use the base domain
       domain != "" ? domain : request.host
+    end
+
+    def safe_redirect?(url)
+      uri = URI.parse(url)
+      [
+        "devcenter.heroku.com",
+        "devcenter-staging.heroku.com",
+      ].include?(uri.host)
+    rescue URI::InvalidURIError
+      false
     end
 
     def set_heroku_cookie(key, value)
