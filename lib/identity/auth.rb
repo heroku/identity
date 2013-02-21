@@ -325,6 +325,8 @@ module Identity
 
     def safe_redirect?(url)
       uri = URI.parse(url)
+      # possibly move this to a config var if it starts ballooning out of
+      # control
       [
         "devcenter.heroku.com",
         "devcenter-staging.heroku.com",
