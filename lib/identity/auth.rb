@@ -11,9 +11,6 @@ module Identity
       @cookie = Cookie.new(session)
     end
 
-    get "/blank-target" do
-    end
-
     namespace "/login" do
       get do
         slim :login, layout: :"layouts/zen_backdrop"
