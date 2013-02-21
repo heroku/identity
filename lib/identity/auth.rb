@@ -20,6 +20,9 @@ module Identity
         slim :"two-factor", layout: :"layouts/zen_backdrop"
       end
 
+      # Creates a session for a user by receiving their username and password.
+      # If that user was trying to authorize an OAuth client before being
+      # forced to login, that authorization process is continued.
       post do
         begin
           if code = params[:code]
