@@ -12,22 +12,9 @@ module Identity
       path: '/',
       expire_after: 2592000
 
+    # CSRF + Flash should come before the unadorned heroku cookies that follow
     use Rack::Csrf, skip: ["POST:/oauth/.*"]
     use Rack::Flash
-
-    # cookies with a domain scoped to all heroku domains, used to set a session
-    # nonce value so that consumers can recognize when the logged in user has
-    # changed
-    if Config.heroku_cookie_domain
-      %w{heroku_session heroku_session_nonce}.each do |key|
-        use Rack::Session::Cookie,
-          coder: Rack::Session::Cookie::Identity.new,
-          domain: Config.heroku_cookie_domain,
-          expire_after: 2592000,
-          http_only: true,
-          key: key
-      end
-    end
 
     run Sinatra::Router.new {
       mount Identity::Account

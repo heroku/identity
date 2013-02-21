@@ -232,8 +232,10 @@ module Identity
       @cookie.clear
 
       # clear heroku globally-scoped cookies
-      env["heroku_session"]       = nil
-      env["heroku_session_nonce"] = nil
+      if Config.heroku_cookie_domain
+        response.delete_cookie("heroku_session")
+        response.delete_cookie("heroku_session_nonce")
+      end
 
       redirect to("/login")
     end
@@ -273,9 +275,13 @@ module Identity
         @cookie.refresh_token           = token["refresh_token"]["token"]
         @cookie.session_id              = token["session"]["id"]
 
-        # scoped to all Heroku apps
-        env["heroku_session"]       = "1"
-        env["heroku_session_nonce"] = token["user"]["session_nonce"]
+        # cookies with a domain scoped to all heroku domains, used to set a session
+        # nonce value so that consumers can recognize when the logged in user has
+        # changed
+        if Config.heroku_cookie_domain
+          set_heroku_cookie("heroku_session", "1")
+          set_heroku_cookie("heroku_session", token["user"]["session_nonce"])
+        end
 
         log :oauth_dance_complete, session_id: @cookie.session_id,
           nonce: token["user"]["session_nonce"]
@@ -306,6 +312,14 @@ module Identity
 
     def request_id
       request.env["REQUEST_ID"]
+    end
+
+    def set_heroku_cookie(key, value)
+      response.set_cookie(key,
+        domain:    Config.heroku_cookie_domain,
+        http_only: true,
+        max_age:   2592000,
+        value:     value)
     end
   end
 end
