@@ -1,6 +1,6 @@
 # Identity Production Checklist
 
-* [ ] Set up a high-fidelity staging replica.
+* [x] Set up a high-fidelity staging replica.
 * [ ] Add to the [platform lifecycle board](https://trello.com/board/platform-engineering-life-cycle/504fbaecbc351ac46c476027)
 * [ ] Request an audit by the security team - this may be backlogged or handled immediatly.
 * [ ] Has a Readme that explains how to run the app locally and create a personal platform deploy.
