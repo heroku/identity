@@ -10,11 +10,6 @@ module Identity
       ENV["COOKIE_ENCRYPTION_KEY"] || raise("missing=COOKIE_ENCRYPTION_KEY")
     end
 
-    # domain that a cookie-based session nonce will be made available to
-    def heroku_cookie_domain
-      ENV["HEROKU_COOKIE_DOMAIN"]
-    end
-
     def dashboard_url
       ENV["DASHBOARD_URL"] || raise("missing=DASHBOARD_URL")
     end
