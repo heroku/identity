@@ -10,6 +10,7 @@ module Identity
       attrs = { host: params[:host], path: params[:path],
         method: params[:method], expects: params[:expects],
         status: params[:status] }
+      attrs.merge!(params) if name == "excon.error"
       attrs.merge!(@extra_attrs)
       Slides.log(name, attrs) { block.call if block }
     end
