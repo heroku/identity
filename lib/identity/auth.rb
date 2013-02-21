@@ -280,7 +280,8 @@ module Identity
         # changed
         if Config.heroku_cookie_domain
           set_heroku_cookie("heroku_session", "1")
-          set_heroku_cookie("heroku_session", token["user"]["session_nonce"])
+          set_heroku_cookie("heroku_session_nonce",
+            token["user"]["session_nonce"])
         end
 
         log :oauth_dance_complete, session_id: @cookie.session_id,
