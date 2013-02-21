@@ -53,8 +53,8 @@ module Identity
         # client not yet authorized; show the user a confirmation dialog
         rescue Identity::Errors::UnauthorizedClient => e
           @client = e.client
-          authorize_params = { "scope" => "all" }.merge(@cookie.authorize_params)
-          @cookie.authorize_params = authorize_params
+          @cookie.authorize_params =
+            { "scope" => "all" }.merge(@cookie.authorize_params)
           slim :"clients/authorize", layout: :"layouts/zen_backdrop"
         end
       end
@@ -119,7 +119,6 @@ module Identity
         # client not yet authorized; show the user a confirmation dialog
         rescue Identity::Errors::UnauthorizedClient => e
           @client = e.client
-          @params = authorize_params
           @cookie.authorize_params = authorize_params
           slim :"clients/authorize", layout: :"layouts/zen_backdrop"
         end
