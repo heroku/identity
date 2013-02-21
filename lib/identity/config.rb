@@ -6,11 +6,6 @@ module Identity
       ENV["AIRBRAKE_API_KEY"]
     end
 
-    # domain that cookies will be scoped to, should be this app's dns only
-    def cookie_domain
-      ENV["COOKIE_DOMAIN"]
-    end
-
     def cookie_encryption_key
       ENV["COOKIE_ENCRYPTION_KEY"] || raise("missing=COOKIE_ENCRYPTION_KEY")
     end

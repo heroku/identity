@@ -3,11 +3,10 @@ module Identity
     use Rack::Instruments
     use Rack::SSL if Config.production?
 
-    # general cookie storing information of the logged in user; should be
-    # scoped to the app's specific domain
+    # General cookie storing information of the logged in user; don't set the
+    # domain so that it's allowed to default to the current app's domain scope.
     use Rack::Session::Cookie,
       coder: FernetCookieCoder.new(Config.cookie_encryption_key),
-      domain: Config.cookie_domain,
       http_only: true,
       path: '/',
       expire_after: 2592000
