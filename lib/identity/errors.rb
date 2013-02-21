@@ -1,4 +1,7 @@
 module Identity::Errors
+  class NoSession < StandardError
+  end
+
   class UnauthorizedClient < StandardError
     attr_accessor :client
 

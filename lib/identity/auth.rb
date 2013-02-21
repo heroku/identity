@@ -53,7 +53,7 @@ module Identity
         # client not yet authorized; show the user a confirmation dialog
         rescue Identity::Errors::UnauthorizedClient => e
           @client = e.client
-          @authorize_params = { "scope" => "all" }.merge(@cookie.authorize_params)
+          authorize_params = { "scope" => "all" }.merge(@cookie.authorize_params)
           @cookie.authorize_params = authorize_params
           slim :"clients/authorize", layout: :"layouts/zen_backdrop"
         end
@@ -88,17 +88,20 @@ module Identity
         call(env.merge("REQUEST_METHOD" => "POST"))
       end
 
+      # Tries to authorize a user for a client by proxying the authorization
+      # request to API. If the user is not logged in, they are sent to the
+      # login screen, from where this authorization will be reattempted on a
+      # successful login. If Identity's access token has expired, it is
+      # refreshed.
       post "/authorize" do
         # if the user is submitting a confirmation form, pull from session,
         # otherwise get params from the request
         authorize_params = params[:authorize] ? (@cookie.authorize_params || {}) :
           filter_params(%w{client_id response_type scope state})
+
         begin
           # have the user login if we have no session for them
-          if !@cookie.access_token
-            @cookie.authorize_params = authorize_params
-            redirect to("/login")
-          end
+          raise Identity::Errors::NoSession if !@cookie.access_token
 
           # Try to perform an access token refresh if we know it's expired. At
           # the time of this writing, refresh tokens last 30 days (much longer
@@ -110,7 +113,7 @@ module Identity
           # redirects back to the oauth client on success
           authorize(authorize_params, params[:authorize] == "Allow Access")
         # refresh token dance was unsuccessful
-        rescue Excon::Errors::Unauthorized
+        rescue Excon::Errors::Unauthorized, Identity::Errors::NoSession
           @cookie.authorize_params = authorize_params
           redirect to("/login")
         # client not yet authorized; show the user a confirmation dialog
@@ -122,19 +125,20 @@ module Identity
         end
       end
 
+      # Exchanges a code and client_secret for a token set by proxying the
+      # request to the API.
       post "/token" do
         res = log :create_token, by_proxy: true, session_id: @cookie.session_id do
+          # no credentials are required here because the code segment of the
+          # exchange is state that's linked to a user in the API
           api = HerokuAPI.new(user: nil, request_id: request_id)
-          api.post(path: "/oauth/tokens", expects: [201, 401], query: {
+          api.post(path: "/oauth/tokens", expects: 201, query: {
             code:          params[:code],
             client_secret: params[:client_secret],
             grant_type:    "authorization_code",
             session_id:    @cookie.session_id,
           })
         end
-
-        # somehow our credentials have expired, restart the auth process
-        logout if res.status == 401
 
         token = MultiJson.decode(res.body)
 
