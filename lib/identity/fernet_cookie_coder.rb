@@ -30,7 +30,7 @@ module Identity
     # fernet throws random exceptions :{ eat it for now
     rescue Exception => e
       Identity.log(:exception, class: e.class.name, message: e.message,
-        fernet: true)
+        fernet: true, backtrace: e.backtrace.inspect)
       {}
     end
 
