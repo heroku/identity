@@ -14,7 +14,7 @@ OLD_COOKIE_ENCRYPTION_KEY=my-really-secure-old-cookie-encryption-key
 
 #
 # WAIT some reasonable amount of time. Probably a few days. Users need to make
-# a request to Identity for their cookies ciphers to be rotated.
+# a request to Identity for their cookies' ciphers to be rotated.
 #
 
 $ heroku config:remove OLD_COOKIE_ENCRYPTION_KEY
