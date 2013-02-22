@@ -6,7 +6,7 @@ module Identity
       super
       path = "#{Config.root}/assets"
       @assets = Sprockets::Environment.new do |env|
-        Slides.log :assets, path: path
+        Identity.log :assets, path: path
 
         env.append_path(path + "/fonts")
         env.append_path(path + "/images")

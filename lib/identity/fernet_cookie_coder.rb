@@ -28,7 +28,7 @@ module Identity
       plain
     # fernet throws random exceptions :{ eat it for now
     rescue Exception => e
-      Slides.log(:exception, class: e.class.name, message: e.message)
+      Identity.log(:exception, class: e.class.name, message: e.message)
       {}
     end
 

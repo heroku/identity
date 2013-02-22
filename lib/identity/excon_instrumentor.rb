@@ -13,7 +13,7 @@ module Identity
       # dump everything on an error
       attrs.merge!(params) if name == "excon.error"
       attrs.merge!(@extra_attrs)
-      Slides.log(name, attrs) { block.call if block }
+      Identity.log(name, attrs) { block.call if block }
     end
   end
 end

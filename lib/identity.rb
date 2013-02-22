@@ -13,3 +13,11 @@ require_relative "identity/auth"
 require_relative "identity/default"
 
 require_relative "identity/main"
+
+module Identity
+  # make sure we get an app=identity in every line that we log
+  def self.log(action, data={}, &block)
+    data.merge!(app: "identity")
+    Slides.log(action, data, &block)
+  end
+end

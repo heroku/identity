@@ -233,7 +233,7 @@ module Identity
 
     def log(action, data={}, &block)
       data.merge! id: request_id
-      Slides.log(action, data.merge(data), &block)
+      Identity.log(action, data.merge(data), &block)
     end
 
     def logout
