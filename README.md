@@ -38,8 +38,9 @@ bin/test
 
 * `id-production`: https://id.heroku.com
     * Consumed by:
-        * `dashboard-dev`: https://dashboard-dev.herokuapp.com
-        * `dashboard-staging`: https://dashboard-dev.herokuapp.com
+        * `dashboard-dev`: https://dashboard-dev.heroku.com
+        * `dashboard-staging`: https://dashboard-dev.heroku.com
+        * `help-staging`: https://help-staging.heroku.com
         * `oauth-example`: https://oauth-example.herokuapp.com
 * `id-staging`: https://id-staging.herokuapp.com
     * Consumed by:
