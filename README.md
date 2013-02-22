@@ -19,7 +19,6 @@ foreman start
 ## Platform Install
 
 ```
-# should be the running domain of your app for cookies to work
 heroku config:add COOKIE_ENCRYPTION_KEY=...
 heroku config:add DASHBOARD_URL="https://dashboard.heroku.com"
 heroku config:add HEROKU_API_URL="https://api.heroku.com"
@@ -37,13 +36,14 @@ bin/test
 ## Installations
 
 * `id-production`: https://id.heroku.com
+    * Mirrored by:
+        * `id-production-eu`: ~~https://id.heroku.com~~ (not activated yet)
     * Consumed by:
         * `dashboard-dev`: https://dashboard-dev.heroku.com
         * `dashboard-staging`: https://dashboard-dev.heroku.com
         * `devcenter-staging`: https://devcenter-staging.heroku.com
         * `help-staging`: https://help-staging.heroku.com
         * `oauth-example`: https://oauth-example.herokuapp.com
-* `id-production-eu`: ~~https://id.heroku.com~~ (not activated yet)
 * `id-staging`: https://id-staging.herokuapp.com
     * Consumed by:
         * `dashboard-brandur`: https://dashboard-brandur.herokuapp.com
