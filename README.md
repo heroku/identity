@@ -4,6 +4,10 @@ Based on the concept of web-based Heroku user management not belonging in the AP
 
 OAuth session management is achieved without any special API permissions by a "meta-OAuth" provider implementation. Identity first authorizes itself to get access to a user's account, then authorizes other consumers that use it as a target by proxying calls to the API (but using only the JSON authentication APIs).
 
+## Operations
+
+See [operations](https://github.com/heroku/identity/tree/master/operations.md).
+
 ## Usage
 
 ``` bash
@@ -35,7 +39,9 @@ bin/test
 * `id-production`: https://id.heroku.com
     * Consumed by:
         * `dashboard-dev`: https://dashboard-dev.herokuapp.com
-        * ~~`dashboard-staging`: https://dashboard-dev.herokuapp.com~~
+        * `dashboard-staging`: https://dashboard-dev.herokuapp.com
+        * `oauth-example`: https://oauth-example.herokuapp.com
 * `id-staging`: https://id-staging.herokuapp.com
     * Consumed by:
         * `dashboard-brandur`: https://dashboard-brandur.herokuapp.com
+        * `oauth-example-staging`: https://oauth-example-staging.herokuapp.com
