@@ -43,6 +43,7 @@ bin/test
         * `devcenter-staging`: https://devcenter-staging.heroku.com
         * `help-staging`: https://help-staging.heroku.com
         * `oauth-example`: https://oauth-example.herokuapp.com
+* `id-production-eu`: ~~https://id.heroku.com~~ (not activated yet)
 * `id-staging`: https://id-staging.herokuapp.com
     * Consumed by:
         * `dashboard-brandur`: https://dashboard-brandur.herokuapp.com
