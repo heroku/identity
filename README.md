@@ -40,6 +40,7 @@ bin/test
     * Consumed by:
         * `dashboard-dev`: https://dashboard-dev.heroku.com
         * `dashboard-staging`: https://dashboard-dev.heroku.com
+        * `devcenter-staging`: https://devcenter-staging.heroku.com
         * `help-staging`: https://help-staging.heroku.com
         * `oauth-example`: https://oauth-example.herokuapp.com
 * `id-staging`: https://id-staging.herokuapp.com
