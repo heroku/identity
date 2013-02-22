@@ -34,7 +34,7 @@ git push heroku master
 bin/test
 ```
 
-### Installations
+## Installations
 
 * `id-production`: https://id.heroku.com
     * Consumed by:
