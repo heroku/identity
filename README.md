@@ -45,6 +45,7 @@ bin/test
         * `help-staging`: https://help-staging.heroku.com
         * `in-vitro-staging`: https://app-clone-staging.herokuapp.com
         * `oauth-example`: https://oauth-example.herokuapp.com
+        * `redeem-staging`: https://redeem-staging.heroku.com
     * Should be consumed by:
         * `dashboard`: https://dashboard.heroku.com
         * `dataclips`: https://dataclips.heroku.com
@@ -53,7 +54,6 @@ bin/test
         * `help`: https://help.heroku.com
         * `in-vitro-production`: https://app-clone-production.herokuapp.com
         * `redeem-production`: https://redeem.heroku.com
-        * `redeem-staging`: https://redeem-staging.heroku.com
 * `id-staging`: https://id-staging.herokuapp.com
     * Consumed by:
         * `dashboard-brandur`: https://dashboard-brandur.herokuapp.com
