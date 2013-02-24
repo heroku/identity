@@ -1,6 +1,6 @@
 module Identity
   class Default < Sinatra::Base
-    register Identity::ErrorHandling
+    register ErrorHandling
 
     configure do
       set :views, "#{Config.root}/views"

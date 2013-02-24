@@ -1,6 +1,6 @@
 module Identity
   class Assets < Sinatra::Base
-    register Identity::ErrorHandling
+    register ErrorHandling
 
     def initialize(*args)
       super
