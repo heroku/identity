@@ -1,7 +1,10 @@
 module Identity
   class Account < Sinatra::Base
-    register Identity::ErrorHandling
+    register ErrorHandling
     register Sinatra::Namespace
+
+    include AuthHelpers
+    include LogHelpers
 
     configure do
       set :views, "#{Config.root}/views"
@@ -67,9 +70,13 @@ module Identity
           flash.now[:error] = json["message"]
           slim :"account/accept", layout: :"layouts/classic"
         else
+          # if we know that we're in the middle of an authorization attempt,
+          # continue it
+          if @cookie.authorize_params
+            authorize(@cookie.authorize_params)
           # users who signed up from a particular source may have a specialized
           # redirect location; otherwise go to Dashboard
-          if json["signup_source"]
+          elsif json["signup_source"]
             redirect to(json["signup_source"]["redirect_uri"])
           else
             redirect to("#{Config.dashboard_url}/signup/finished")
@@ -134,12 +141,6 @@ module Identity
     get "/signup" do
       @cookie.signup_source = params[:slug]
       slim :signup, layout: :"layouts/zen_backdrop"
-    end
-
-    private
-
-    def request_id
-      request.env["REQUEST_ID"]
     end
   end
 end

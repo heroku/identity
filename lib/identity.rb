@@ -6,6 +6,9 @@ require_relative "identity/excon_instrumentor"
 require_relative "identity/fernet_cookie_coder"
 require_relative "identity/heroku_api"
 
+require_relative "identity/log_helpers"
+require_relative "identity/auth_helpers"
+
 # modules
 require_relative "identity/account"
 require_relative "identity/assets"
