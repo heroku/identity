@@ -55,21 +55,18 @@ module Identity
       end
 
       post "/accept/:id/:hash" do |id, hash|
-        api = HerokuAPI.new(request_id: request_id)
-        res = api.post(path: "/invitation2/save", expects: [200, 422],
-          query: {
-            "id"                          => id,
-            "token"                       => hash,
-            "user[password]"              => params[:password],
-            "user[password_confirmation]" => params[:password_confirmation],
-            "user[receive_newsletter]"    => params[:receive_newsletter],
-          })
-        json = MultiJson.decode(res.body)
+        begin
+          api = HerokuAPI.new(request_id: request_id)
+          res = api.post(path: "/invitation2/save", expects: 200,
+            query: {
+              "id"                          => id,
+              "token"                       => hash,
+              "user[password]"              => params[:password],
+              "user[password_confirmation]" => params[:password_confirmation],
+              "user[receive_newsletter]"    => params[:receive_newsletter],
+            })
+          json = MultiJson.decode(res.body)
 
-        if res.status == 422
-          flash.now[:error] = json["message"]
-          slim :"account/accept", layout: :"layouts/classic"
-        else
           # if we know that we're in the middle of an authorization attempt,
           # continue it
           if @cookie.authorize_params
@@ -81,6 +78,10 @@ module Identity
           else
             redirect to("#{Config.dashboard_url}/signup/finished")
           end
+        rescue Identity::Errors::UnprocessableEntity => e
+          json = MultiJson.decode(e.response.body)
+          flash.now[:error] = json["message"]
+          slim :"account/accept", layout: :"layouts/classic"
         end
       end
 
@@ -89,51 +90,53 @@ module Identity
       end
 
       post "/password/reset" do
-        api = HerokuAPI.new(request_id: request_id)
-        # @todo: use bare email instead of reset[email] when ready
-        res = api.post(path: "/auth/reset_password", expects: [200, 422],
-          query: { "reset[email]" => params[:email] })
-        json = MultiJson.decode(res.body)
+        begin
+          api = HerokuAPI.new(request_id: request_id)
+          # @todo: use bare email instead of reset[email] when ready
+          res = api.post(path: "/auth/reset_password", expects: 200,
+            query: { "reset[email]" => params[:email] })
 
-        if res.status == 422
-          flash.now[:error] = json["message"]
-        else
+          json = MultiJson.decode(res.body)
           flash.now[:notice] = json["message"]
+          slim :"account/password/reset", layout: :"layouts/zen_backdrop"
+        rescue Identity::Errors::UnprocessableEntity => e
+          json = MultiJson.decode(e.response.body)
+          flash.now[:error] = json["message"]
+          slim :"account/password/reset", layout: :"layouts/zen_backdrop"
         end
-
-        slim :"account/password/reset", layout: :"layouts/zen_backdrop"
       end
 
       get "/password/reset/:hash" do |hash|
-        api = HerokuAPI.new(request_id: request_id)
-        res = api.get(path: "/auth/finish_reset_password/#{hash}",
-          expects: [200, 404])
+        begin
+          api = HerokuAPI.new(request_id: request_id)
+          res = api.get(path: "/auth/finish_reset_password/#{hash}",
+            expects: 200)
 
-        if res.status == 404
-          slim :"account/password/not_found", layout: :"layouts/zen_backdrop"
-        else
           @user = MultiJson.decode(res.body)
           slim :"account/password/finish_reset", layout: :"layouts/zen_backdrop"
+        rescue Identity::Errors::NotFound => e
+          slim :"account/password/not_found", layout: :"layouts/zen_backdrop"
         end
       end
 
       post "/password/reset/:hash" do |hash|
-        api = HerokuAPI.new(request_id: request_id)
-        res = api.post(path: "/auth/finish_reset_password/#{hash}",
-          expects: [200, 404, 422], query: {
-            "user_to_reset[password]"              => params[:password],
-            "user_to_reset[password_confirmation]" =>
-              params[:password_confirmation],
-          })
+        begin
+          api = HerokuAPI.new(request_id: request_id)
+          res = api.post(path: "/auth/finish_reset_password/#{hash}",
+            expects: [200, 404, 422], query: {
+              "user_to_reset[password]"              => params[:password],
+              "user_to_reset[password_confirmation]" =>
+                params[:password_confirmation],
+            })
 
-        if res.status == 404
-          slim :"account/password/not_found", layout: :"layouts/zen_backdrop"
-        elsif res.status == 422
-          flash.now[:error] = json["errors"]
-          slim :"account/password/finish_reset", layout: :"layouts/zen_backdrop"
-        else
           flash[:success] = "Your password has been changed."
           redirect to("/login")
+        rescue Identity::Errors::NotFound => e
+          slim :"account/password/not_found", layout: :"layouts/zen_backdrop"
+        rescue Identity::Errors::UnprocessableEntity => e
+          json = MultiJson.decode(e.response.body)
+          flash.now[:error] = json["errors"]
+          slim :"account/password/finish_reset", layout: :"layouts/zen_backdrop"
         end
       end
     end
