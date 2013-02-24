@@ -40,17 +40,16 @@ module Identity
       end
 
       get "/accept/:id/:hash" do |id, hash|
-        api = HerokuAPI.new(request_id: request_id)
-        res = api.get(path: "/signup/accept2/#{id}/#{hash}",
-          expects: [200, 422])
-        json = MultiJson.decode(res.body)
-
-        if res.status == 422
+        begin
+          api = HerokuAPI.new(request_id: request_id)
+          res = api.get(path: "/signup/accept2/#{id}/#{hash}",
+            expects: 200)
+          @user = MultiJson.decode(res.body)
+          slim :"account/accept", layout: :"layouts/classic"
+        rescue Identity::Errors::UnprocessableEntity => e
+          json = MultiJson.decode(res.body)
           flash.now[:error] = json["message"]
           slim :login, layout: :"layouts/zen_backdrop"
-        else
-          @user = json
-          slim :"account/accept", layout: :"layouts/classic"
         end
       end
 
@@ -123,7 +122,7 @@ module Identity
         begin
           api = HerokuAPI.new(request_id: request_id)
           res = api.post(path: "/auth/finish_reset_password/#{hash}",
-            expects: [200, 404, 422], query: {
+            expects: 200, query: {
               "user_to_reset[password]"              => params[:password],
               "user_to_reset[password_confirmation]" =>
                 params[:password_confirmation],
