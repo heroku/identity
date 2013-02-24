@@ -43,7 +43,7 @@ bin/test
         * `dashboard-staging`: https://dashboard-dev.heroku.com
         * `devcenter-staging`: https://devcenter-staging.heroku.com
         * `help-staging`: https://help-staging.heroku.com
-        * `in-vitro-staging`: https://app-clone-staging.herokuapp.com
+        * `cloner-staging`: https://cloner-staging.herokuapp.com
         * `oauth-example`: https://oauth-example.herokuapp.com
         * `redeem-staging`: https://redeem-staging.heroku.com
     * Should be consumed by:
@@ -52,7 +52,7 @@ bin/test
         * `dataclips-staging`: https://dataclips-staging.herokuapp.com
         * `devcenter`: https://devcenter.heroku.com
         * `help`: https://help.heroku.com
-        * `in-vitro-production`: https://app-clone-production.herokuapp.com
+        * `cloner-production`: https://cloner.heroku.com
         * `redeem-production`: https://redeem.heroku.com
 * `id-staging`: https://id-staging.herokuapp.com
     * Consumed by:
