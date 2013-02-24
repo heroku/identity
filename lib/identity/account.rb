@@ -46,7 +46,7 @@ module Identity
             expects: 200)
           @user = MultiJson.decode(res.body)
           slim :"account/accept", layout: :"layouts/classic"
-        rescue Identity::Errors::UnprocessableEntity => e
+        rescue Excon::Errors::UnprocessableEntity => e
           json = MultiJson.decode(res.body)
           flash.now[:error] = json["message"]
           slim :login, layout: :"layouts/zen_backdrop"
@@ -77,7 +77,7 @@ module Identity
           else
             redirect to("#{Config.dashboard_url}/signup/finished")
           end
-        rescue Identity::Errors::UnprocessableEntity => e
+        rescue Excon::Errors::UnprocessableEntity => e
           json = MultiJson.decode(e.response.body)
           flash.now[:error] = json["message"]
           slim :"account/accept", layout: :"layouts/classic"
@@ -98,7 +98,7 @@ module Identity
           json = MultiJson.decode(res.body)
           flash.now[:notice] = json["message"]
           slim :"account/password/reset", layout: :"layouts/zen_backdrop"
-        rescue Identity::Errors::UnprocessableEntity => e
+        rescue Excon::Errors::UnprocessableEntity => e
           json = MultiJson.decode(e.response.body)
           flash.now[:error] = json["message"]
           slim :"account/password/reset", layout: :"layouts/zen_backdrop"
@@ -113,7 +113,7 @@ module Identity
 
           @user = MultiJson.decode(res.body)
           slim :"account/password/finish_reset", layout: :"layouts/zen_backdrop"
-        rescue Identity::Errors::NotFound => e
+        rescue Excon::Errors::NotFound => e
           slim :"account/password/not_found", layout: :"layouts/zen_backdrop"
         end
       end
@@ -130,9 +130,9 @@ module Identity
 
           flash[:success] = "Your password has been changed."
           redirect to("/login")
-        rescue Identity::Errors::NotFound => e
+        rescue Excon::Errors::NotFound => e
           slim :"account/password/not_found", layout: :"layouts/zen_backdrop"
-        rescue Identity::Errors::UnprocessableEntity => e
+        rescue Excon::Errors::UnprocessableEntity => e
           json = MultiJson.decode(e.response.body)
           flash.now[:error] = json["errors"]
           slim :"account/password/finish_reset", layout: :"layouts/zen_backdrop"
