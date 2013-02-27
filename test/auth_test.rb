@@ -13,6 +13,7 @@ describe Identity::Auth do
 
   before do
     stub_heroku_api
+    rack_mock_session.clear_cookies
   end
 
   describe "POST /oauth/authorize" do
@@ -171,6 +172,12 @@ describe Identity::Auth do
       delete "/logout"
       assert_equal 302, last_response.status
       assert_match %r{/login$}, last_response.headers["Location"]
+    end
+
+    it "destroys heroku_* cookies" do
+      delete "/logout"
+      assert_equal "", rack_mock_session.cookie_jar["heroku_session"]
+      assert_equal "", rack_mock_session.cookie_jar["heroku_session_nonce"]
     end
 
     it "redirects to a given url if it's safe" do
