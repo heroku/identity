@@ -36,9 +36,13 @@ bin/test
 ## Installations
 
 * `id-production`: https://id.heroku.com
+    * Powered by `api.heroku.com`
     * Mirrored by:
         * `id-production-eu`: ~~https://id.heroku.com~~ (not activated yet)
-    * Consumed by:
+    * Consumed by **kernel** apps:
+       * `core`: https://api.heroku.com
+    * Consumed by **platform** apps:
+        * `dashboard-brandur`: https://dashboard-brandur.herokuapp.com
         * `dashboard-dev`: https://dashboard-dev.heroku.com
         * `dashboard-staging`: https://dashboard-dev.heroku.com
         * `devcenter-staging`: https://devcenter-staging.heroku.com
@@ -46,6 +50,10 @@ bin/test
         * `cloner-staging`: https://cloner-staging.herokuapp.com
         * `oauth-example`: https://oauth-example.herokuapp.com
         * `redeem-staging`: https://redeem-staging.heroku.com
+    * Still need to sanity check:
+        * `dataclips`
+        * `postgres`
+        * `vault`: https://vault.heroku.com
     * Should be consumed by:
         * `dashboard`: https://dashboard.heroku.com
         * `dataclips`: https://dataclips.heroku.com
@@ -55,6 +63,9 @@ bin/test
         * `cloner-production`: https://cloner.heroku.com
         * `redeem-production`: https://redeem.heroku.com
 * `id-staging`: https://id-staging.herokuapp.com
-    * Consumed by:
-        * `dashboard-brandur`: https://dashboard-brandur.herokuapp.com
+    * Powered by `api.staging.herokudev.com`
+    * Consumed by **kernel** apps:
+       * `core`: https://api.staging.herokudev.com
+    * Consumed by **platform** apps:
+        * `dashboard-api-staging`: https://dashboard-api-staging.herokuapp.com
         * `oauth-example-staging`: https://oauth-example-staging.herokuapp.com
