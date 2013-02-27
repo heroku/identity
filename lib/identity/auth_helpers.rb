@@ -8,6 +8,8 @@ module Identity
       api = HerokuAPI.new(user: nil, pass: @cookie.access_token,
         request_id: request_id)
 
+      halt 400, "Need client_id" unless params["client_id"]
+
       res = log :get_client, client_id: params["client_id"] do
         api.get(path: "/oauth/clients/#{params["client_id"]}", expects: 200)
       end
