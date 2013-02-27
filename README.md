@@ -50,10 +50,10 @@ bin/test
         * `cloner-staging`: https://cloner-staging.herokuapp.com
         * `oauth-example`: https://oauth-example.herokuapp.com
         * `redeem-staging`: https://redeem-staging.heroku.com
+        * `vault-staging`: https://vault-staging.herokuapp.com
     * Still need to sanity check:
         * `dataclips-staging`: https://dataclips-staging.herokuapp.com/
         * `postgres-staging`: https://postgres-staging.herokuapp.com/
-        * `vault-staging`: https://vault-staging.herokuapp.com
     * Should be consumed by:
         * `dashboard`: https://dashboard.heroku.com
         * `dataclips`: https://dataclips.heroku.com
