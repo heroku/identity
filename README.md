@@ -51,9 +51,9 @@ bin/test
         * `oauth-example`: https://oauth-example.herokuapp.com
         * `redeem-staging`: https://redeem-staging.heroku.com
     * Still need to sanity check:
-        * `dataclips`
-        * `postgres`
-        * `vault`: https://vault.heroku.com
+        * `dataclips-staging`: https://dataclips-staging.herokuapp.com/
+        * `postgres-staging`: https://postgres-staging.herokuapp.com/
+        * `vault-staging`: https://vault-staging.herokuapp.com
     * Should be consumed by:
         * `dashboard`: https://dashboard.heroku.com
         * `dataclips`: https://dataclips.heroku.com
