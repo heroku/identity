@@ -2,18 +2,23 @@ module Identity
   class ExconInstrumentor
     attr_accessor :events
 
-    def initialize(extra_attrs={})
-      @extra_attrs = extra_attrs
+    def initialize(extra_data={})
+      @extra_data = extra_data
     end
 
     def instrument(name, params={}, &block)
-      attrs = { host: params[:host], path: params[:path],
-        method: params[:method], expects: params[:expects],
-        status: params[:status] }
+      data = [
+        [:app,     "identity"],
+        [:host,    params[:host]],
+        [:path,    params[:path]],
+        [:method,  params[:method]],
+        [:expects, params[:expects]],
+        [:status,  params[:status]],
+      ]
       # dump everything on an error
-      attrs.merge!(params) if name == "excon.error"
-      attrs.merge!(@extra_attrs)
-      Identity.log(name, attrs) { block.call if block }
+      data += params.map { |k, v| [k, v] } if name == "excon.error"
+      data += @extra_data
+      Slides.log_array(name, data) { block.call if block }
     end
   end
 end

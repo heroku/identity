@@ -17,6 +17,10 @@ module Slides
   def self.log(action, data={}, &block)
     yield(block) if block
   end
+
+  def self.log_array(action, data, &block)
+    yield(block) if block
+  end
 end
 
 class MiniTest::Spec

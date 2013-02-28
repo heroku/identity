@@ -3,10 +3,12 @@ require "base64"
 module Identity
   class HerokuAPI < Excon::Connection
     def initialize(options={})
+      options[:headers] ||= {}
+      options[:request_ids] ||= []
       headers = {
-        "Accept"          => "application/vnd.heroku+json; version=3",
-        "Heroku-Group-ID" => options[:request_id],
-      }.merge(options[:headers] || {})
+        "Accept"     => "application/vnd.heroku+json; version=3",
+        "Request-ID" => options[:request_ids].join(", "),
+      }.merge!(options[:headers])
       if options[:user] || options[:pass]
         authorization = ["#{options[:user] || ''}:#{options[:pass] || ''}"].
           pack('m').delete("\r\n")
@@ -14,8 +16,8 @@ module Identity
       elsif options[:authorization]
         headers["Authorization"] = options[:authorization]
       end
-      super(Config.heroku_api_url, headers: headers,
-        instrumentor: ExconInstrumentor.new(id: options[:request_id]))
+      super(Config.heroku_api_url, headers: headers, instrumentor:
+        ExconInstrumentor.new(options[:request_ids].map { |id| [:id, id] }))
     end
   end
 end

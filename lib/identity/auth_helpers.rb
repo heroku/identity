@@ -6,7 +6,7 @@ module Identity
     # API.
     def authorize(params, confirm=false)
       api = HerokuAPI.new(user: nil, pass: @cookie.access_token,
-        request_id: request_id)
+        request_ids: request_ids)
 
       halt 400, "Need client_id" unless params["client_id"]
 
@@ -60,7 +60,7 @@ module Identity
     # the user's client identities.
     def perform_oauth_dance(user, pass, code)
       log :oauth_dance do
-        options = { user: user, pass: pass, request_id: request_id }
+        options = { user: user, pass: pass, request_ids: request_ids }
         if code
           options.merge!(headers: { "Heroku-Two-Factor-Code" => code })
         end
@@ -107,7 +107,7 @@ module Identity
       log :oauth_refresh_dance do
         res = log :refresh_token do
           api = HerokuAPI.new(user: nil, pass: @cookie.access_token,
-            request_id: request_id)
+            request_ids: request_ids)
           api.post(path: "/oauth/tokens", expects: 201,
             query: {
               client_secret: Config.heroku_oauth_secret,

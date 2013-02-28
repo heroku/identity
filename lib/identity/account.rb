@@ -22,7 +22,7 @@ module Identity
       # Remove this as soon as we get Devcenter and Dashboard upgraded.
       get do
         return 401 if !request.env["HTTP_AUTHORIZATION"]
-        api = HerokuAPI.new(user: nil, request_id: request_id,
+        api = HerokuAPI.new(user: nil, request_ids: request_ids,
           authorization: request.env["HTTP_AUTHORIZATION"],
           # not necessarily V3, respond with whatever the client asks for
           headers: { "Accept" => request.env["HTTP_ACCEPT"] })
@@ -32,7 +32,7 @@ module Identity
       end
 
       post do
-        api = HerokuAPI.new(request_id: request_id)
+        api = HerokuAPI.new(request_ids: request_ids)
         res = api.post(path: "/signup", expects: [200, 422],
           query: { email: params[:email], slug: @cookie.signup_source })
         json = MultiJson.decode(res.body)
@@ -41,7 +41,7 @@ module Identity
 
       get "/accept/:id/:hash" do |id, hash|
         begin
-          api = HerokuAPI.new(request_id: request_id)
+          api = HerokuAPI.new(request_ids: request_ids)
           res = api.get(path: "/signup/accept2/#{id}/#{hash}",
             expects: 200)
           @user = MultiJson.decode(res.body)
@@ -55,7 +55,7 @@ module Identity
 
       post "/accept/:id/:hash" do |id, hash|
         begin
-          api = HerokuAPI.new(request_id: request_id)
+          api = HerokuAPI.new(request_ids: request_ids)
           res = api.post(path: "/invitation2/save", expects: 200,
             query: {
               "id"                          => id,
@@ -90,7 +90,7 @@ module Identity
 
       post "/password/reset" do
         begin
-          api = HerokuAPI.new(request_id: request_id)
+          api = HerokuAPI.new(request_ids: request_ids)
           # @todo: use bare email instead of reset[email] when ready
           res = api.post(path: "/auth/reset_password", expects: 200,
             query: { "reset[email]" => params[:email] })
@@ -107,7 +107,7 @@ module Identity
 
       get "/password/reset/:hash" do |hash|
         begin
-          api = HerokuAPI.new(request_id: request_id)
+          api = HerokuAPI.new(request_ids: request_ids)
           res = api.get(path: "/auth/finish_reset_password/#{hash}",
             expects: 200)
 
@@ -120,7 +120,7 @@ module Identity
 
       post "/password/reset/:hash" do |hash|
         begin
-          api = HerokuAPI.new(request_id: request_id)
+          api = HerokuAPI.new(request_ids: request_ids)
           res = api.post(path: "/auth/finish_reset_password/#{hash}",
             expects: 200, query: {
               "user_to_reset[password]"              => params[:password],
