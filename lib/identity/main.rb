@@ -18,10 +18,10 @@ module Identity
     use Rack::Flash
 
     run Sinatra::Router.new {
-      mount Identity::Account
-      mount Identity::Assets
-      mount Identity::Auth
-      run   Identity::Default # index + error handlers
+      mount Account
+      mount Assets
+      mount Auth
+      run   Default # index + error handlers
     }
   end
 end
