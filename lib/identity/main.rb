@@ -1,6 +1,6 @@
 module Identity
   Main = Rack::Builder.new do
-    use Rack::Instruments
+    use Rack::Instruments, context: { app: "identity" }
     use Rack::SSL if Config.production?
 
     # General cookie storing information of the logged in user; don't set the
