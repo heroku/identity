@@ -133,5 +133,13 @@ module Identity
       uri.query  = Rack::Utils.build_query(uri_params)
       uri.to_s
     end
+
+    def set_heroku_cookie(key, value)
+      response.set_cookie(key,
+        domain:    heroku_cookie_domain,
+        http_only: true,
+        max_age:   2592000,
+        value:     value)
+    end
   end
 end
