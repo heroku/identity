@@ -54,12 +54,12 @@ bin/test
         * `redeem-staging`: https://redeem-staging.heroku.com
         * `vault-staging`: https://vault-staging.herokuapp.com
     * Should be consumed by:
+        * `cloner-production`: https://cloner.heroku.com
         * `dashboard`: https://dashboard.heroku.com
         * `dataclips`: https://dataclips.heroku.com
-        * `dataclips-staging`: https://dataclips-staging.herokuapp.com
         * `devcenter`: https://devcenter.heroku.com
         * `help`: https://help.heroku.com
-        * `cloner-production`: https://cloner.heroku.com
+        * `postgres`: https://postgres.heroku.com
         * `redeem-production`: https://redeem.heroku.com
 * `id-staging`: https://id-staging.herokuapp.com
     * Powered by `api.staging.herokudev.com`
