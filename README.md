@@ -42,6 +42,7 @@ bin/test
     * Consumed by **kernel** apps:
        * `core`: https://api.heroku.com
     * Consumed by **platform** apps:
+        * `addons-staging`: https://addons.herokuapp.com
         * `cloner-staging`: https://cloner-staging.herokuapp.com
         * `dashboard-brandur`: https://dashboard-brandur.herokuapp.com
         * `dashboard-dev`: https://dashboard-dev.heroku.com
@@ -54,6 +55,7 @@ bin/test
         * `redeem-staging`: https://redeem-staging.heroku.com
         * `vault-staging`: https://vault-staging.herokuapp.com
     * Should be consumed by:
+        * `addons`: https://addons.heroku.com
         * `cloner-production`: https://cloner.heroku.com
         * `dashboard`: https://dashboard.heroku.com
         * `dataclips`: https://dataclips.heroku.com
