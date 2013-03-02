@@ -1,8 +1,8 @@
 module Identity
   module LogHelpers
     def log(action, data={}, &block)
-      data = data.map { |k, v| [k, v] }
-      data << [:app, "identity"]
+      data.merge! app: "identity",
+        id: request_ids ? request_ids.join(",") : nil
       data += request_ids.map { |id| [:id, id] } if request_ids
       Slides.log_array(action, data, &block)
     end
