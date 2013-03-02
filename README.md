@@ -45,15 +45,14 @@ bin/test
         * `dashboard-brandur`: https://dashboard-brandur.herokuapp.com
         * `dashboard-dev`: https://dashboard-dev.heroku.com
         * `dashboard-staging`: https://dashboard-dev.heroku.com
+        * `dataclips-staging`: https://dataclips-staging.herokuapp.com/
         * `devcenter-staging`: https://devcenter-staging.heroku.com
         * `help-staging`: https://help-staging.heroku.com
         * `cloner-staging`: https://cloner-staging.herokuapp.com
         * `oauth-example`: https://oauth-example.herokuapp.com
+        * `postgres-staging`: https://postgres-staging.herokuapp.com/
         * `redeem-staging`: https://redeem-staging.heroku.com
         * `vault-staging`: https://vault-staging.herokuapp.com
-    * Still need to sanity check:
-        * `dataclips-staging`: https://dataclips-staging.herokuapp.com/
-        * `postgres-staging`: https://postgres-staging.herokuapp.com/
     * Should be consumed by:
         * `dashboard`: https://dashboard.heroku.com
         * `dataclips`: https://dataclips.heroku.com
