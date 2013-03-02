@@ -42,13 +42,13 @@ bin/test
     * Consumed by **kernel** apps:
        * `core`: https://api.heroku.com
     * Consumed by **platform** apps:
+        * `cloner-staging`: https://cloner-staging.herokuapp.com
         * `dashboard-brandur`: https://dashboard-brandur.herokuapp.com
         * `dashboard-dev`: https://dashboard-dev.heroku.com
         * `dashboard-staging`: https://dashboard-dev.heroku.com
         * `dataclips-staging`: https://dataclips-staging.herokuapp.com/
         * `devcenter-staging`: https://devcenter-staging.heroku.com
         * `help-staging`: https://help-staging.heroku.com
-        * `cloner-staging`: https://cloner-staging.herokuapp.com
         * `oauth-example`: https://oauth-example.herokuapp.com
         * `postgres-staging`: https://postgres-staging.herokuapp.com/
         * `redeem-staging`: https://redeem-staging.heroku.com
