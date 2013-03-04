@@ -66,6 +66,9 @@ module Identity
             })
           json = MultiJson.decode(res.body)
 
+          # log the user in right away
+          perform_oauth_dance(json["email"], params[:password], nil)
+
           # if we know that we're in the middle of an authorization attempt,
           # continue it
           if @cookie.authorize_params

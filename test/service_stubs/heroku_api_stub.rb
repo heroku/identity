@@ -132,6 +132,7 @@ If you don't receive an email, and it's not in your spam folder, this could mean
 
   post "/invitation2/save" do
     MultiJson.encode({
+      email: "kerry@heroku.com",
       signup_source: {
         redirect_uri: "https://dashboard.heroku.com"
       }

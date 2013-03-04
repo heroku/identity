@@ -58,11 +58,11 @@ module Identity
     # Performs the complete OAuth dance against the Heroku API in order to
     # provision an identity client token that can be used by Identity to manage
     # the user's client identities.
-    def perform_oauth_dance(user, pass, code)
+    def perform_oauth_dance(user, pass, otp_code)
       log :oauth_dance do
         options = { user: user, pass: pass, request_ids: request_ids }
-        if code
-          options.merge!(headers: { "Heroku-Two-Factor-Code" => code })
+        if otp_code
+          options.merge!(headers: { "Heroku-Two-Factor-Code" => otp_code })
         end
         api = HerokuAPI.new(options)
         res = log :create_authorization do
@@ -70,13 +70,13 @@ module Identity
             query: { client_id: Config.heroku_oauth_id, response_type: "code" })
         end
 
-        code = MultiJson.decode(res.body)["grants"][0]["code"]
+        grant_code = MultiJson.decode(res.body)["grants"][0]["code"]
 
         # exchange authorization grant code for an access/refresh token set
         res = log :create_token do
           api.post(path: "/oauth/tokens", expects: 201,
             query: {
-              code:          code,
+              code:          grant_code,
               client_secret: Config.heroku_oauth_secret,
               grant_type:    "authorization_code",
             })
@@ -132,6 +132,13 @@ module Identity
       uri_params = Rack::Utils.parse_query(uri.query).merge(params)
       uri.query  = Rack::Utils.build_query(uri_params)
       uri.to_s
+    end
+
+    def heroku_cookie_domain
+      domain = request.host.split(".")[1..-1].join(".")
+
+      # for something like "localhost", just use the base domain
+      domain != "" ? domain : request.host
     end
 
     def set_heroku_cookie(key, value)
