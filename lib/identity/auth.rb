@@ -168,13 +168,6 @@ module Identity
       request.env["x-rack.flash"]
     end
 
-    def heroku_cookie_domain
-      domain = request.host.split(".")[1..-1].join(".")
-
-      # for something like "localhost", just use the base domain
-      domain != "" ? domain : request.host
-    end
-
     def logout
       @cookie.clear
 
