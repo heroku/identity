@@ -40,6 +40,7 @@ module Identity
       end
 
       get "/accept/:id/:hash" do |id, hash|
+        res = nil
         begin
           api = HerokuAPI.new(request_ids: request_ids)
           res = api.get(path: "/signup/accept2/#{id}/#{hash}",
