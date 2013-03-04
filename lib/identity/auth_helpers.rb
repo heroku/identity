@@ -90,9 +90,9 @@ module Identity
         @cookie.refresh_token           = token["refresh_token"]["token"]
         @cookie.session_id              = token["session"]["id"]
 
-        # cookies with a domain scoped to all heroku domains, used to set a session
-        # nonce value so that consumers can recognize when the logged in user has
-        # changed
+        # cookies with a domain scoped to all heroku domains, used to set a
+        # session nonce value so that consumers can recognize when the logged
+        # in user has changed
         set_heroku_cookie("heroku_session", "1")
         set_heroku_cookie("heroku_session_nonce",
           token["user"]["session_nonce"])
