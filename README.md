@@ -63,6 +63,7 @@ bin/test
         * `help`: https://help.heroku.com
         * `postgres`: https://postgres.heroku.com
         * `redeem-production`: https://redeem.heroku.com
+        * `vault`: https://vault.heroku.com
 * `id-staging`: https://id-staging.herokuapp.com
     * Powered by `api.staging.herokudev.com`
     * Consumed by **kernel** apps:
