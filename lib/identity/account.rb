@@ -86,7 +86,7 @@ module Identity
           flash[:error] = "Unknown OAuth client."
           redirect to("/login")
         # refresh token dance was unsuccessful
-        rescue Excon::Errors::Unauthorized, Identity::Errors::NoSession
+        rescue Excon::Errors::Unauthorized
           @cookie.authorize_params = authorize_params
           redirect to("/login")
         # client not yet authorized; show the user a confirmation dialog
