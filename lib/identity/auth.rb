@@ -188,6 +188,8 @@ module Identity
       # possibly move this to a config var if it starts ballooning out of
       # control
       [
+        "addons.heroku.com",
+        "addons-staging.heroku.com",
         "devcenter.heroku.com",
         "devcenter-staging.heroku.com",
       ].include?(uri.host)
