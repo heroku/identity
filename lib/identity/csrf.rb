@@ -8,7 +8,11 @@ module Identity
     def call(env)
       super(env)
     rescue InvalidCsrfToken
-      Identity.log :invalid_csrf_token, id: env["REQUEST_IDS"].join(",")
+      req = Rack::Request.new(env)
+      Identity.log :invalid_csrf_token,
+        actual_token: req.params['_csrf'],
+        expected_token: env['rack.session']['csrf.token'],
+        id: env["REQUEST_IDS"].join(",")
       [403, {'Content-Type' => 'text/html', 'Content-Length' => '0'}, []]
     end
   end
