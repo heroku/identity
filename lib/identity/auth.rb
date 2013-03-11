@@ -43,6 +43,10 @@ module Identity
           else
             redirect to(Config.dashboard_url)
           end
+        # given client_id wasn't found
+        rescue Excon::Errors::NotFound
+          flash[:error] = "Unknown OAuth client."
+          redirect to("/login")
         # two-factor auth is required
         rescue Excon::Errors::Forbidden => e
           raise e unless e.response.headers.has_key?("Heroku-Two-Factor-Required")
@@ -113,6 +117,10 @@ module Identity
 
           # redirects back to the oauth client on success
           authorize(authorize_params, params[:authorize] == "Allow Access")
+        # given client_id wasn't found
+        rescue Excon::Errors::NotFound
+          flash[:error] = "Unknown OAuth client."
+          redirect to("/login")
         # refresh token dance was unsuccessful
         rescue Excon::Errors::Unauthorized, Identity::Errors::NoSession
           @cookie.authorize_params = authorize_params

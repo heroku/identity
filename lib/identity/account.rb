@@ -81,6 +81,18 @@ module Identity
           else
             redirect to("#{Config.dashboard_url}/signup/finished")
           end
+        rescue Excon::Errors::NotFound
+          flash[:error] = "Unknown OAuth client."
+          redirect to("/login")
+        # refresh token dance was unsuccessful
+        rescue Excon::Errors::Unauthorized, Identity::Errors::NoSession
+          @cookie.authorize_params = authorize_params
+          redirect to("/login")
+        # client not yet authorized; show the user a confirmation dialog
+        rescue Identity::Errors::UnauthorizedClient => e
+          @client = e.client
+          @cookie.authorize_params = authorize_params
+          slim :"clients/authorize", layout: :"layouts/zen_backdrop"
         rescue Excon::Errors::UnprocessableEntity => e
           json = MultiJson.decode(e.response.body)
           flash.now[:error] = json["message"]
