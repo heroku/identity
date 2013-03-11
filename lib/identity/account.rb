@@ -81,6 +81,7 @@ module Identity
           else
             redirect to("#{Config.dashboard_url}/signup/finished")
           end
+        # given client_id wasn't found
         rescue Excon::Errors::NotFound
           flash[:error] = "Unknown OAuth client."
           redirect to("/login")
@@ -93,6 +94,7 @@ module Identity
           @client = e.client
           @cookie.authorize_params = authorize_params
           slim :"clients/authorize", layout: :"layouts/zen_backdrop"
+        # some problem occurred with the signup
         rescue Excon::Errors::UnprocessableEntity => e
           json = MultiJson.decode(e.response.body)
           flash.now[:error] = json["message"]
