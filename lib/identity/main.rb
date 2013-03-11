@@ -14,7 +14,7 @@ module Identity
       expire_after: 2592000
 
     # CSRF + Flash should come before the unadorned heroku cookies that follow
-    use Rack::Csrf, skip: ["POST:/oauth/.*"]
+    use Identity::CSRF, skip: ["POST:/oauth/.*"]
     use Rack::Flash
 
     run Sinatra::Router.new {
