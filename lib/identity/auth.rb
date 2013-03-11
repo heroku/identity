@@ -180,8 +180,8 @@ module Identity
       @cookie.clear
 
       # clear heroku globally-scoped cookies
-      response.delete_cookie("heroku_session")
-      response.delete_cookie("heroku_session_nonce")
+      delete_heroku_cookie("heroku_session")
+      delete_heroku_cookie("heroku_session_nonce")
 
       url = if params[:url] && safe_redirect?(params[:url])
         params[:url]

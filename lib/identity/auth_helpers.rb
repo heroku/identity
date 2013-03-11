@@ -55,6 +55,11 @@ module Identity
       redirect to(uri)
     end
 
+    def delete_heroku_cookie(key)
+      response.delete_cookie(key,
+        domain: heroku_cookie_domain)
+    end
+
     # Performs the complete OAuth dance against the Heroku API in order to
     # provision an identity client token that can be used by Identity to manage
     # the user's client identities.
@@ -124,6 +129,14 @@ module Identity
       end
     end
 
+    def set_heroku_cookie(key, value)
+      response.set_cookie(key,
+        domain:    heroku_cookie_domain,
+        http_only: true,
+        max_age:   2592000,
+        value:     value)
+    end
+
     private
 
     # merges extra params into a base URI
@@ -139,14 +152,6 @@ module Identity
 
       # for something like "localhost", just use the base domain
       domain != "" ? domain : request.host
-    end
-
-    def set_heroku_cookie(key, value)
-      response.set_cookie(key,
-        domain:    heroku_cookie_domain,
-        http_only: true,
-        max_age:   2592000,
-        value:     value)
     end
   end
 end
