@@ -16,12 +16,10 @@ module Identity
 
     namespace "/login" do
       get do
-        cache_control :no_cache, :no_store
         slim :login, layout: :"layouts/zen_backdrop"
       end
 
       get "/two-factor" do
-        cache_control :no_cache, :no_store
         slim :"two-factor", layout: :"layouts/zen_backdrop"
       end
 
