@@ -40,6 +40,7 @@ module Identity
       end
 
       get "/accept/:id/:hash" do |id, hash|
+        cache_control :no_cache, :no_store
         res = nil
         begin
           api = HerokuAPI.new(request_ids: request_ids)
@@ -103,6 +104,7 @@ module Identity
       end
 
       get "/password/reset" do
+        cache_control :no_cache, :no_store
         slim :"account/password/reset", layout: :"layouts/zen_backdrop"
       end
 
@@ -124,6 +126,7 @@ module Identity
       end
 
       get "/password/reset/:hash" do |hash|
+        cache_control :no_cache, :no_store
         begin
           api = HerokuAPI.new(request_ids: request_ids)
           res = api.get(path: "/auth/finish_reset_password/#{hash}",
@@ -159,6 +162,7 @@ module Identity
     end
 
     get "/signup" do
+      cache_control :no_cache, :no_store
       @cookie.signup_source = params[:slug]
       slim :signup, layout: :"layouts/zen_backdrop"
     end
