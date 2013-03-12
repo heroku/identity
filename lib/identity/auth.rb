@@ -81,12 +81,6 @@ module Identity
             api.delete(path: "/oauth/sessions/#{@cookie.session_id}",
               expects: [200, 401])
           end
-
-          # destroy all Heroku OAuth tokens for the user until I can sessions
-          # working again properly
-          log :destroy_heroku_tokens do
-            api.delete(path: "/oauth/token/heroku", expects: 200)
-          end
         ensure
           logout
         end
