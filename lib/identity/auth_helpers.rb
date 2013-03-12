@@ -93,7 +93,8 @@ module Identity
         @cookie.access_token_expires_at =
           Time.now + token["access_token"]["expires_in"]
         @cookie.refresh_token           = token["refresh_token"]["token"]
-        @cookie.session_id              = token["session"]["id"]
+        @cookie.session_id              =
+          token["session"] ? token["session"]["id"] : nil
 
         # cookies with a domain scoped to all heroku domains, used to set a
         # session nonce value so that consumers can recognize when the logged
