@@ -81,6 +81,15 @@ If you don't receive an email, and it's not in your spam folder, this could mean
     })
   end
 
+  post "/oauth/sessions" do
+    status(201)
+    MultiJson.encode({
+      id:          "session123@heroku.com",
+      description: "Session @ 127.0.0.1",
+      expires_in:  2592000,
+    })
+  end
+
   delete "/oauth/sessions/:id" do |id|
     status(200)
     MultiJson.encode({
