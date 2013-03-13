@@ -38,7 +38,7 @@ module Identity
       res = log :create_authorization, by_proxy: true,
         client_id: params["client_id"], session_id: @cookie.session_id do
           api.post(path: "/oauth/authorizations", expects: [201, 401],
-            query: params)
+            query: params.merge(session_id: @cookie.session_id))
       end
 
       logout if res.status == 401
