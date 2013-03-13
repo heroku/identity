@@ -70,9 +70,22 @@ module Identity
           options.merge!(headers: { "Heroku-Two-Factor-Code" => otp_code })
         end
         api = HerokuAPI.new(options)
+
+        # create a session on which we can group any authorization grants and
+        # tokens which will be created during this Identity, err, session
+        res = log :create_session do
+          api.post(path: "/oauth/sessions", expects: 201)
+        end
+        session = MultiJson.decode(res.body)
+        @cookie.session_id = session["id"]
+
         res = log :create_authorization do
           api.post(path: "/oauth/authorizations", expects: 201,
-            query: { client_id: Config.heroku_oauth_id, response_type: "code" })
+            query: {
+              client_id:     Config.heroku_oauth_id,
+              response_type: "code",
+              session_id:    @cookie.session_id,
+            })
         end
 
         grant_code = MultiJson.decode(res.body)["grants"][0]["code"]
@@ -93,8 +106,6 @@ module Identity
         @cookie.access_token_expires_at =
           Time.now + token["access_token"]["expires_in"]
         @cookie.refresh_token           = token["refresh_token"]["token"]
-        @cookie.session_id              =
-          token["session"] ? token["session"]["id"] : nil
 
         # cookies with a domain scoped to all heroku domains, used to set a
         # session nonce value so that consumers can recognize when the logged
