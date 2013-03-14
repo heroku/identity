@@ -111,7 +111,7 @@ module Identity
           api = HerokuAPI.new(request_ids: request_ids)
           # @todo: use bare email instead of reset[email] when ready
           res = api.post(path: "/auth/reset_password", expects: 200,
-            query: { "reset[email]" => params[:email] })
+            query: { email: params[:email] })
 
           json = MultiJson.decode(res.body)
           flash.now[:notice] = json["message"]
