@@ -62,28 +62,28 @@ bin/test
     * Consumed by **kernel** apps:
        * `core`: https://api.heroku.com
     * Consumed by **platform** apps:
+        * `addons`: https://addons.heroku.com
         * `addons-staging`: https://addons.herokuapp.com
         * `cloner-staging`: https://cloner-staging.herokuapp.com
+        * `cloner-production`: https://cloner.heroku.com
+        * `dashboard`: https://dashboard.heroku.com
         * `dashboard-brandur`: https://dashboard-brandur.herokuapp.com
         * `dashboard-dev`: https://dashboard-dev.heroku.com
         * `dashboard-staging`: https://dashboard-dev.heroku.com
+        * `dataclips`: https://dataclips.heroku.com
         * `dataclips-staging`: https://dataclips-staging.herokuapp.com/
+        * `devcenter-eu`: https://devcenter.heroku.com
+        * `devcenter-metrics`: https://devcenter-metrics.heroku.com
         * `devcenter-staging`: https://devcenter-staging.heroku.com
+        * `help`: https://help.heroku.com
         * `help-staging`: https://help-staging.heroku.com
         * `oauth-example`: https://oauth-example.herokuapp.com
-        * `postgres-staging`: https://postgres-staging.herokuapp.com/
-        * `redeem-staging`: https://redeem-staging.heroku.com
-        * `vault-staging`: https://vault-staging.herokuapp.com
-    * Should be consumed by:
-        * `addons`: https://addons.heroku.com
-        * `cloner-production`: https://cloner.heroku.com
-        * `dashboard`: https://dashboard.heroku.com
-        * `dataclips`: https://dataclips.heroku.com
-        * `devcenter-eu`: https://devcenter.heroku.com
-        * `help`: https://help.heroku.com
         * `postgres`: https://postgres.heroku.com
+        * `postgres-staging`: https://postgres-staging.herokuapp.com/
         * `redeem-production`: https://redeem.heroku.com DONE
+        * `redeem-staging`: https://redeem-staging.heroku.com
         * `vault`: https://vault.heroku.com
+        * `vault-staging`: https://vault-staging.herokuapp.com
 * `id-staging`: https://id-staging.herokuapp.com
     * Powered by `api.staging.herokudev.com`
     * Consumed by **kernel** apps:
