@@ -27,6 +27,24 @@ heroku config:add HEROKU_OAUTH_SECRET=...
 git push heroku master
 ```
 
+## Debugging Production
+
+### Airbrake
+
+Uncaught errors are sent to Airbrake, which can be accessed via:
+
+    heroku addons:open airbrake -a id-production
+
+### Logs
+
+Identity keeps fairly detailed logs for each request:
+
+    heroku logs --tail -n 1000 -a id-production
+
+### Splunk
+
+Identity's logs are also drained to the [platform Splunk installation](https://splunk.herokai.com). Identity also injects its request IDs into the Heroku API, so if the UUID of any given Identity request is obtained (i.e. find the `id=<uuid>` attribute in any emitted log line), it can used to bring up all corresponding Identity and API logs in Splunk.
+
 ## Test
 
 ``` bash
@@ -59,10 +77,10 @@ bin/test
         * `cloner-production`: https://cloner.heroku.com
         * `dashboard`: https://dashboard.heroku.com
         * `dataclips`: https://dataclips.heroku.com
-        * `devcenter`: https://devcenter.heroku.com
+        * `devcenter-eu`: https://devcenter.heroku.com
         * `help`: https://help.heroku.com
         * `postgres`: https://postgres.heroku.com
-        * `redeem-production`: https://redeem.heroku.com
+        * `redeem-production`: https://redeem.heroku.com DONE
         * `vault`: https://vault.heroku.com
 * `id-staging`: https://id-staging.herokuapp.com
     * Powered by `api.staging.herokudev.com`
