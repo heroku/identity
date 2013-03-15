@@ -55,6 +55,7 @@ module Identity
     private
 
     def respond_with_asset(asset)
+      cache_control(:public, max_age: 2592000)
       last_modified(asset.mtime.utc)
       asset
     end
