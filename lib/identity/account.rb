@@ -105,7 +105,8 @@ module Identity
       get "/email/confirm/:hash" do |hash|
         begin
           api = HerokuAPI.new(request_ids: request_ids)
-          api.post(path: "/confirm_change_email/#{hash}", expects: 200)
+          # this endpoint currently requires (!) GET
+          api.get(path: "/confirm_change_email/#{hash}", expects: 200)
           redirect to(Config.dashboard_url)
         rescue Excon::Errors::NotFound => e
           slim :"account/email/not_found", layout: :"layouts/zen_backdrop"
