@@ -111,7 +111,7 @@ module Identity
           # this endpoint currently requires (!) GET
           api.get(path: "/confirm_change_email/#{hash}", expects: 302)
           redirect to(Config.dashboard_url)
-        rescue Excon::Errors::NotFound => e
+        rescue Excon::Errors::NotFound, Excon::Errors::UnprocessableEntity => e
           slim :"account/email/not_found", layout: :"layouts/zen_backdrop"
         rescue Identity::Errors::NoSession
           @cookie.redirect_url = request.env["PATH_INFO"]
