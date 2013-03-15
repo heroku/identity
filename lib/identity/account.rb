@@ -109,7 +109,6 @@ module Identity
       post "/password/reset" do
         begin
           api = HerokuAPI.new(request_ids: request_ids)
-          # @todo: use bare email instead of reset[email] when ready
           res = api.post(path: "/auth/reset_password", expects: 200,
             query: { email: params[:email] })
 
