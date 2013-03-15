@@ -68,6 +68,27 @@ describe Identity::Account do
     end
   end
 
+  describe "GET /account/email/confirm/:hash" do
+    it "redirects to dashboard on a successful confirmation" do
+      stub_heroku_api
+      get "/account/email/confirm/c45685917ef644198a0fececa10d479a"
+      assert_equal 302, last_response.status
+      assert_match Identity::Config.dashboard_url,
+        last_response.headers["Location"]
+    end
+
+    it "shows a helpful page for a hash that wasn't found" do
+      stub_heroku_api do
+        post("/confirm_change_email/:hash") {
+          raise Excon::Errors::NotFound, "Not found"
+        }
+      end
+      get "/account/email/confirm/c45685917ef644198a0fececa10d479a"
+      assert_equal 200, last_response.status
+      assert_match /couldn't find that e-mail/, last_response.body
+    end
+  end
+
   describe "GET /account/password/reset" do
     it "shows a reset password form" do
       get "/account/password/reset"

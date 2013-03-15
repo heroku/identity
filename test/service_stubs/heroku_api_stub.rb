@@ -41,6 +41,10 @@ If you don't receive an email, and it's not in your spam folder, this could mean
     MultiJson.encode({ email: "kerry@heroku.com" })
   end
 
+  post "/confirm_change_email/:hash" do |hash|
+    200
+  end
+
   get "/oauth/authorizations" do
     status(200)
     MultiJson.encode([])
