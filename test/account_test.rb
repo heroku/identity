@@ -52,21 +52,21 @@ describe Identity::Account do
     end
   end
 
-	describe "GET /account/accept/:id/:hash" do
-	  it "shows a form to finish signup" do
-		  get "/account/accept/123/456abc"
-			assert_equal 200, last_response.status
-		end
-	end
+  describe "GET /account/accept/:id/:hash" do
+    it "shows a form to finish signup" do
+      get "/account/accept/123/456abc"
+      assert_equal 200, last_response.status
+    end
+  end
 
-	describe "POST /account/accept/:id/:hash" do
-	  it "completes then redirects" do
-		  post "/account/accept/123/456abc"
-			assert_equal 302, last_response.status
+  describe "POST /account/accept/:id/:hash" do
+    it "completes then redirects" do
+      post "/account/accept/123/456abc"
+      assert_equal 302, last_response.status
       assert_match %r{https://dashboard.heroku.com$},
-			  last_response.headers["Location"]
-		end
-	end
+        last_response.headers["Location"]
+    end
+  end
 
   describe "GET /account/password/reset" do
     it "shows a reset password form" do
@@ -114,6 +114,13 @@ describe Identity::Account do
   describe "GET /signup" do
     it "shows a new account page" do
       get "/signup"
+      assert_equal 200, last_response.status
+    end
+  end
+
+  describe "GET /signup/:slug" do
+    it "shows a new account page" do
+      get "/signup/facebook"
       assert_equal 200, last_response.status
     end
   end
