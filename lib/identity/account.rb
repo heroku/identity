@@ -97,8 +97,8 @@ module Identity
         # some problem occurred with the signup
         rescue Excon::Errors::UnprocessableEntity => e
           json = MultiJson.decode(e.response.body)
-          flash.now[:error] = json["message"]
-          slim :"account/accept", layout: :"layouts/classic"
+          flash[:error] = json.map { |e| e.join(" ") }.join("; ")
+          redirect to("/account/accept/#{id}/#{hash}")
         end
       end
 
