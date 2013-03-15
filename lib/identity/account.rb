@@ -162,5 +162,10 @@ module Identity
       @cookie.signup_source = params[:slug]
       slim :signup, layout: :"layouts/zen_backdrop"
     end
+
+    get "/signup/:slug" do |slug|
+      @cookie.signup_source = slug
+      slim :signup, layout: :"layouts/zen_backdrop"
+    end
   end
 end
