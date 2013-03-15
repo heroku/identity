@@ -53,6 +53,15 @@ module Identity
       @session["password"] = password
     end
 
+    # URL to redirect to after login
+    def redirect_url
+      @session["redirect_url"]
+    end
+
+    def redirect_url=(redirect_url)
+      @session["redirect_url"] = redirect_url
+    end
+
     def refresh_token
       @session["refresh_token"]
     end

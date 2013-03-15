@@ -36,9 +36,12 @@ module Identity
 
           perform_oauth_dance(user, pass, code)
 
+          # in special cases, we may have a redirect URL to go to after login
+          if @cookie.redirect_url
+            redirect to(@cookie.redirect_url)
           # if we know that we're in the middle of an authorization attempt,
           # continue it; otherwise go to dashboard
-          if @cookie.authorize_params
+          elsif @cookie.authorize_params
             authorize(@cookie.authorize_params)
           else
             redirect to(Config.dashboard_url)

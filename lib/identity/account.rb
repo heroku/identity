@@ -104,12 +104,18 @@ module Identity
 
       get "/email/confirm/:hash" do |hash|
         begin
-          api = HerokuAPI.new(request_ids: request_ids)
+          # confirming an e-mail change requires authentication
+          raise Identity::Errors::NoSession if !@cookie.access_token
+          api = HerokuAPI.new(user: nil, pass: @cookie.access_token,
+            request_ids: request_ids)
           # this endpoint currently requires (!) GET
           api.get(path: "/confirm_change_email/#{hash}", expects: 200)
           redirect to(Config.dashboard_url)
         rescue Excon::Errors::NotFound => e
           slim :"account/email/not_found", layout: :"layouts/zen_backdrop"
+        rescue Identity::Errors::NoSession
+          @cookie.redirect_url = request.env["PATH_INFO"]
+          redirect to("/login")
         end
       end
 
