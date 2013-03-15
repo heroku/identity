@@ -140,9 +140,8 @@ module Identity
           api = HerokuAPI.new(request_ids: request_ids)
           res = api.post(path: "/auth/finish_reset_password/#{hash}",
             expects: 200, query: {
-              "user_to_reset[password]"              => params[:password],
-              "user_to_reset[password_confirmation]" =>
-                params[:password_confirmation],
+              :password              => params[:password],
+              :password_confirmation => params[:password_confirmation],
             })
 
           flash[:success] = "Your password has been changed."
