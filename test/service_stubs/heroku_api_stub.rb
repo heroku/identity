@@ -42,7 +42,7 @@ If you don't receive an email, and it's not in your spam folder, this could mean
   end
 
   post "/confirm_change_email/:hash" do |hash|
-    200
+    302
   end
 
   get "/oauth/authorizations" do
