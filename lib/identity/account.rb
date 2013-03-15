@@ -127,8 +127,8 @@ module Identity
           slim :"account/password/reset", layout: :"layouts/zen_backdrop"
         rescue Excon::Errors::UnprocessableEntity => e
           json = MultiJson.decode(e.response.body)
-          flash.now[:error] = json["message"]
-          slim :"account/password/reset", layout: :"layouts/zen_backdrop"
+          flash[:error] = json.map { |e| e.join(" ") }.join("; ")
+          redirect to("/account/password/reset")
         end
       end
 
