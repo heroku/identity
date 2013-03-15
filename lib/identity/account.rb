@@ -40,15 +40,15 @@ module Identity
       end
 
       get "/accept/:id/:hash" do |id, hash|
-        res = nil
         begin
           api = HerokuAPI.new(request_ids: request_ids)
           res = api.get(path: "/signup/accept2/#{id}/#{hash}",
             expects: 200)
           @user = MultiJson.decode(res.body)
           slim :"account/accept", layout: :"layouts/classic"
-        rescue Excon::Errors::UnprocessableEntity => e
-          json = MultiJson.decode(res.body)
+        # Core should return a 404, but returns a 422
+        rescue Excon::Errors::NotFound, Excon::Errors::UnprocessableEntity => e
+          json = MultiJson.decode(e.response.body)
           flash.now[:error] = json["message"]
           slim :login, layout: :"layouts/zen_backdrop"
         end
