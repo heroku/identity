@@ -153,8 +153,8 @@ module Identity
           # error looks like:
           #   [["password","is too short (minimum is 6 characters)"]]
           json = MultiJson.decode(e.response.body)
-          flash.now[:error] = json.map { |e| e.join(" ") }.join("; ")
-          slim :"account/password/finish_reset", layout: :"layouts/zen_backdrop"
+          flash[:error] = json.map { |e| e.join(" ") }.join("; ")
+          redirect to("/account/password/reset/#{hash}")
         end
       end
     end
