@@ -124,11 +124,6 @@ If you don't receive an email, and it's not in your spam folder, this could mean
     })
   end
 
-  # deprecated endpoint for destroying all a user's Heroku OAuth tokens
-  delete "/oauth/token/heroku" do
-    200
-  end
-
   post "/signup" do
     MultiJson.encode({ email: "kerry@heroku.com" })
   end
