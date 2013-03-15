@@ -175,11 +175,12 @@ describe Identity::Auth do
     end
 
     it "destroys heroku_* cookies" do
-      rack_mock_session.cookie_jar["heroku_session"]       = "1"
-      rack_mock_session.cookie_jar["heroku_session_nonce"] = "a-nonce"
+      rack_mock_session.cookie_jar.for("org")["heroku_session"]       = "1"
+      rack_mock_session.cookie_jar.for("org")["heroku_session_nonce"] = "a-nonce"
       delete "/logout"
-      assert_equal "", rack_mock_session.cookie_jar["heroku_session"]
-      assert_equal "", rack_mock_session.cookie_jar["heroku_session_nonce"]
+      p rack_mock_session.cookie_jar
+      assert_equal "", rack_mock_session.cookie_jar.for("org")["heroku_session"]
+      assert_equal "", rack_mock_session.cookie_jar.for("org")["heroku_session_nonce"]
     end
 
     it "redirects to a given url if it's safe" do
