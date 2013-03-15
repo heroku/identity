@@ -108,8 +108,7 @@ module Identity
           raise Identity::Errors::NoSession if !@cookie.access_token
           api = HerokuAPI.new(user: nil, pass: @cookie.access_token,
             request_ids: request_ids)
-          # this endpoint currently requires (!) GET
-          api.get(path: "/confirm_change_email/#{hash}", expects: 302)
+          api.post(path: "/confirm_change_email/#{hash}", expects: 302)
           redirect to(Config.dashboard_url)
         rescue Excon::Errors::NotFound, Excon::Errors::UnprocessableEntity => e
           slim :"account/email/not_found", layout: :"layouts/zen_backdrop"
