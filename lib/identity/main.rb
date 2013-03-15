@@ -2,6 +2,7 @@ module Identity
   Main = Rack::Builder.new do
     use Rack::Instruments, context: { app: "identity" }
     use Rack::SSL if Config.production?
+    use Rack::Deflater
 
     # General cookie storing information of the logged in user; don't set the
     # domain so that it's allowed to default to the current app's domain scope.
