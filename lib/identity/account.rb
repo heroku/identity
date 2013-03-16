@@ -87,7 +87,6 @@ module Identity
           redirect to("/login")
         # refresh token dance was unsuccessful
         rescue Excon::Errors::Unauthorized
-          @cookie.authorize_params = authorize_params
           redirect to("/login")
         # client not yet authorized; show the user a confirmation dialog
         rescue Identity::Errors::UnauthorizedClient => e
