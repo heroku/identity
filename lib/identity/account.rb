@@ -41,7 +41,7 @@ module Identity
         rescue Excon::Errors::UnprocessableEntity => e
           # during transition, handle either V3 or V2 error responses
           json = MultiJson.decode(e.response.body)
-          flash[:error] = e["error"] || e["message"]
+          flash[:error] = json["error"] || json["message"]
           redirect to("/signup")
         end
       end
