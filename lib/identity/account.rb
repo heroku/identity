@@ -25,7 +25,9 @@ module Identity
         api = HerokuAPI.new(user: nil, request_ids: request_ids,
           authorization: request.env["HTTP_AUTHORIZATION"],
           # not necessarily V3, respond with whatever the client asks for
-          headers: { "Accept" => request.env["HTTP_ACCEPT"] })
+          headers: {
+            "Accept" => request.env["HTTP_ACCEPT"] || "application/json"
+          })
         res = api.get(path: "/account", expects: 200)
         content_type(:json)
         res.body
