@@ -34,7 +34,7 @@ module Identity
       post do
         begin
           api = HerokuAPI.new(request_ids: request_ids)
-          res = api.post(path: "/signup", expects: [200, 422],
+          res = api.post(path: "/signup", expects: 200,
             query: { email: params[:email], slug: @cookie.signup_source })
           json = MultiJson.decode(res.body)
           slim :"account/finish_new", layout: :"layouts/zen_backdrop"
