@@ -32,11 +32,18 @@ module Identity
       end
 
       post do
-        api = HerokuAPI.new(request_ids: request_ids)
-        res = api.post(path: "/signup", expects: [200, 422],
-          query: { email: params[:email], slug: @cookie.signup_source })
-        json = MultiJson.decode(res.body)
-        slim :"account/finish_new", layout: :"layouts/zen_backdrop"
+        begin
+          api = HerokuAPI.new(request_ids: request_ids)
+          res = api.post(path: "/signup", expects: [200, 422],
+            query: { email: params[:email], slug: @cookie.signup_source })
+          json = MultiJson.decode(res.body)
+          slim :"account/finish_new", layout: :"layouts/zen_backdrop"
+        rescue Excon::Errors::UnprocessableEntity => e
+          # during transition, handle either V3 or V2 error responses
+          json = MultiJson.decode(e.response.body)
+          flash[:error] = e["error"] || e["message"]
+          redirect to("/signup")
+        end
       end
 
       get "/accept/:id/:hash" do |id, hash|
