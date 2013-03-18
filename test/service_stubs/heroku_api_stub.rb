@@ -132,7 +132,7 @@ If you don't receive an email, and it's not in your spam folder, this could mean
     MultiJson.encode({ email: "kerry@heroku.com" })
   end
 
-  get "/signup/accept2/:id/:hash" do
+  get "/invitation2/show" do
     MultiJson.encode({
       created_at: Time.now.iso8601,
       email:      "kerry@heroku.com",

@@ -42,8 +42,11 @@ module Identity
       get "/accept/:id/:hash" do |id, hash|
         begin
           api = HerokuAPI.new(request_ids: request_ids)
-          res = api.get(path: "/signup/accept2/#{id}/#{hash}",
-            expects: 200)
+          res = api.get(path: "/invitation2/show", expects: 200,
+            query: {
+              "id"    => id,
+              "token" => hash,
+            })
           @user = MultiJson.decode(res.body)
           slim :"account/accept", layout: :"layouts/classic"
         # Core should return a 404, but returns a 422
