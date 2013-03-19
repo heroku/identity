@@ -94,6 +94,19 @@ describe Identity::Auth do
       assert_equal "faa180e4-5844-42f2-ad66-0c574a1dbed2", tokens["refresh_token"]
       assert_equal 7200, tokens["expires_in"]
     end
+
+    it "forwards a 401" do
+      stub_heroku_api do
+        post("/oauth/tokens") {
+          raise Excon::Errors::Unauthorized.new("Unauthorized", nil,
+            Excon::Response.new(body: "Unauthorized"))
+        }
+      end
+      post "/login", email: "kerry@heroku.com", password: "abcdefgh"
+      post "/oauth/authorize", client_id: "dashboard"
+      post "/oauth/token"
+      assert_equal 401, last_response.status
+    end
   end
 
   describe "GET /login" do
@@ -116,7 +129,9 @@ describe Identity::Auth do
         #post("/oauth/authorizations") { 401 }
         # webmock doesn't handle Excon's :expects, so raise error directly
         # until it does
-        post("/oauth/authorizations") { raise(Excon::Errors::Unauthorized, "Unauthorized") }
+        post("/oauth/authorizations") {
+          raise(Excon::Errors::Unauthorized, "Unauthorized")
+        }
       end
       post "/login", email: "kerry@heroku.com", password: "abcdefgh"
       assert_equal 302, last_response.status

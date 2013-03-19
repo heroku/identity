@@ -145,42 +145,49 @@ module Identity
       # Exchanges a code and client_secret for a token set by proxying the
       # request to the API.
       post "/token" do
-        res = log :create_token, by_proxy: true, session_id: @cookie.session_id do
-          # no credentials are required here because the code segment of the
-          # exchange is state that's linked to a user in the API
-          api = HerokuAPI.new(user: nil, request_ids: request_ids, version: 3)
-          api.post(path: "/oauth/tokens", expects: 201, query: {
-            code:          params[:code],
-            client_secret: params[:client_secret],
-            grant_type:    "authorization_code",
-            session_id:    @cookie.session_id,
-          })
+        begin
+          res = log :create_token, by_proxy: true,
+            session_id: @cookie.session_id do
+            # no credentials are required here because the code segment of the
+            # exchange is state that's linked to a user in the API
+            api = HerokuAPI.new(user: nil, request_ids: request_ids, version: 3)
+            api.post(path: "/oauth/tokens", expects: 201, query: {
+              code:          params[:code],
+              client_secret: params[:client_secret],
+              grant_type:    "authorization_code",
+              session_id:    @cookie.session_id,
+            })
+          end
+
+          token = MultiJson.decode(res.body)
+
+          content_type(:json)
+          status(200)
+          response = {
+            # core spec response
+            access_token:  token["access_token"]["token"],
+            expires_in:    token["access_token"]["expires_in"],
+            refresh_token: token["refresh_token"]["token"],
+            token_type:    "Bearer",
+
+            # heroku extra response
+            session_nonce: token["user"]["session_nonce"],
+          }
+
+          # some basic sanity checks
+          raise "missing=access_token"  unless response[:access_token]
+          raise "missing=expires_in"    unless response[:expires_in]
+          raise "missing=refresh_token" unless response[:refresh_token]
+
+          # WARNING: some users appear to have nil nonces
+          #raise "missing=session_nonce" unless response[:session_nonce]
+
+          MultiJson.encode(response)
+        rescue Excon::Errors::Unauthorized => e
+          # pass the whole API error through to the client
+          content_type(:json)
+          [401, e.response.body]
         end
-
-        token = MultiJson.decode(res.body)
-
-        content_type(:json)
-        status(200)
-        response = {
-          # core spec response
-          access_token:  token["access_token"]["token"],
-          expires_in:    token["access_token"]["expires_in"],
-          refresh_token: token["refresh_token"]["token"],
-          token_type:    "Bearer",
-
-          # heroku extra response
-          session_nonce: token["user"]["session_nonce"],
-        }
-
-        # some basic sanity checks
-        raise "missing=access_token"  unless response[:access_token]
-        raise "missing=expires_in"    unless response[:expires_in]
-        raise "missing=refresh_token" unless response[:refresh_token]
-
-        # WARNING: some users appear to have nil nonces
-        #raise "missing=session_nonce" unless response[:session_nonce]
-
-        MultiJson.encode(response)
       end
     end
 
