@@ -162,6 +162,7 @@ module Identity
 
         content_type(:json)
         status(200)
+p token
         response = {
           # core spec response
           # on return to V3, remove rescue onwards
