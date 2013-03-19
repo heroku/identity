@@ -195,20 +195,17 @@ module Identity
       #   1. { "id":..., "message":... } (V3)
       #   2. { "error":... } (V2)
       #   3. [["password","is too short (minimum is 6 characters)"]] (V-Insane)
-      json = begin
-        MultiJson.decode(body)
+      #   4. "User not found." (V2 404)
+      begin
+        json = MultiJson.decode(body)
+        !json.is_a?(Array) ?
+          json["error"] || json["message"] :
+          json.map { |e| e.join(" ") }.join("; ")
       rescue MultiJson::DecodeError => e
-        # this is not supposed to happen, notify Airbrake, but fail gracefully
-        # for the user
+        # V2 logs some special cases, like 404s, as plain text
         log :decode_error, body: body
-        Airbrake.notify(e) if Config.airbrake_api_key
-        { "message" =>
-            "An error has occurred. If this problem persists, please contact " +
-            "support@heroku.com." }
+        body
       end
-      !json.is_a?(Array) ?
-        json["error"] || json["message"] :
-        json.map { |e| e.join(" ") }.join("; ")
     end
   end
 end
