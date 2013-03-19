@@ -164,7 +164,7 @@ module Identity
         status(200)
         response = {
           # core spec response
-          # on return to V3, remove || onwards
+          # on return to V3, remove || onwards (except for nonce)
           access_token:
              token["access_token"]["token"] || token["access_token"],
           expires_in:
@@ -175,7 +175,7 @@ module Identity
 
           # heroku extra response
           session_nonce:
-             token["user"]["session_nonce"] || token["session_nonce"],
+             token["session_nonce"] || token["user"]["session_nonce"]
         }
 
         # some basic sanity checks
