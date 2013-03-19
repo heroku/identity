@@ -195,7 +195,7 @@ module Identity
       #   1. { "id":..., "message":... } (V3)
       #   2. { "error":... } (V2)
       #   3. [["password","is too short (minimum is 6 characters)"]] (V-Insane)
-      json = MultiJson.decode(e.response.body)
+      json = MultiJson.decode(body)
       !json.is_a?(Array) ?
         json["error"] || json["message"] :
         json.map { |e| e.join(" ") }.join("; ")
