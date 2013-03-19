@@ -162,21 +162,20 @@ module Identity
 
         content_type(:json)
         status(200)
-p token
         response = {
           # core spec response
-          # on return to V3, remove rescue onwards
+          # on return to V3, remove || onwards
           access_token:
-             (token["access_token"]["token"] rescue token["access_token"]),
+             token["access_token"]["token"] || token["access_token"],
           expires_in:
-             (token["access_token"]["expires_in"] rescue token["expires_in"]),
+             token["access_token"]["expires_in"] || token["expires_in"],
           refresh_token:
-             (token["refresh_token"]["token"] rescue token["refresh_token"]),
+             token["refresh_token"]["token"] || token["refresh_token"],
           token_type:    "Bearer",
 
           # heroku extra response
           session_nonce:
-             (token["user"]["session_nonce"] rescue token["session_nonce"]),
+             token["user"]["session_nonce"] || token["session_nonce"],
         }
 
         # some basic sanity checks
