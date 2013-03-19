@@ -175,14 +175,14 @@ module Identity
 
           # heroku extra response
           session_nonce:
-             token["session_nonce"] || token["user"]["session_nonce"]
+             (token["session_nonce"] || token["user"]["session_nonce"] rescue nil)
         }
 
         # some basic sanity checks
         raise "missing=access_token"  unless response[:access_token]
         raise "missing=expires_in"    unless response[:expires_in]
         raise "missing=refresh_token" unless response[:refresh_token]
-        raise "missing=session_nonce" unless response[:session_nonce]
+        #raise "missing=session_nonce" unless response[:session_nonce]
 
         MultiJson.encode(response)
       end

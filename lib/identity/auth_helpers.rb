@@ -116,13 +116,13 @@ module Identity
         @cookie.refresh_token           =
            token["refresh_token"]["token"] || token["refresh_token"]
         nonce =
-          token["session_nonce"] || token["user"]["session_nonce"]
+          (token["session_nonce"] || token["user"]["session_nonce"] rescue nil)
 
         # some basic sanity checks
         raise "missing=access_token"  unless @cookie.access_token
         raise "missing=expires_in"    unless @cookie.access_token_expires_at
         raise "missing=refresh_token" unless @cookie.refresh_token
-        raise "missing=session_nonce" unless nonce
+        #raise "missing=session_nonce" unless nonce
 
         # cookies with a domain scoped to all heroku domains, used to set a
         # session nonce value so that consumers can recognize when the logged
