@@ -77,6 +77,10 @@ bin/test
         * `devcenter-staging`: https://devcenter-staging.heroku.com
         * `help`: https://help.heroku.com
         * `help-staging`: https://help-staging.heroku.com
+        * `manager`: https://manager.heroku.com
+        * `manager-dev`: https://manager-dev.herokuapp.com
+        * `manager-sandbox`: https://manager-sandbox.herokuapp.com
+        * `manager-staging`: https://manager-staging.herokuapp.com
         * `oauth-example`: https://oauth-example.herokuapp.com
         * `postgres`: https://postgres.heroku.com
         * `postgres-staging`: https://postgres-staging.herokuapp.com/
