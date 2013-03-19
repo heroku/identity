@@ -224,6 +224,8 @@ module Identity
       [
         "addons.heroku.com",
         "addons-staging.heroku.com",
+        "api.heroku.com",
+        "api.staging.herokudev.com",
         "devcenter.heroku.com",
         "devcenter-staging.heroku.com",
       ].include?(uri.host)
