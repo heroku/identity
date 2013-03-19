@@ -192,8 +192,8 @@ module Identity
 
     def decode_error(body)
       # error might look like:
-      #   1. { "id":..., "error":... } (V3)
-      #   2. { "message":... } (V2)
+      #   1. { "id":..., "message":... } (V3)
+      #   2. { "error":... } (V2)
       #   3. [["password","is too short (minimum is 6 characters)"]] (V-Insane)
       json = MultiJson.decode(e.response.body)
       !json.is_a?(Array) ?
