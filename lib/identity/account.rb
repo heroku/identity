@@ -139,7 +139,7 @@ module Identity
           json = MultiJson.decode(res.body)
           flash.now[:notice] = json["message"]
           slim :"account/password/reset", layout: :"layouts/zen_backdrop"
-        rescue Excon::Errors::UnprocessableEntity => e
+        rescue Excon::Errors::NotFound, Excon::Errors::UnprocessableEntity => e
           flash[:error] = decode_error(e.response.body)
           redirect to("/account/password/reset")
         end
