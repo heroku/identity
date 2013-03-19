@@ -106,20 +106,26 @@ module Identity
 
         # store appropriate tokens to session
         token = MultiJson.decode(res.body)
-        @cookie.access_token            = token["access_token"]["token"]
+
+        # on return to V3, eliminate all clauses to the left of ||
+        @cookie.access_token            =
+          token["access_token"] || token["access_token"]["token"]
         @cookie.access_token_expires_at =
-          Time.now + token["access_token"]["expires_in"]
-        @cookie.refresh_token           = token["refresh_token"]["token"]
+          Time.now + (token["expires_in"] || token["access_token"]["expires_in"])
+        @cookie.refresh_token           =
+          token["refresh_token"] || token["refresh_token"]["token"]
 
         # cookies with a domain scoped to all heroku domains, used to set a
         # session nonce value so that consumers can recognize when the logged
         # in user has changed
         set_heroku_cookie("heroku_session", "1")
         set_heroku_cookie("heroku_session_nonce",
-          token["user"]["session_nonce"])
+          # on return to V3, eliminate clause to the left of ||
+          token["session_nonce"] || token["user"]["session_nonce"])
 
         log :oauth_dance_complete, session_id: @cookie.session_id,
-          nonce: token["user"]["session_nonce"]
+          # on return to V3, eliminate clause to the left of ||
+          nonce: token["session_nonce"] || token["user"]["session_nonce"]
       end
     end
 
