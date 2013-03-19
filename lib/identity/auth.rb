@@ -162,16 +162,29 @@ module Identity
 
         content_type(:json)
         status(200)
-        MultiJson.encode({
+        response = {
           # core spec response
-          access_token:  token["access_token"]["token"],
-          expires_in:    token["access_token"]["expires_in"],
-          refresh_token: token["refresh_token"]["token"],
+          # on return to V3, remove rescue onwards
+          access_token:
+             (token["access_token"]["token"] rescue token["access_token"]),
+          expires_in:
+             (token["access_token"]["expires_in"] rescue token["expires_in"]),
+          refresh_token:
+             (token["refresh_token"]["token"] rescue token["refresh_token"]),
           token_type:    "Bearer",
 
           # heroku extra response
-          session_nonce: token["session_nonce"],
-        })
+          session_nonce:
+             (token["user"]["session_nonce"] rescue token["session_nonce"]),
+        }
+
+        # some basic sanity checks
+        raise "missing=access_token"  unless response[:access_token]
+        raise "missing=expires_in"    unless response[:expires_in]
+        raise "missing=refresh_token" unless response[:refresh_token]
+        raise "missing=session_nonce" unless response[:session_nonce]
+
+        MultiJson.encode(response)
       end
     end
 

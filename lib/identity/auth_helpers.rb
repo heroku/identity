@@ -107,15 +107,16 @@ module Identity
         # store appropriate tokens to session
         token = MultiJson.decode(res.body)
 
-        # on return to V3, eliminate all clauses to the left of ||
+        # on return to V3, remove rescue onwards
         @cookie.access_token            =
-          token["access_token"] || token["access_token"]["token"]
+          token["access_token"]["token"] rescue token["access_token"]
         @cookie.access_token_expires_at =
-          Time.now + (token["expires_in"] || token["access_token"]["expires_in"])
+          Time.now +
+            (token["access_token"]["expires_in"] rescue token["expires_in"])
         @cookie.refresh_token           =
-          token["refresh_token"] || token["refresh_token"]["token"]
+           token["refresh_token"]["token"] rescue token["refresh_token"]
         nonce =
-          token["session_nonce"] || token["user"]["session_nonce"]
+          token["user"]["session_nonce"] rescue token["session_nonce"]
 
         # some basic sanity checks
         raise "missing=access_token"  unless @cookie.access_token
