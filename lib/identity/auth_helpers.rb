@@ -37,7 +37,8 @@ module Identity
 
       res = log :create_authorization, by_proxy: true,
         client_id: params["client_id"], session_id: @cookie.session_id do
-          api.post(path: "/oauth/authorizations", expects: [201, 401],
+          # on return to V3, change to just expect 201
+          api.post(path: "/oauth/authorizations", expects: [200, 201, 401],
             query: params.merge(session_id: @cookie.session_id))
       end
 
@@ -74,13 +75,15 @@ module Identity
         # create a session on which we can group any authorization grants and
         # tokens which will be created during this Identity, err, session
         res = log :create_session do
+          # on return to V3, change to just expect 201
           api.post(path: "/oauth/sessions", expects: 201)
         end
         session = MultiJson.decode(res.body)
         @cookie.session_id = session["id"]
 
         res = log :create_authorization do
-          api.post(path: "/oauth/authorizations", expects: 201,
+          # on return to V3, change to just expect 201
+          api.post(path: "/oauth/authorizations", expects: [200, 201],
             query: {
               client_id:     Config.heroku_oauth_id,
               response_type: "code",
@@ -92,7 +95,8 @@ module Identity
 
         # exchange authorization grant code for an access/refresh token set
         res = log :create_token do
-          api.post(path: "/oauth/tokens", expects: 201,
+          # on return to V3, change to just expect 201
+          api.post(path: "/oauth/tokens", expects: [200, 201],
             query: {
               code:          grant_code,
               client_secret: Config.heroku_oauth_secret,
@@ -125,7 +129,8 @@ module Identity
         res = log :refresh_token do
           api = HerokuAPI.new(user: nil, pass: @cookie.access_token,
             request_ids: request_ids)
-          api.post(path: "/oauth/tokens", expects: 201,
+          # on return to V3, change to just expect 201
+          api.post(path: "/oauth/tokens", expects: [200, 201],
             query: {
               client_secret: Config.heroku_oauth_secret,
               grant_type:    "refresh_token",

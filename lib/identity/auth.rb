@@ -149,7 +149,8 @@ module Identity
           # no credentials are required here because the code segment of the
           # exchange is state that's linked to a user in the API
           api = HerokuAPI.new(user: nil, request_ids: request_ids)
-          api.post(path: "/oauth/tokens", expects: 201, query: {
+          # on return to V3, change to just expect 201
+          api.post(path: "/oauth/tokens", expects: [200, 201], query: {
             code:          params[:code],
             client_secret: params[:client_secret],
             grant_type:    "authorization_code",
