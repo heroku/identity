@@ -41,9 +41,7 @@ module Identity
           json = MultiJson.decode(res.body)
           slim :"account/finish_new", layout: :"layouts/zen_backdrop"
         rescue Excon::Errors::UnprocessableEntity => e
-          # during transition, handle either V3 or V2 error responses
-          json = MultiJson.decode(e.response.body)
-          flash[:error] = json["error"] || json["message"]
+          flash[:error] = decode_error(e.response.body)
           redirect to("/signup")
         end
       end
@@ -60,8 +58,7 @@ module Identity
           slim :"account/accept", layout: :"layouts/classic"
         # Core should return a 404, but returns a 422
         rescue Excon::Errors::NotFound, Excon::Errors::UnprocessableEntity => e
-          json = MultiJson.decode(e.response.body)
-          flash.now[:error] = json["message"]
+          flash[:error] = decode_error(e.response.body)
           slim :login, layout: :"layouts/zen_backdrop"
         end
       end
@@ -107,8 +104,7 @@ module Identity
           slim :"clients/authorize", layout: :"layouts/zen_backdrop"
         # some problem occurred with the signup
         rescue Excon::Errors::UnprocessableEntity => e
-          json = MultiJson.decode(e.response.body)
-          flash[:error] = json.map { |e| e.join(" ") }.join("; ")
+          flash[:error] = decode_error(e.response.body)
           redirect to("/account/accept/#{id}/#{hash}")
         end
       end
@@ -144,9 +140,7 @@ module Identity
           flash.now[:notice] = json["message"]
           slim :"account/password/reset", layout: :"layouts/zen_backdrop"
         rescue Excon::Errors::UnprocessableEntity => e
-          # during transition, handle either V3 or V2 error responses
-          json = MultiJson.decode(e.response.body)
-          flash[:error] = json["error"] || json["message"]
+          flash[:error] = decode_error(e.response.body)
           redirect to("/account/password/reset")
         end
       end
@@ -178,10 +172,7 @@ module Identity
         rescue Excon::Errors::NotFound => e
           slim :"account/password/not_found", layout: :"layouts/zen_backdrop"
         rescue Excon::Errors::UnprocessableEntity => e
-          # error looks like:
-          #   [["password","is too short (minimum is 6 characters)"]]
-          json = MultiJson.decode(e.response.body)
-          flash[:error] = json.map { |e| e.join(" ") }.join("; ")
+          flash[:error] = decode_error(e.response.body)
           redirect to("/account/password/reset/#{hash}")
         end
       end
@@ -195,6 +186,19 @@ module Identity
     get "/signup/:slug" do |slug|
       @cookie.signup_source = slug
       slim :signup, layout: :"layouts/zen_backdrop"
+    end
+
+    private
+
+    def decode_error(body)
+      # error might look like:
+      #   1. { "id":..., "error":... } (V3)
+      #   2. { "message":... } (V2)
+      #   3. [["password","is too short (minimum is 6 characters)"]] (V-Insane)
+      json = MultiJson.decode(e.response.body)
+      !json.is_a?(Array) ?
+        json["error"] || json["message"] :
+        json.map { |e| e.join(" ") }.join("; ")
     end
   end
 end
