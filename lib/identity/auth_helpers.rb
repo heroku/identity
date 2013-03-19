@@ -115,7 +115,7 @@ module Identity
         @cookie.refresh_token           =
           token["refresh_token"] || token["refresh_token"]["token"]
         nonce =
-          token["session_nonce"] || token["user"]["session_nonce"])
+          token["session_nonce"] || token["user"]["session_nonce"]
 
         # some basic sanity checks
         raise "missing=access_token"  unless @cookie.access_token
