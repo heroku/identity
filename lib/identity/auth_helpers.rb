@@ -115,6 +115,9 @@ module Identity
             (token["access_token"]["expires_in"] || token["expires_in"])
         @cookie.refresh_token           =
            token["refresh_token"]["token"] || token["refresh_token"]
+
+        # this rescue is required here because some users seem to have nil
+        # nonces
         nonce =
           (token["session_nonce"] || token["user"]["session_nonce"] rescue nil)
 

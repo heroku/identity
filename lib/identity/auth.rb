@@ -174,6 +174,8 @@ module Identity
           token_type:    "Bearer",
 
           # heroku extra response
+          # this rescue is required here because some users seem to have nil
+          # nonces
           session_nonce:
              (token["session_nonce"] || token["user"]["session_nonce"] rescue nil)
         }
