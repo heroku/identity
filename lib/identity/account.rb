@@ -200,6 +200,7 @@ module Identity
       rescue MultiJson::DecodeError => e
         # this is not supposed to happen, notify Airbrake, but fail gracefully
         # for the user
+        log :decode_error, body: body
         Airbrake.notify(e) if Config.airbrake_api_key
         { "message" =>
             "An error has occurred. If this problem persists, please contact " +
