@@ -195,9 +195,16 @@ module Identity
       #   1. { "id":..., "message":... } (V3)
       #   2. { "error":... } (V2)
       #   3. [["password","is too short (minimum is 6 characters)"]] (V-Insane)
-      json = MultiJson.decode(body) rescue { "message" =>
-        "An error has occurred. If this problem persists, please contact " +
-        "support@heroku.com." }
+      json = begin
+        MultiJson.decode(body)
+      rescue MultiJson::DecodeError => e
+        # this is not supposed to happen, notify Airbrake, but fail gracefully
+        # for the user
+        Airbrake.notify(e) if Config.airbrake_api_key
+        { "message" =>
+            "An error has occurred. If this problem persists, please contact " +
+            "support@heroku.com." }
+      end
       !json.is_a?(Array) ?
         json["error"] || json["message"] :
         json.map { |e| e.join(" ") }.join("; ")
