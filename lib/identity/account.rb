@@ -144,8 +144,9 @@ module Identity
           flash.now[:notice] = json["message"]
           slim :"account/password/reset", layout: :"layouts/zen_backdrop"
         rescue Excon::Errors::UnprocessableEntity => e
+          # during transition, handle either V3 or V2 error responses
           json = MultiJson.decode(e.response.body)
-          flash[:error] = json.map { |e| e.join(" ") }.join("; ")
+          flash[:error] = json["error"] || json["message"]
           redirect to("/account/password/reset")
         end
       end
