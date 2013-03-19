@@ -129,8 +129,7 @@ module Identity
         set_heroku_cookie("heroku_session", "1")
         set_heroku_cookie("heroku_session_nonce", nonce)
 
-        log :oauth_dance_complete, session_id: @cookie.session_id,
-          nonce: nonce)
+        log :oauth_dance_complete, session_id: @cookie.session_id, nonce: nonce
       end
     end
 
@@ -151,9 +150,15 @@ module Identity
 
         # store appropriate tokens to session
         token = MultiJson.decode(res.body)
-        @cookie.access_token            = token["access_token"]["token"]
+
+        # on return to V3, eliminate all clauses to the left of ||
+        @cookie.access_token            =
+          token["access_token"] || token["access_token"]["token"]
         @cookie.access_token_expires_at =
-          Time.now + token["access_token"]["expires_in"]
+          Time.now + (token["expires_in"] || token["access_token"]["expires_in"])
+
+        raise "missing=access_token"  unless @cookie.access_token
+        raise "missing=expires_in"    unless @cookie.access_token_expires_at
       end
     end
 
