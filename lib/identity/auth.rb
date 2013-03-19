@@ -77,7 +77,7 @@ module Identity
       delete do
         begin
           api = HerokuAPI.new(user: nil, pass: @cookie.access_token,
-            request_ids: request_ids)
+            request_ids: request_ids, version: 3)
           # tells API to destroy the session for Identity's current tokens, and
           # all the tokens that were provisioned through this session
           log :destroy_session, session_id: @cookie.session_id do
@@ -148,9 +148,8 @@ module Identity
         res = log :create_token, by_proxy: true, session_id: @cookie.session_id do
           # no credentials are required here because the code segment of the
           # exchange is state that's linked to a user in the API
-          api = HerokuAPI.new(user: nil, request_ids: request_ids)
-          # on return to V3, change to just expect 201
-          api.post(path: "/oauth/tokens", expects: [200, 201], query: {
+          api = HerokuAPI.new(user: nil, request_ids: request_ids, version: 3)
+          api.post(path: "/oauth/tokens", expects: 201, query: {
             code:          params[:code],
             client_secret: params[:client_secret],
             grant_type:    "authorization_code",
@@ -164,26 +163,21 @@ module Identity
         status(200)
         response = {
           # core spec response
-          # on return to V3, remove || onwards (except for nonce)
-          access_token:
-             token["access_token"]["token"] || token["access_token"],
-          expires_in:
-             token["access_token"]["expires_in"] || token["expires_in"],
-          refresh_token:
-             token["refresh_token"]["token"] || token["refresh_token"],
+          access_token:  token["access_token"]["token"],
+          expires_in:    token["access_token"]["expires_in"],
+          refresh_token: token["refresh_token"]["token"],
           token_type:    "Bearer",
 
           # heroku extra response
-          # this rescue is required here because some users seem to have nil
-          # nonces
-          session_nonce:
-             (token["session_nonce"] || token["user"]["session_nonce"] rescue nil)
+          session_nonce: token["user"]["session_nonce"],
         }
 
         # some basic sanity checks
         raise "missing=access_token"  unless response[:access_token]
         raise "missing=expires_in"    unless response[:expires_in]
         raise "missing=refresh_token" unless response[:refresh_token]
+
+        # WARNING: some users appear to have nil nonces
         #raise "missing=session_nonce" unless response[:session_nonce]
 
         MultiJson.encode(response)

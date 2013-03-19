@@ -5,13 +5,9 @@ module Identity
     def initialize(options={})
       options[:headers] ||= {}
       options[:request_ids] ||= []
+      version = options[:version] || raise("missing=version")
       headers = {
-        #
-        # Consumed OAuth APIs are V3, but signup/email change/password reset
-        # APIs are not. This is largely because these V3 APIs do not yet exist.
-        # Move Identity back to V3 after they're properly implemented.
-        #
-        #"Accept"     => "application/vnd.heroku+json; version=3",
+        "Accept"     => "application/vnd.heroku+json; version=#{version}",
         "Request-ID" => options[:request_ids].join(", "),
       }.merge!(options[:headers])
       if options[:user] || options[:pass]

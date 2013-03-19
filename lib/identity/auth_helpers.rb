@@ -6,7 +6,7 @@ module Identity
     # API.
     def authorize(params, confirm=false)
       api = HerokuAPI.new(user: nil, pass: @cookie.access_token,
-        request_ids: request_ids)
+        request_ids: request_ids, version: 3)
 
       halt 400, "Need client_id" unless params["client_id"]
 
@@ -37,8 +37,7 @@ module Identity
 
       res = log :create_authorization, by_proxy: true,
         client_id: params["client_id"], session_id: @cookie.session_id do
-          # on return to V3, change to just expect 201
-          api.post(path: "/oauth/authorizations", expects: [200, 201, 401],
+          api.post(path: "/oauth/authorizations", expects: [201, 401],
             query: params.merge(session_id: @cookie.session_id))
       end
 
@@ -66,7 +65,12 @@ module Identity
     # the user's client identities.
     def perform_oauth_dance(user, pass, otp_code)
       log :oauth_dance do
-        options = { user: user, pass: pass, request_ids: request_ids }
+        options = {
+          user:        user,
+          pass:        pass,
+          request_ids: request_ids,
+          version:     3,
+        }
         if otp_code
           options.merge!(headers: { "Heroku-Two-Factor-Code" => otp_code })
         end
@@ -75,15 +79,13 @@ module Identity
         # create a session on which we can group any authorization grants and
         # tokens which will be created during this Identity, err, session
         res = log :create_session do
-          # on return to V3, change to just expect 201
           api.post(path: "/oauth/sessions", expects: 201)
         end
         session = MultiJson.decode(res.body)
         @cookie.session_id = session["id"]
 
         res = log :create_authorization do
-          # on return to V3, change to just expect 201
-          api.post(path: "/oauth/authorizations", expects: [200, 201],
+          api.post(path: "/oauth/authorizations", expects: 201,
             query: {
               client_id:     Config.heroku_oauth_id,
               response_type: "code",
@@ -95,8 +97,7 @@ module Identity
 
         # exchange authorization grant code for an access/refresh token set
         res = log :create_token do
-          # on return to V3, change to just expect 201
-          api.post(path: "/oauth/tokens", expects: [200, 201],
+          api.post(path: "/oauth/tokens", expects: 201,
             query: {
               code:          grant_code,
               client_secret: Config.heroku_oauth_secret,
@@ -107,24 +108,21 @@ module Identity
         # store appropriate tokens to session
         token = MultiJson.decode(res.body)
 
-        # on return to V3, remove || onwards (except for nonce)
-        @cookie.access_token            =
-          token["access_token"]["token"] || token["access_token"]
+        @cookie.access_token            = token["access_token"]["token"]
         @cookie.access_token_expires_at =
-          Time.now +
-            (token["access_token"]["expires_in"] || token["expires_in"])
-        @cookie.refresh_token           =
-           token["refresh_token"]["token"] || token["refresh_token"]
+          Time.now + token["access_token"]["expires_in"]
+        @cookie.refresh_token           = token["refresh_token"]["token"]
 
         # this rescue is required here because some users seem to have nil
         # nonces
-        nonce =
-          (token["session_nonce"] || token["user"]["session_nonce"] rescue nil)
+        nonce = token["user"]["session_nonce"]
 
         # some basic sanity checks
         raise "missing=access_token"  unless @cookie.access_token
         raise "missing=expires_in"    unless @cookie.access_token_expires_at
         raise "missing=refresh_token" unless @cookie.refresh_token
+
+        # WARNING: some users appear to have nil nonces
         #raise "missing=session_nonce" unless nonce
 
         # cookies with a domain scoped to all heroku domains, used to set a
@@ -142,9 +140,8 @@ module Identity
       log :oauth_refresh_dance do
         res = log :refresh_token do
           api = HerokuAPI.new(user: nil, pass: @cookie.access_token,
-            request_ids: request_ids)
-          # on return to V3, change to just expect 201
-          api.post(path: "/oauth/tokens", expects: [200, 201],
+            request_ids: request_ids, version: 3)
+          api.post(path: "/oauth/tokens", expects: 201,
             query: {
               client_secret: Config.heroku_oauth_secret,
               grant_type:    "refresh_token",
@@ -155,11 +152,9 @@ module Identity
         # store appropriate tokens to session
         token = MultiJson.decode(res.body)
 
-        # on return to V3, eliminate all clauses to the left of ||
-        @cookie.access_token            =
-          token["access_token"] || token["access_token"]["token"]
+        @cookie.access_token            = token["access_token"]["token"]
         @cookie.access_token_expires_at =
-          Time.now + (token["expires_in"] || token["access_token"]["expires_in"])
+          Time.now + token["access_token"]["expires_in"]
 
         raise "missing=access_token"  unless @cookie.access_token
         raise "missing=expires_in"    unless @cookie.access_token_expires_at
