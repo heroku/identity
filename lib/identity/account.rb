@@ -120,6 +120,18 @@ module Identity
           redirect to(Config.dashboard_url)
         rescue Excon::Errors::NotFound, Excon::Errors::UnprocessableEntity => e
           slim :"account/email/not_found", layout: :"layouts/zen_backdrop"
+        # it seems that the user's access token is no longer valid, refresh
+        rescue Excon::Errors::Unauthorized
+          begin
+            perform_oauth_refresh_dance
+            redirect to(request.path_info)
+          # Defensive coding because this is REALLY hard to test. Just have the
+          # user logout and try again.
+          rescue => e
+            log :refresh_on_email_change_error
+            Airbrake.notify(e) if Config.airbrake_api_key
+            redirect to("/logout")
+          end
         rescue Identity::Errors::NoSession
           @cookie.redirect_url = request.env["PATH_INFO"]
           redirect to("/login")
