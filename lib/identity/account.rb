@@ -85,8 +85,10 @@ module Identity
             authorize(@cookie.authorize_params)
           # users who signed up from a particular source may have a specialized
           # redirect location; otherwise go to Dashboard
-          elsif json["signup_source"]
+          elsif json["signup_source"] && json["signup_source"]["redirect_uri"]
             redirect to(json["signup_source"]["redirect_uri"])
+          elsif json["signup_source_slug"]
+            redirect to("#{Config.dashboard_url}/signup/finished?#{json["signup_source_slug"]}")
           else
             redirect to("#{Config.dashboard_url}/signup/finished")
           end
