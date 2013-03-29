@@ -87,6 +87,8 @@ module Identity
           # redirect location; otherwise go to Dashboard
           elsif json["signup_source"]
             redirect to(json["signup_source"]["redirect_uri"])
+          elsif slug = json["signup_source_slug"]
+            redirect to("#{Config.dashboard_url}/signup/finished?#{slug}")
           else
             redirect to("#{Config.dashboard_url}/signup/finished")
           end
