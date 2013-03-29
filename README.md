@@ -12,6 +12,7 @@ See [operations](https://github.com/heroku/identity/tree/master/operations.md).
 
 ``` bash
 bundle install
+cp .env.sample .env # And then edit it
 foreman start
 # check localhost:5000
 ```
