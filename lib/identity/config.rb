@@ -30,6 +30,10 @@ module Identity
       ENV["MIXPANEL_TOKEN"]
     end
 
+    def google_tag_manager_account
+      ENV["GOOGLE_TAG_MANAGER_ACCOUNT"]
+    end
+
     def old_cookie_encryption_key
       ENV["OLD_COOKIE_ENCRYPTION_KEY"]
     end

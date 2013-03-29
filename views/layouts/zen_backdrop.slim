@@ -9,6 +9,7 @@ html
     == render :slim, :"_analytics", layout: false
     == render :slim, :"_mixpanel", layout: false
   body id=@body_id
+    == render :slim, :"_tag_manager", layout: false
     .container
       h1.logo
         a href="http://heroku.com" title="Heroku" Heroku
