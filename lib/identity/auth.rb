@@ -49,6 +49,8 @@ module Identity
         # given client_id wasn't found
         rescue Excon::Errors::NotFound
           flash[:error] = "Unknown OAuth client."
+          # clear a bad set of parameters in the session
+          @cookie.authorize_params = nil
           redirect to("/login")
         # two-factor auth is required
         rescue Excon::Errors::Forbidden => e
