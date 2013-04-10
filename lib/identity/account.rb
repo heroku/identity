@@ -131,11 +131,8 @@ module Identity
           begin
             perform_oauth_refresh_dance
             redirect to(request.path_info)
-          # Defensive coding because this is REALLY hard to test. Just have the
-          # user logout and try again.
-          rescue => e
-            log :refresh_on_email_change_error
-            Airbrake.notify(e) if Config.airbrake_api_key
+          # refresh dance unsuccessful
+          rescue Excon::Errors::Unauthorized
             redirect to("/logout")
           end
         rescue Identity::Errors::NoSession
