@@ -119,6 +119,11 @@ module Identity
           # currently returns a 302, but will return a 200
           api.post(path: "/confirm_change_email/#{hash}", expects: [200, 302])
           redirect to(Config.dashboard_url)
+        # user tried to access the change e-mail request under the wrong
+        # account
+        rescue Excon::Errors::Forbidden
+          flash[:error] = "This link can't be used with your current login."
+          redirect to("/login")
         rescue Excon::Errors::NotFound, Excon::Errors::UnprocessableEntity => e
           slim :"account/email/not_found", layout: :"layouts/zen_backdrop"
         # it seems that the user's access token is no longer valid, refresh
