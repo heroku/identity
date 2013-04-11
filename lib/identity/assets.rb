@@ -52,6 +52,11 @@ module Identity
       end
     end
 
+    get "/favicon.ico" do
+      content_type("image/x-icon")
+      respond_with_asset(@assets["favicon.ico"])
+    end
+
     private
 
     def respond_with_asset(asset)
