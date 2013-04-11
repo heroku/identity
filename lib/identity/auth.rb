@@ -46,9 +46,9 @@ module Identity
           else
             redirect to(Config.dashboard_url)
           end
-        # given client_id wasn't found
+        # given client_id or session wasn't found
         rescue Excon::Errors::NotFound
-          flash[:error] = "Unknown OAuth client."
+          flash[:error] = "Unknown OAuth client or session."
           # clear a bad set of parameters in the session
           @cookie.authorize_params = nil
           redirect to("/login")
@@ -130,7 +130,7 @@ module Identity
           authorize(authorize_params, params[:authorize] == "Allow Access")
         # given client_id wasn't found
         rescue Excon::Errors::NotFound
-          flash[:error] = "Unknown OAuth client."
+          flash[:error] = "Unknown OAuth client or session."
           redirect to("/login")
         # refresh token dance was unsuccessful
         rescue Excon::Errors::Unauthorized, Identity::Errors::NoSession

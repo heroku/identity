@@ -94,7 +94,7 @@ module Identity
           end
         # given client_id wasn't found
         rescue Excon::Errors::NotFound
-          flash[:error] = "Unknown OAuth client."
+          flash[:error] = "Unknown OAuth client or session."
           redirect to("/login")
         # refresh token dance was unsuccessful
         rescue Excon::Errors::Unauthorized
