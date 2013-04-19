@@ -209,10 +209,15 @@ module Identity
     private
 
     def generate_referral_slug(original_slug)
-
-      verifier = Fernet.verifier(ENV['REFERRAL_SECRET'], cookies[:ref])
-      if verifier.valid? # signature valid, TTL verified
-        referral = verifier.data[:referrer]
+      referral = nil
+      secret = ENV['REFERRAL_SECRET']
+      token = cookies[:ref]
+      if cookies[:ref] != nil 
+        begin
+          verifier = Fernet.verifier(secret, token)
+          referral = CGI.escape(verifier.data[:referrer])
+        rescue
+        end
       end
 
       referral_data = {
@@ -222,7 +227,7 @@ module Identity
         :referral => referral
       }
 
-      original_slug + '?' + CGI.unescape(referral_data.to_query)
+      original_slug + '?' + referral_data.to_query
 
     end
 
