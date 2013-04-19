@@ -1,3 +1,5 @@
+require 'CGI'
+
 module Identity
   class Account < Sinatra::Base
     register ErrorHandling
@@ -36,8 +38,9 @@ module Identity
       post do
         begin
           api = HerokuAPI.new(request_ids: request_ids, version: 2)
+          signup_source = generate_referral_slug(@cookie.signup_source)
           res = api.post(path: "/signup", expects: 200,
-            query: { email: params[:email], slug: @cookie.signup_source })
+            query: { email: params[:email], slug: signup_source })
           json = MultiJson.decode(res.body)
           slim :"account/finish_new", layout: :"layouts/zen_backdrop"
         rescue Excon::Errors::UnprocessableEntity => e
@@ -204,6 +207,24 @@ module Identity
     end
 
     private
+
+    def generate_referral_slug(original_slug)
+
+      verifier = Fernet.verifier(ENV['REFERRAL_SECRET'], cookies[:ref])
+      if verifier.valid? # signature valid, TTL verified
+        referral = verifier.data[:referrer]
+      end
+
+      referral_data = {
+        :utm_campaign => cookies[:utm_campaign],
+        :utm_source => cookies[:utm_source],
+        :utm_medium => cookies[:utm_medium],
+        :referral => referral
+      }
+
+      original_slug + '?' + CGI.unescape(referral_data.to_query)
+
+    end
 
     def decode_error(body)
       # error might look like:
