@@ -1,4 +1,4 @@
-require 'CGI'
+require 'cgi'
 
 module Identity
   class Account < Sinatra::Base
