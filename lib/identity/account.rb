@@ -1,4 +1,5 @@
 require 'cgi'
+require "addressable/uri"
 
 module Identity
   class Account < Sinatra::Base
@@ -210,9 +211,12 @@ module Identity
 
     def generate_referral_slug(original_slug)
       referral = nil
-      secret = ENV['REFERRAL_SECRET']
-      token = cookies[:ref]
-      if cookies[:ref] != nil 
+      secret = nil
+      secret = ENV['REFERRAL_SECRET'] if env.has_key? 'REFERRAL_SECRET'
+      token = request.cookies[:ref]
+      uri = Addressable::URI.new
+
+      if token != nil and secret != nil
         begin
           verifier = Fernet.verifier(secret, token)
           referral = CGI.escape(verifier.data[:referrer])
@@ -220,14 +224,20 @@ module Identity
         end
       end
 
-      referral_data = {
-        :utm_campaign => cookies[:utm_campaign],
-        :utm_source => cookies[:utm_source],
-        :utm_medium => cookies[:utm_medium],
+      uri.query_values = {
+        :utm_campaign => request.cookies[:utm_campaign],
+        :utm_source => request.cookies[:utm_source],
+        :utm_medium => request.cookies[:utm_medium],
         :referral => referral
       }
+      
+      if original_slug != nil
+        new_slug = original_slug + '?' + uri.query
+      else
+        new_slug = '?' + uri.query
+      end
 
-      original_slug + '?' + referral_data.to_query
+      new_slug
 
     end
 
