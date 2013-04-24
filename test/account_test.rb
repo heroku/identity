@@ -41,6 +41,20 @@ describe Identity::Account do
       post "/account", email: "kerry@heroku.com"
     end
 
+    it "appends tracking data to the signup_source slug" do
+      rack_mock_session.set_cookie "utm_campaign=heroku-postgres"
+      stub_heroku_api do
+        post("/signup") {
+          unless params[:slug].include?("utm_campaign=heroku-postgres")
+            raise("expected utm_campaign in the slug")
+          end
+          pass
+        }
+      end
+      get "/signup"
+      post "/account", email: "kerry@heroku.com"
+    end
+
     it "doesn't forward a signup_source slug if none given" do
       stub_heroku_api do
         post("/signup") {

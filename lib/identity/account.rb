@@ -213,7 +213,7 @@ module Identity
       referral = nil
       secret = nil
       secret = ENV['REFERRAL_SECRET'] if env.has_key? 'REFERRAL_SECRET'
-      token = request.cookies[:ref]
+      token = request.cookies["ref"]
       uri = Addressable::URI.new
 
       if token && secret
@@ -225,9 +225,9 @@ module Identity
       end
 
       uri.query_values = {
-        :utm_campaign => request.cookies[:utm_campaign],
-        :utm_source   => request.cookies[:utm_source],
-        :utm_medium   => request.cookies[:utm_medium],
+        :utm_campaign => request.cookies["utm_campaign"],
+        :utm_source   => request.cookies["utm_source"],
+        :utm_medium   => request.cookies["utm_medium"],
         :referral     => referral,
       }
 
