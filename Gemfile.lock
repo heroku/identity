@@ -15,6 +15,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.4.0)
+    columnize (0.3.6)
     connection_pool (0.9.3)
     crack (0.3.1)
     debugger (1.2.2)
