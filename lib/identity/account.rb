@@ -220,7 +220,9 @@ module Identity
         begin
           verifier = Fernet.verifier(secret, token)
           referral = CGI.escape(verifier.data[:referrer])
-        rescue
+        rescue Exception => e
+          Identity.log(:referral_slug_error => true,
+            :exception => e.class.name, :message => e.message)
         end
       end
 
