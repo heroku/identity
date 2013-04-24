@@ -90,6 +90,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  addressable
   airbrake
   coffee-script
   debugger

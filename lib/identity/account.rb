@@ -1,3 +1,6 @@
+require 'cgi'
+require "addressable/uri"
+
 module Identity
   class Account < Sinatra::Base
     register ErrorHandling
@@ -36,8 +39,9 @@ module Identity
       post do
         begin
           api = HerokuAPI.new(request_ids: request_ids, version: 2)
+          signup_source = generate_referral_slug(@cookie.signup_source)
           res = api.post(path: "/signup", expects: 200,
-            query: { email: params[:email], slug: @cookie.signup_source })
+            query: { email: params[:email], slug: signup_source })
           json = MultiJson.decode(res.body)
           slim :"account/finish_new", layout: :"layouts/zen_backdrop"
         rescue Excon::Errors::UnprocessableEntity => e
@@ -204,6 +208,36 @@ module Identity
     end
 
     private
+
+    def generate_referral_slug(original_slug)
+      referral = nil
+      secret = nil
+      secret = ENV['REFERRAL_SECRET'] if env.has_key? 'REFERRAL_SECRET'
+      token = request.cookies[:ref]
+      uri = Addressable::URI.new
+
+      if token && secret
+        begin
+          verifier = Fernet.verifier(secret, token)
+          referral = CGI.escape(verifier.data[:referrer])
+        rescue
+        end
+      end
+
+      uri.query_values = {
+        :utm_campaign => request.cookies[:utm_campaign],
+        :utm_source   => request.cookies[:utm_source],
+        :utm_medium   => request.cookies[:utm_medium],
+        :referral     => referral,
+      }
+
+      # no tracking code, just return the original slug
+      if uri.query_values.all? { |k, v| v.nil? }
+        return original_slug
+      else
+        return "#{original_slug}?#{uri.query}"
+      end
+    end
 
     def decode_error(body)
       # error might look like:

@@ -1,5 +1,6 @@
 source "https://rubygems.org"
 
+gem "addressable"
 gem "airbrake"
 gem "coffee-script"
 gem "excon"
