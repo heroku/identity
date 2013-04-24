@@ -231,13 +231,12 @@ module Identity
         :referral     => referral,
       }
 
-      if original_slug
-        new_slug = original_slug + '?' + uri.query
+      # no tracking code, just return the original slug
+      if uri.query_values.all? { |k, v| v.nil? }
+        return original_slug
       else
-        new_slug = '?' + uri.query
+        return "#{original_slug}?#{uri.query}"
       end
-
-      new_slug
     end
 
     def decode_error(body)
