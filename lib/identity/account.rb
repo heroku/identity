@@ -216,7 +216,7 @@ module Identity
       token = request.cookies[:ref]
       uri = Addressable::URI.new
 
-      if token != nil and secret != nil
+      if token && secret
         begin
           verifier = Fernet.verifier(secret, token)
           referral = CGI.escape(verifier.data[:referrer])
@@ -226,19 +226,18 @@ module Identity
 
       uri.query_values = {
         :utm_campaign => request.cookies[:utm_campaign],
-        :utm_source => request.cookies[:utm_source],
-        :utm_medium => request.cookies[:utm_medium],
-        :referral => referral
+        :utm_source   => request.cookies[:utm_source],
+        :utm_medium   => request.cookies[:utm_medium],
+        :referral     => referral,
       }
-      
-      if original_slug != nil
+
+      if original_slug
         new_slug = original_slug + '?' + uri.query
       else
         new_slug = '?' + uri.query
       end
 
       new_slug
-
     end
 
     def decode_error(body)

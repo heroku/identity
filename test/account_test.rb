@@ -44,7 +44,9 @@ describe Identity::Account do
     it "doesn't forward a signup_source slug if none given" do
       stub_heroku_api do
         post("/signup") {
-          raise("given a slug") if params[:slug]
+          if params[:slug]
+            raise("didn't expect a slug param, received: #{params[:slug]}")
+          end
           pass
         }
       end
