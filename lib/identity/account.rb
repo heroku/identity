@@ -212,7 +212,7 @@ module Identity
     def generate_referral_slug(original_slug)
       referral = nil
       secret = nil
-      secret = ENV['REFERRAL_SECRET'] if env.has_key? 'REFERRAL_SECRET'
+      secret = ENV['REFERRAL_SECRET'] if ENV.has_key? 'REFERRAL_SECRET'
       token = request.cookies["ref"]
       uri = Addressable::URI.new
 
