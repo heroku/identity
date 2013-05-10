@@ -65,14 +65,18 @@ module Identity
     # the user's client identities.
     def perform_oauth_dance(user, pass, otp_code)
       log :oauth_dance do
+        headers = { "X-Forwarded-For" => request.env["HTTP_X_FORWARDED_FOR"] }
+
         options = {
           user:        user,
           pass:        pass,
           request_ids: request_ids,
           version:     3,
+          headers:     headers
         }
+
         if otp_code
-          options.merge!(headers: { "Heroku-Two-Factor-Code" => otp_code })
+          headers.merge!({ "Heroku-Two-Factor-Code" => otp_code })
         end
         api = HerokuAPI.new(options)
 
