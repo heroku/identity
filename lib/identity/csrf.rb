@@ -12,7 +12,7 @@ module Identity
       Identity.log :invalid_csrf_token,
         actual_token: req.params['_csrf'],
         expected_token: env['rack.session']['csrf.token'],
-        id: env["REQUEST_IDS"].join(",")
+        id: env["REQUEST_IDS"]
       [403, {'Content-Type' => 'text/html', 'Content-Length' => '0'}, []]
     end
   end
