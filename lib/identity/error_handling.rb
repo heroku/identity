@@ -15,7 +15,7 @@ module Identity
         e = env["sinatra.error"]
         Identity.log(:exception, type: :unavailable,
           class: e.class.name, message: e.message,
-          id: request.env["REQUEST_ID"], backtrace: e.backtrace.inspect)
+          request_id: request.env["REQUEST_IDS"], backtrace: e.backtrace.inspect)
         slim :"errors/503", layout: :"layouts/classic"
       end
 
@@ -24,7 +24,7 @@ module Identity
         Airbrake.notify(e) if Config.airbrake_api_key
         Identity.log(:exception,
           class: e.class.name, message: e.message,
-          id: request.env["REQUEST_ID"], backtrace: e.backtrace.inspect)
+          request_id: request.env["REQUEST_IDS"], backtrace: e.backtrace.inspect)
         slim :"errors/500", layout: :"layouts/classic"
       end
     end

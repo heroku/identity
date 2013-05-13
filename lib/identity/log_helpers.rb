@@ -1,8 +1,7 @@
 module Identity
   module LogHelpers
     def log(action, data={}, &block)
-      data.merge! app: "identity",
-        id: request_ids ? request_ids.join(",") : nil
+      data.merge! app: "identity", request_id: request_ids
       Slides.log(action, data, &block)
     end
 
