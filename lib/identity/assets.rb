@@ -44,7 +44,7 @@ module Identity
       get "/assets/*.#{format}" do |image|
         name = "#{image}.#{format}"
         if @assets[name]
-          respond_with_asset(@assets[name], format)
+          respond_with_asset(@assets[name])
         else
           404
         end
