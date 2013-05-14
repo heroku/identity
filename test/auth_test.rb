@@ -118,7 +118,8 @@ describe Identity::Auth do
 
   describe "POST /login" do
     it "logs a user in and redirects to dashboard" do
-      post "/login", email: "kerry@heroku.com", password: "abcdefgh"
+      post "/login", { email:  "kerry@heroku.com", password: "abcdefgh" },
+        { "HTTP_X_FORWARDED_FOR" => "8.7.6.5" }
       assert_equal 302, last_response.status
       assert_equal Identity::Config.dashboard_url,
         last_response.headers["Location"]
