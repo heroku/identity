@@ -65,7 +65,7 @@ module Identity
     # the user's client identities.
     def perform_oauth_dance(user, pass, otp_code)
       log :oauth_dance do
-        headers = { "X-Forwarded-For" => request.env["HTTP_X_FORWARDED_FOR"] }
+        headers = { "X-Forwarded-For" => request.ip }
 
         options = {
           user:        user,
