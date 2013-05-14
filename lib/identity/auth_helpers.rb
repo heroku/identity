@@ -5,8 +5,8 @@ module Identity
     # Performs the authorization step of the OAuth dance against the Heroku
     # API.
     def authorize(params, confirm=false)
-      api = HerokuAPI.new(user: nil, pass: @cookie.access_token,
-        request_ids: request_ids, version: 3)
+      api = HerokuAPI.new(pass: @cookie.access_token,
+        ip: request.ip, request_ids: request_ids, version: 3)
 
       halt 400, "Need client_id" unless params["client_id"]
 
@@ -67,18 +67,17 @@ module Identity
     # the user's client identities.
     def perform_oauth_dance(user, pass, otp_code)
       log :oauth_dance do
-        headers = { "X-Forwarded-For" => request.ip }
-
         options = {
-          user:        user,
+          headers:     {},
+          ip:          request.ip,
           pass:        pass,
           request_ids: request_ids,
+          user:        user,
           version:     3,
-          headers:     headers
         }
 
         if otp_code
-          headers.merge!({ "Heroku-Two-Factor-Code" => otp_code })
+          options[:headers].merge!({ "Heroku-Two-Factor-Code" => otp_code })
         end
         api = HerokuAPI.new(options)
 
@@ -145,8 +144,8 @@ module Identity
     def perform_oauth_refresh_dance
       log :oauth_refresh_dance do
         res = log :refresh_token do
-          api = HerokuAPI.new(user: nil, pass: @cookie.access_token,
-            request_ids: request_ids, version: 3)
+          api = HerokuAPI.new(pass: @cookie.access_token,
+            ip: request.ip, request_ids: request_ids, version: 3)
           api.post(path: "/oauth/tokens", expects: 201,
             body: URI.encode_www_form({
               client_secret: Config.heroku_oauth_secret,

@@ -27,6 +27,7 @@ module Identity
         return 401 if !request.env["HTTP_AUTHORIZATION"]
         api = HerokuAPI.new(user: nil, request_ids: request_ids, version: 2,
           authorization: request.env["HTTP_AUTHORIZATION"],
+            ip: request.ip,
           # not necessarily V3, respond with whatever the client asks for
           headers: {
             "Accept" => request.env["HTTP_ACCEPT"] || "application/json"
@@ -38,7 +39,8 @@ module Identity
 
       post do
         begin
-          api = HerokuAPI.new(request_ids: request_ids, version: 2)
+          api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
+            version: 2)
           signup_source = generate_referral_slug(@cookie.signup_source)
           res = api.post(path: "/signup", expects: 200,
             body: URI.encode_www_form({
@@ -55,7 +57,8 @@ module Identity
 
       get "/accept/:id/:hash" do |id, hash|
         begin
-          api = HerokuAPI.new(request_ids: request_ids, version: 2)
+          api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
+            version: 2)
           res = api.get(path: "/invitation2/show", expects: 200,
             body: URI.encode_www_form({
               "id"    => id,
@@ -72,7 +75,8 @@ module Identity
 
       post "/accept/:id/:hash" do |id, hash|
         begin
-          api = HerokuAPI.new(request_ids: request_ids, version: 2)
+          api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
+            version: 2)
           res = api.post(path: "/invitation2/save", expects: 200,
             body: URI.encode_www_form({
               "id"                          => id,
@@ -122,7 +126,7 @@ module Identity
           # confirming an e-mail change requires authentication
           raise Identity::Errors::NoSession if !@cookie.access_token
           api = HerokuAPI.new(user: nil, pass: @cookie.access_token,
-            request_ids: request_ids, version: 2)
+            ip: request.ip, request_ids: request_ids, version: 2)
           # currently returns a 302, but will return a 200
           api.post(path: "/confirm_change_email/#{hash}", expects: [200, 302])
           redirect to(Config.dashboard_url)
@@ -154,7 +158,8 @@ module Identity
 
       post "/password/reset" do
         begin
-          api = HerokuAPI.new(request_ids: request_ids, version: 2)
+          api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
+            version: 2)
           res = api.post(path: "/auth/reset_password", expects: 200,
             body: URI.encode_www_form({
               email: params[:email]
@@ -171,7 +176,8 @@ module Identity
 
       get "/password/reset/:hash" do |hash|
         begin
-          api = HerokuAPI.new(request_ids: request_ids, version: 2)
+          api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
+            version: 2)
           res = api.get(path: "/auth/finish_reset_password/#{hash}",
             expects: 200)
 
@@ -184,7 +190,8 @@ module Identity
 
       post "/password/reset/:hash" do |hash|
         begin
-          api = HerokuAPI.new(request_ids: request_ids, version: 2)
+          api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
+            version: 2)
           res = api.post(path: "/auth/finish_reset_password/#{hash}",
             expects: 200, body: URI.encode_www_form({
               :password              => params[:password],

@@ -79,7 +79,7 @@ module Identity
       delete do
         begin
           api = HerokuAPI.new(user: nil, pass: @cookie.access_token,
-            request_ids: request_ids, version: 3)
+            ip: request.ip, request_ids: request_ids, version: 3)
           # tells API to destroy the session for Identity's current tokens, and
           # all the tokens that were provisioned through this session
           log :destroy_session, session_id: @cookie.session_id do
@@ -152,7 +152,8 @@ module Identity
             session_id: @cookie.session_id do
             # no credentials are required here because the code segment of the
             # exchange is state that's linked to a user in the API
-            api = HerokuAPI.new(user: nil, request_ids: request_ids, version: 3)
+            api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
+              version: 3)
             api.post(path: "/oauth/tokens", expects: 201,
               body: URI.encode_www_form({
                 code:          params[:code],
