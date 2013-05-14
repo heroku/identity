@@ -55,7 +55,6 @@ module Identity
 
     def respond_with_asset(asset)
       cache_control(:public, max_age: 2592000)
-      #content_type(Rack::Mime.mime_type(File.extname(asset.pathname)))
       content_type(asset.content_type)
       last_modified(asset.mtime.utc)
       asset
