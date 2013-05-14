@@ -41,7 +41,10 @@ module Identity
           api = HerokuAPI.new(request_ids: request_ids, version: 2)
           signup_source = generate_referral_slug(@cookie.signup_source)
           res = api.post(path: "/signup", expects: 200,
-            query: { email: params[:email], slug: signup_source })
+            body: URI.encode_www_form({
+              email: params[:email],
+              slug: signup_source
+            }))
           json = MultiJson.decode(res.body)
           slim :"account/finish_new", layout: :"layouts/zen_backdrop"
         rescue Excon::Errors::UnprocessableEntity => e
@@ -54,10 +57,10 @@ module Identity
         begin
           api = HerokuAPI.new(request_ids: request_ids, version: 2)
           res = api.get(path: "/invitation2/show", expects: 200,
-            query: {
+            body: URI.encode_www_form({
               "id"    => id,
               "token" => hash,
-            })
+            }))
           @user = MultiJson.decode(res.body)
           slim :"account/accept", layout: :"layouts/classic"
         # Core should return a 404, but returns a 422
@@ -71,13 +74,13 @@ module Identity
         begin
           api = HerokuAPI.new(request_ids: request_ids, version: 2)
           res = api.post(path: "/invitation2/save", expects: 200,
-            query: {
+            body: URI.encode_www_form({
               "id"                          => id,
               "token"                       => hash,
               "user[password]"              => params[:password],
               "user[password_confirmation]" => params[:password_confirmation],
               "user[receive_newsletter]"    => params[:receive_newsletter],
-            })
+            }))
           json = MultiJson.decode(res.body)
 
           # log the user in right away
@@ -153,7 +156,9 @@ module Identity
         begin
           api = HerokuAPI.new(request_ids: request_ids, version: 2)
           res = api.post(path: "/auth/reset_password", expects: 200,
-            query: { email: params[:email] })
+            body: URI.encode_www_form({
+              email: params[:email]
+            }))
 
           json = MultiJson.decode(res.body)
           flash.now[:notice] = json["message"]
@@ -181,10 +186,10 @@ module Identity
         begin
           api = HerokuAPI.new(request_ids: request_ids, version: 2)
           res = api.post(path: "/auth/finish_reset_password/#{hash}",
-            expects: 200, query: {
+            expects: 200, body: URI.encode_www_form({
               :password              => params[:password],
               :password_confirmation => params[:password_confirmation],
-            })
+            }))
 
           flash[:success] = "Your password has been changed."
           redirect to("/login")

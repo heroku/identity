@@ -153,12 +153,13 @@ module Identity
             # no credentials are required here because the code segment of the
             # exchange is state that's linked to a user in the API
             api = HerokuAPI.new(user: nil, request_ids: request_ids, version: 3)
-            api.post(path: "/oauth/tokens", expects: 201, query: {
-              code:          params[:code],
-              client_secret: params[:client_secret],
-              grant_type:    "authorization_code",
-              session_id:    @cookie.session_id,
-            })
+            api.post(path: "/oauth/tokens", expects: 201,
+              body: URI.encode_www_form({
+                code:          params[:code],
+                client_secret: params[:client_secret],
+                grant_type:    "authorization_code",
+                session_id:    @cookie.session_id,
+              }))
           end
 
           token = MultiJson.decode(res.body)
