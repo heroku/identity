@@ -22,7 +22,7 @@ module Identity
         headers["Authorization"] = options[:authorization]
       end
       super(Config.heroku_api_url, headers: headers, instrumentor:
-        ExconInstrumentor.new(id: request_ids))
+        ExconInstrumentor.new(request_id: request_ids))
     end
   end
 end
