@@ -6,7 +6,7 @@ module Identity
     # API.
     def authorize(params, confirm=false)
       api = HerokuAPI.new(pass: @cookie.access_token,
-        ip: request.ip, request_ids: request_ids, version: 3)
+        ip: request.ip, request_ids: request_ids, version: 2)
 
       halt 400, "Need client_id" unless params["client_id"]
 
@@ -73,7 +73,7 @@ module Identity
           pass:        pass,
           request_ids: request_ids,
           user:        user,
-          version:     3,
+          version:     2,
         }
 
         if otp_code
@@ -145,7 +145,7 @@ module Identity
       log :oauth_refresh_dance do
         res = log :refresh_token do
           api = HerokuAPI.new(pass: @cookie.access_token,
-            ip: request.ip, request_ids: request_ids, version: 3)
+            ip: request.ip, request_ids: request_ids, version: 2)
           api.post(path: "/oauth/tokens", expects: 201,
             body: URI.encode_www_form({
               client_secret: Config.heroku_oauth_secret,
