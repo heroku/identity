@@ -18,6 +18,7 @@ gem "sinatra-contrib", require: "sinatra/namespace"
 gem "sinatra-router"
 gem "slim"
 gem "compass"
+gem "sprockets-sass"
 gem "sprockets"
 gem "yui-compressor"
 
