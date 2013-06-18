@@ -6,6 +6,8 @@ html
     title Heroku | #{@title}
     link href="/assets/#{Identity::Config.release}/zen-backdrop.css" media="screen" rel="stylesheet" type="text/css"
     script src="/assets/#{Identity::Config.release}/zen-backdrop.js" type="text/javascript"
+    meta name="viewport" content="width=device-width, initial-scale=1"
+
     == render :slim, :"_analytics", layout: false
     == render :slim, :"_mixpanel", layout: false
   body id=@body_id

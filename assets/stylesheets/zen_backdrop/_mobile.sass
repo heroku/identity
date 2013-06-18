@@ -1,4 +1,59 @@
-+mobile-only
++tablet-portrait-and-below
+
+  *
+    +box-sizing(border-box)
 
   body
-    background: yellow
+    margin: 0
+    padding: 0
+
+    #landscape
+      display: none
+
+    .logo
+      position: absolute
+      width: 100%
+      left: 0
+      top: 20px
+      z-index: 100
+      text-align: center
+      a
+        background: none
+        text-indent: 0
+        font-family: "Hybrea"
+        font-size: 32px
+        width: auto
+        height: auto
+        display: inline
+        color: #C6C7E4
+        letter-spacing: 1px
+        text-transform: lowercase
+
+    .content
+      margin-top: 60px
+
+    .dialog
+      max-width: 320px
+      margin: 0 auto
+      padding: 10px
+      +box-shadow(none)
+      background: none
+      width: 100%
+      border: none
+
+      fieldset
+        margin: 0
+        padding: 0
+
+      input.text
+        width: 100%
+        font-size: 16px
+        padding: 10px 7px
+        &:-webkit-autofill
+          background-color: green !important
+
+    #message
+      max-width: 320px
+      padding: 15px 10px
+      span
+        margin-left: 10px
