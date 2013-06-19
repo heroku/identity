@@ -98,6 +98,13 @@ module Identity
         call(env.merge("REQUEST_METHOD" => "POST"))
       end
 
+      if Identity::Config.development?
+        get "/authorize/dev" do
+          @client = {"name" => "Test Client"}
+          slim :"clients/authorize", layout: :"layouts/zen_backdrop"
+        end
+      end
+
       # Tries to authorize a user for a client by proxying the authorization
       # request to API. If the user is not logged in, they are sent to the
       # login screen, from where this authorization will be reattempted on a
