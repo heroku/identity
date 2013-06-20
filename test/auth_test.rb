@@ -22,7 +22,7 @@ describe Identity::Auth do
       assert_equal 302, last_response.status
     end
 
-    it "an be called by a user who is logged in" do
+    it "can be called by a user who is logged in" do
       post "/login", email: "kerry@heroku.com", password: "abcdefgh"
       assert_equal 302, last_response.status
       assert_equal "https://dashboard.heroku.com",

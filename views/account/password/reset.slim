@@ -10,7 +10,6 @@
 
 - if !flash[:notice]
   div#reset_password.dialog
-    h2 Reset Password
     - if !flash[:error]
 		  p.overview Enter your email address below and we'll send you a link to reset your password.
     form.panel-body method="post"
@@ -21,6 +20,6 @@
       fieldset.submit
         p
           a href="/login" Log In
-          |  or 
+          | &nbsp;or&nbsp;
           a href="/signup" Sign Up
         input.submit type="submit" value="Reset Password"
