@@ -1,4 +1,12 @@
-+tablet-portrait-and-below
+=placeholder
+  &.placeholder
+    @content
+  &:-moz-placeholder
+    @content
+  &::-webkit-input-placeholder
+    @content
+
++mobile-only
 
   *
     +box-sizing(border-box)
@@ -34,26 +42,62 @@
 
     .dialog
       max-width: 320px
-      margin: 0 auto
+      margin: 20px auto 0 auto
       padding: 10px
       +box-shadow(none)
       background: none
       width: 100%
       border: none
 
+      h2
+        padding: 5px 0 10px 0
+
+      p
+        padding-left: 0
+        padding-right: 0
+        font-size: 16px
+        line-height: 20px
+
       fieldset
         margin: 0
         padding: 0
+        &.submit
+          padding: 0
+
+          p
+            float: left
+
 
       input.text
         width: 100%
         font-size: 16px
         padding: 10px 7px
-        &:-webkit-autofill
-          background-color: green !important
+        +placeholder
+          color: #1B1324
+          +opacity(0.5)
+
+    form
+      fieldset
+        .field
+          label
+            display: none
+            font-size: 14px
+            line-height: 20px
+
+    input.submit
+      border-radius: 4px
+      line-height: 24px
 
     #message
       max-width: 320px
-      padding: 15px 10px
+      margin-top: 20px
+      padding: 10px
+      background: none
+      +box-shadow(none)
+      border: none
+      &:hover
+        background: none
+        +box-shadow(none)
+        border: none
       span
         margin-left: 10px

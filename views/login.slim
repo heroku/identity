@@ -6,14 +6,15 @@
     fieldset
       .field
         label for="email" Email
-        input#email.text type="email" name="email" size="43"
+        input#email.text type="email" name="email" placeholder="email address"
       .field
         label for="password" Password
-        input#password.text.password type="password" name="password" size="43"
+        input#password.text.password type="password" name="password" placeholder="password"
     fieldset.submit
       p
         a href="/account/password/reset" Reset Password
       input.submit type="submit" name="commit" value="Log In"
+
 a href="/signup" id="message"
   | Getting started with Heroku is easy.
   span Sign Up
