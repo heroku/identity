@@ -4,11 +4,14 @@
 == render :slim, :"_flash", layout: false
 #signup.dialog
 
+  h2 Signup
+
   p.overview Signing up for Heroku is easy. Enter your email below, and you'll be up and running in no time. Signing up signifies that you have read and agree to the <a href="http://legal.heroku.com/tos">Terms of Service</a> and <a href="http://legal.heroku.com/privacy">Privacy Policy</a>.
   form#signup-form.panel-body action="/account" method="post"
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
     fieldset
       div.field
+        label for="invitation_email" Email
         input#invitation_email.text type="text" name="email" autofocus="autofocus" autocapitalize="off" placeholder="Enter your email address"
     fieldset.submit
       input.submit type="submit" value="Sign Up"
