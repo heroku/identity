@@ -12,7 +12,10 @@
 
         p
           strong #{@client["name"]}
-          | &nbsp;is requesting read and write access to <strong>all</strong> your apps. You can revoke access at any time using <strong>heroku authorizations</strong> from the command line.
+          | &nbsp;is requesting read and write access to <strong>all</strong> your apps.
+
+        p
+          | You can revoke this authorization at any time from your <a href="http://dashboard.heroku.com/account">Dashboard account page</a> or using the <a href="https://github.com/heroku/heroku-oauth">heroku-oauth</a> CLI plugin.
 
     fieldset.submit
       p
