@@ -1,0 +1,103 @@
+=placeholder
+  &.placeholder
+    @content
+  &:-moz-placeholder
+    @content
+  &::-webkit-input-placeholder
+    @content
+
++mobile-only
+
+  *
+    +box-sizing(border-box)
+
+  body
+    margin: 0
+    padding: 0
+
+    #landscape
+      display: none
+
+    .logo
+      position: absolute
+      width: 100%
+      left: 0
+      top: 20px
+      z-index: 100
+      text-align: center
+      a
+        background: none
+        text-indent: 0
+        font-family: "Hybrea"
+        font-size: 32px
+        width: auto
+        height: auto
+        display: inline
+        color: #C6C7E4
+        letter-spacing: 1px
+        text-transform: lowercase
+
+    .content
+      margin-top: 60px
+
+    .dialog
+      max-width: 320px
+      margin: 20px auto 0 auto
+      padding: 10px
+      +box-shadow(none)
+      background: none
+      width: 100%
+      border: none
+
+      h2
+        padding: 5px 0 10px 0
+
+      p
+        padding-left: 0
+        padding-right: 0
+        font-size: 16px
+        line-height: 20px
+
+      fieldset
+        margin: 0
+        padding: 0
+        &.submit
+          padding: 0
+
+          p
+            float: left
+
+
+      input.text
+        width: 100%
+        font-size: 16px
+        padding: 10px 7px
+        +placeholder
+          color: #1B1324
+          +opacity(0.5)
+
+    form
+      fieldset
+        .field
+          label
+            display: none
+            font-size: 14px
+            line-height: 20px
+
+    input.submit
+      border-radius: 4px
+      line-height: 24px
+
+    #message
+      max-width: 320px
+      margin-top: 20px
+      padding: 10px
+      background: none
+      +box-shadow(none)
+      border: none
+      &:hover
+        background: none
+        +box-shadow(none)
+        border: none
+      span
+        margin-left: 10px
