@@ -5,7 +5,7 @@
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
     fieldset
       .field
-        h2 Authorize #{@client["name"]}?
+        h1 Authorize #{@client["name"]}?
 
         - if @client["description"].present?
           p #{@client["description"]}
