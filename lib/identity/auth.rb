@@ -46,9 +46,13 @@ module Identity
           else
             redirect to(Config.dashboard_url)
           end
-        # given client_id or session wasn't found
+        # given client_id wasn't found (API throws a 400 status)
+        rescue Excon::Errors::BadRequest
+          flash[:error] = "Unknown OAuth client."
+          redirect to("/login")
+        # given session wasn't found
         rescue Excon::Errors::NotFound
-          flash[:error] = "Unknown OAuth client or session."
+          flash[:error] = "Your session has expired."
           # clear a bad set of parameters in the session
           @cookie.authorize_params = nil
           redirect to("/login")
@@ -135,9 +139,12 @@ module Identity
 
           # redirects back to the oauth client on success
           authorize(authorize_params, params[:authorize] == "Allow Access")
-        # given client_id wasn't found
+        # given client_id wasn't found (API throws a 400 status)
+        rescue Excon::Errors::BadRequest
+          flash[:error] = "Unknown OAuth client."
+          redirect to("/login")
         rescue Excon::Errors::NotFound
-          flash[:error] = "Unknown OAuth client or session."
+          flash[:error] = "Your session has expired."
           redirect to("/login")
         # refresh token dance was unsuccessful
         rescue Excon::Errors::Unauthorized, Identity::Errors::NoSession
