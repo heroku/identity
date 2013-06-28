@@ -103,9 +103,12 @@ module Identity
           else
             redirect to("#{Config.dashboard_url}/signup/finished")
           end
-        # given client_id wasn't found
+        # given client_id wasn't found (API throws a 400 status)
+        rescue Excon::Errors::BadRequest
+          flash[:error] = "Unknown OAuth client."
+          redirect to("/login")
         rescue Excon::Errors::NotFound
-          flash[:error] = "Unknown OAuth client or session."
+          flash[:error] = "Your session has expired."
           redirect to("/login")
         # refresh token dance was unsuccessful
         rescue Excon::Errors::Unauthorized
