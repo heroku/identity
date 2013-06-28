@@ -50,9 +50,9 @@ module Identity
         rescue Excon::Errors::BadRequest
           flash[:error] = "Unknown OAuth client."
           redirect to("/login")
-        # given session wasn't found
+        # we couldn't track the user's session meaning that it's likely been
+        # destroyed or expired, redirect to login
         rescue Excon::Errors::NotFound
-          flash[:error] = "Your session has expired."
           # clear a bad set of parameters in the session
           @cookie.authorize_params = nil
           redirect to("/login")
@@ -143,8 +143,9 @@ module Identity
         rescue Excon::Errors::BadRequest
           flash[:error] = "Unknown OAuth client."
           redirect to("/login")
+        # we couldn't track the user's session meaning that it's likely been
+        # destroyed or expired, redirect to login
         rescue Excon::Errors::NotFound
-          flash[:error] = "Your session has expired."
           redirect to("/login")
         # refresh token dance was unsuccessful
         rescue Excon::Errors::Unauthorized, Identity::Errors::NoSession
