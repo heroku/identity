@@ -178,8 +178,8 @@ module Identity
     def set_heroku_cookie(key, value)
       response.set_cookie(key,
         domain:    heroku_cookie_domain,
+        expires:   Time.now + 2592000,
         http_only: true,
-        max_age:   2592000,
         value:     value)
     end
 
