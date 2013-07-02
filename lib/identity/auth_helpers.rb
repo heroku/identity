@@ -118,8 +118,6 @@ module Identity
           Time.now + token["access_token"]["expires_in"]
         @cookie.refresh_token           = token["refresh_token"]["token"]
 
-        # this rescue is required here because some users seem to have nil
-        # nonces
         nonce = token["user"]["session_nonce"]
 
         # some basic sanity checks
@@ -161,8 +159,19 @@ module Identity
         @cookie.access_token_expires_at =
           Time.now + token["access_token"]["expires_in"]
 
+        nonce = token["user"]["session_nonce"]
+
         raise "missing=access_token"  unless @cookie.access_token
         raise "missing=expires_in"    unless @cookie.access_token_expires_at
+
+        # cookies with a domain scoped to all heroku domains, used to set a
+        # session nonce value so that consumers can recognize when the logged
+        # in user has changed
+        set_heroku_cookie("heroku_session", "1")
+        set_heroku_cookie("heroku_session_nonce", nonce)
+
+        log :oauth_refresh_dance_complete, session_id: @cookie.session_id,
+          nonce: nonce
       end
     end
 
