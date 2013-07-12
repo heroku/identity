@@ -5,8 +5,6 @@ html
     title Heroku | #{@title}
     link href="/assets/#{Identity::Config.release}/classic.css" media="screen" rel="stylesheet" type="text/css"
     script src="/assets/#{Identity::Config.release}/classic.js" type="text/javascript"
-    == render :slim, :"_analytics", layout: false
-    == render :slim, :"_mixpanel", layout: false
   body class="#{@bodyclass}"
     == render :slim, :"_tag_manager", layout: false
     #background
