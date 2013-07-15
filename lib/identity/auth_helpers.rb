@@ -28,6 +28,15 @@ module Identity
         authorization = authorizations.
           detect { |a| a["client"] && a["client"]["id"] == params["client_id"] }
 
+        # fall back to legacy_id (for now)
+        if !authorization
+          authorization = authorizations.detect { |a|
+            a["client"] && a["client"]["legacy_id"] &&
+              a["client"]["legacy_id"] == params["client_id"]
+          }
+          log :legacy_client_id if authorization
+        end
+
         # if there is no authorization raise an error so that we can show a
         # confirmation dialog to the user
         if !authorization && !confirm
