@@ -18,7 +18,7 @@
             - if @scope && @scope.is_a?(Array)
               - @scope.each do |scope|
                 - if scope == "global"
-                  li Read and write access to <strong>all</strong> your apps.
+                  li Read and write access to <strong>all</strong> your apps and your account.
                 - elsif scope == "identity"
                   li Read and write access to your account (but none of your apps).
                 - elsif scope == "read"
@@ -32,7 +32,7 @@
                 - else
                   li Unknown scope: <strong>#{scope}</strong>.
             - else
-              li Read and write access to <strong>all</strong> your apps.
+              li Read and write access to <strong>all</strong> your apps and your account.
 
         p
           | You can revoke this authorization at any time from your <a href="http://dashboard.heroku.com/account">Dashboard account page</a> or using the <a href="https://github.com/heroku/heroku-oauth">heroku-oauth</a> CLI plugin.
