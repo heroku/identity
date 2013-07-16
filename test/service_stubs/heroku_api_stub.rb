@@ -55,7 +55,7 @@ If you don't receive an email, and it's not in your spam folder, this could mean
     status(201)
     MultiJson.encode({
       id:         "authorization123@heroku.com",
-      scope:      "all",
+      scopes:     ["global"],
       created_at: Time.now,
       updated_at: Time.now,
       access_tokens: [],

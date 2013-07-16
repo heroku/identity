@@ -12,7 +12,27 @@
 
         p
           strong #{@client["name"]}
-          | &nbsp;is requesting read and write access to <strong>all</strong> your apps.
+          | &nbsp;is requesting the following access:
+          / The is_a array thing is a temporary safeguard against old cookies.
+          ul
+            - if @scope && @scope.is_a?(Array)
+              - @scope.each do |scope|
+                - if scope == "global"
+                  li Read and write access to <strong>all</strong> your apps and your account.
+                - elsif scope == "identity"
+                  li Read and write access to your account (but none of your apps).
+                - elsif scope == "read"
+                  li Read access to <strong>all</strong> your apps.
+                - elsif scope == "read-protected"
+                  li Read access to the <strong>config vars</strong> of <strong>all</strong> your apps.
+                - elsif scope == "write"
+                  li Read and write access to <strong>all</strong> your apps.
+                - elsif scope == "write-protected"
+                  li Read and write access to the <strong>config vars</strong> of <strong>all</strong> your apps.
+                - else
+                  li Unknown scope: <strong>#{scope}</strong>.
+            - else
+              li Read and write access to <strong>all</strong> your apps and your account.
 
         p
           | You can revoke this authorization at any time from your <a href="http://dashboard.heroku.com/account">Dashboard account page</a> or using the <a href="https://github.com/heroku/heroku-oauth">heroku-oauth</a> CLI plugin.

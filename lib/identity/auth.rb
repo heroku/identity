@@ -69,6 +69,7 @@ module Identity
         # client not yet authorized; show the user a confirmation dialog
         rescue Identity::Errors::UnauthorizedClient => e
           @client = e.client
+          @scope  = @cookie && @cookie.authorize_params["scope"] || nil
           slim :"clients/authorize", layout: :"layouts/zen_backdrop"
         end
       end
@@ -105,6 +106,9 @@ module Identity
       if Identity::Config.development?
         get "/authorize/dev" do
           @client = {"name" => "Test Client"}
+          @scope = [
+            "global", "read", "read-protected", "write", "write-protected"
+          ]
           slim :"clients/authorize", layout: :"layouts/zen_backdrop"
         end
       end
@@ -120,7 +124,9 @@ module Identity
         authorize_params = if params[:authorize]
           @cookie.authorize_params || {}
         else
-          filter_params(%w{client_id response_type scope state})
+          filter_params(%w{client_id response_type scope state}).tap do |p|
+            p["scope"] = p["scope"].split(/[, ]+/).sort.uniq if p["scope"]
+          end
         end
 
         # clear anything that might be left over in the session
@@ -153,8 +159,9 @@ module Identity
           redirect to("/login")
         # client not yet authorized; show the user a confirmation dialog
         rescue Identity::Errors::UnauthorizedClient => e
-          @client = e.client
           @cookie.authorize_params = authorize_params
+          @client = e.client
+          @scope  = @cookie && @cookie.authorize_params["scope"] || nil
           slim :"clients/authorize", layout: :"layouts/zen_backdrop"
         end
       end

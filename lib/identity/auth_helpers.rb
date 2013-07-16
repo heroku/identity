@@ -25,14 +25,17 @@ module Identity
         logout if res.status == 401
         authorizations = MultiJson.decode(res.body)
 
-        authorization = authorizations.
-          detect { |a| a["client"] && a["client"]["id"] == params["client_id"] }
+        authorization = authorizations.detect { |a|
+          a["client"] && a["client"]["id"] == params["client_id"] &&
+            a["scopes"] == scope
+        }
 
         # fall back to legacy_id (for now)
         if !authorization
           authorization = authorizations.detect { |a|
             a["client"] && a["client"]["legacy_id"] &&
-              a["client"]["legacy_id"] == params["client_id"]
+              a["client"]["legacy_id"] == params["client_id"] &&
+              a["scopes"] == scope
           }
           log :legacy_client_id if authorization
         end
