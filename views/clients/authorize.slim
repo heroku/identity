@@ -26,9 +26,9 @@
                 - elsif scope == "read-protected"
                   li Read access to the <strong>config vars</strong> of <strong>all</strong> your apps.
                 - elsif scope == "write"
-                  li Write access to <strong>all</strong> your apps.
+                  li Read and write access to <strong>all</strong> your apps.
                 - elsif scope == "write-protected"
-                  li Write access to the <strong>config vars</strong> of <strong>all</strong> your apps.
+                  li Read and write access to the <strong>config vars</strong> of <strong>all</strong> your apps.
                 - else
                   li Unknown scope: <strong>#{scope}</strong>.
             - else
