@@ -107,7 +107,12 @@ module Identity
         get "/authorize/dev" do
           @client = {"name" => "Test Client"}
           @scope = [
-            "global", "read", "read-protected", "write", "write-protected"
+            "global",
+            "identity",
+            "read",
+            "read-protected",
+            "write",
+            "write-protected",
           ]
           slim :"clients/authorize", layout: :"layouts/zen_backdrop"
         end
