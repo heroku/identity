@@ -27,7 +27,7 @@ module Identity
 
         authorization = authorizations.detect { |a|
           a["client"] && a["client"]["id"] == params["client_id"] &&
-            a["scopes"] == scope
+            a["scopes"] == params["scope"]
         }
 
         # fall back to legacy_id (for now)
@@ -35,7 +35,7 @@ module Identity
           authorization = authorizations.detect { |a|
             a["client"] && a["client"]["legacy_id"] &&
               a["client"]["legacy_id"] == params["client_id"] &&
-              a["scopes"] == scope
+              a["scopes"] == params["scope"]
           }
           log :legacy_client_id if authorization
         end
