@@ -52,6 +52,7 @@ module Identity
           api.post(path: "/oauth/authorizations", expects: [201, 401],
             body: URI.encode_www_form(
               params.merge({
+                # scope is space-delimited when sending to the API
                 scope:      params["scope"] ? params["scope"].join(" ") : nil,
                 session_id: @cookie.session_id
               }.reject { |k, v| v = nil })
