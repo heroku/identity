@@ -130,7 +130,9 @@ module Identity
           @cookie.authorize_params || {}
         else
           filter_params(%w{client_id response_type scope state}).tap do |p|
-            p["scope"] = p["scope"].split(/[, ]+/).sort.uniq if p["scope"]
+            p["scope"] = p["scope"] ?
+              p["scope"].split(/[, ]+/).sort.uniq :
+              ["global"]
           end
         end
 
