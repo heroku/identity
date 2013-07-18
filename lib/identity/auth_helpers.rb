@@ -27,7 +27,7 @@ module Identity
 
         authorization = authorizations.detect { |a|
           a["client"] && a["client"]["id"] == params["client_id"] &&
-            a["scopes"] == params["scope"]
+            a["scopes"] == (params["scope"] || ["global"])
         }
 
         # fall back to legacy_id (for now)
@@ -35,7 +35,7 @@ module Identity
           authorization = authorizations.detect { |a|
             a["client"] && a["client"]["legacy_id"] &&
               a["client"]["legacy_id"] == params["client_id"] &&
-              a["scopes"] == params["scope"]
+              a["scopes"] == (params["scope"] || ["global"])
           }
           log :legacy_client_id if authorization
         end
@@ -51,7 +51,10 @@ module Identity
         client_id: params["client_id"], session_id: @cookie.session_id do
           api.post(path: "/oauth/authorizations", expects: [201, 401],
             body: URI.encode_www_form(
-              params.merge(session_id: @cookie.session_id)
+              params.merge({
+                scope:      params["scope"] ? params["scope"].join(" ") : nil,
+                session_id: @cookie.session_id
+              }.reject { |k, v| v = nil })
             ))
       end
 
