@@ -185,9 +185,10 @@ module Identity
               body: URI.encode_www_form({
                 code:          params[:code],
                 client_secret: params[:client_secret],
-                grant_type:    "authorization_code",
+                grant_type:    params[:grant_type] || "authorization_code",
+                refresh_token: params[:refresh_token],
                 session_id:    @cookie.session_id,
-              }))
+              }.reject { |k, v| v == nil }))
           end
 
           token = MultiJson.decode(res.body)
