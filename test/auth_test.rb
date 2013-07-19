@@ -95,6 +95,92 @@ describe Identity::Auth do
       assert_equal 7200, tokens["expires_in"]
     end
 
+    it "accepts an authorization code" do
+      i = 0
+      stub_heroku_api do
+        post("/oauth/tokens") {
+          # only check parameters on the 2nd request, as ID does one OAuth
+          # dance to procure its own token
+          if (i += 1) > 1
+            raise("missing_param=code")       unless params[:code]
+            raise("missing_param=grant_type") unless params[:grant_type]
+            raise("extra_param=refresh_token") if params[:refresh_token]
+          end
+          status(201)
+          MultiJson.encode({
+            authorization: {
+              id: "authorization123@heroku.com",
+            },
+            access_token: {
+              id:         "access-token123@heroku.com",
+              token:      "e51e8a64-29f1-4bbf-997e-391d84aa12a9",
+              expires_in: 7200,
+            },
+            refresh_token: {
+              id:         "refresh-token123@heroku.com",
+              token:      "faa180e4-5844-42f2-ad66-0c574a1dbed2",
+              expires_in: 2592000,
+            },
+            session: {
+              id:         "session123@heroku.com",
+            },
+            user: {
+              session_nonce: "0a80ac35-b9d8-4fab-9261-883bea77ad3a",
+            }
+          })
+        }
+      end
+      post "/login", email: "kerry@heroku.com", password: "abcdefgh"
+      post "/oauth/authorize", client_id: "dashboard"
+      post "/oauth/token",
+        grant_type: "authorization_code",
+        code: "secret-auth-grant-code"
+      assert_equal 200, last_response.status
+    end
+
+    it "accepts a refresh token" do
+      i = 0
+      stub_heroku_api do
+        post("/oauth/tokens") {
+          # only check parameters on the 2nd request, as ID does one OAuth
+          # dance to procure its own token
+          if (i += 1) > 1
+            raise("missing_param=grant_type") unless params[:grant_type]
+            raise("missing_param=refresh_token") unless params[:refresh_token]
+            raise("extra_param=code") if params[:code]
+          end
+          status(201)
+          MultiJson.encode({
+            authorization: {
+              id: "authorization123@heroku.com",
+            },
+            access_token: {
+              id:         "access-token123@heroku.com",
+              token:      "e51e8a64-29f1-4bbf-997e-391d84aa12a9",
+              expires_in: 7200,
+            },
+            refresh_token: {
+              id:         "refresh-token123@heroku.com",
+              token:      "faa180e4-5844-42f2-ad66-0c574a1dbed2",
+              expires_in: 2592000,
+            },
+            session: {
+              id:         "session123@heroku.com",
+            },
+            user: {
+              session_nonce: "0a80ac35-b9d8-4fab-9261-883bea77ad3a",
+            }
+          })
+        }
+      end
+      post "/login", email: "kerry@heroku.com", password: "abcdefgh"
+      post "/oauth/authorize", client_id: "dashboard"
+      post "/oauth/token",
+        grant_type: "refresh_token",
+        refresh_token: "secret-refresh-token"
+      assert_equal 200, last_response.status
+    end
+
     it "forwards a 401" do
       stub_heroku_api do
         post("/oauth/tokens") {
