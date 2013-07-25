@@ -27,7 +27,7 @@ module Identity
     end
 
     def heroku_cookie_domain
-      ENV["HEROKU_DOMAIN"] || ".heroku.com"
+      ENV["HEROKU_COOKIE_DOMAIN"] || ".heroku.com"
     end
 
     def mixpanel_token
