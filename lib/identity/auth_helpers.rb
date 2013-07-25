@@ -75,7 +75,7 @@ module Identity
 
     def delete_heroku_cookie(key)
       response.delete_cookie(key,
-        domain: heroku_cookie_domain)
+        domain: Config.heroku_cookie_domain)
     end
 
     # Performs the complete OAuth dance against the Heroku API in order to
@@ -193,7 +193,7 @@ module Identity
 
     def set_heroku_cookie(key, value)
       response.set_cookie(key,
-        domain:    heroku_cookie_domain,
+        domain:    Config.heroku_cookie_domain,
         expires:   Time.now + 2592000,
         http_only: true,
         value:     value)
@@ -207,13 +207,6 @@ module Identity
       uri_params = Rack::Utils.parse_query(uri.query).merge(params)
       uri.query  = Rack::Utils.build_query(uri_params)
       uri.to_s
-    end
-
-    def heroku_cookie_domain
-      domain = request.host.split(".")[1..-1].join(".")
-
-      # for something like "localhost", just use the base domain
-      domain != "" ? domain : request.host
     end
   end
 end
