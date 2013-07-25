@@ -30,11 +30,14 @@ git push heroku master
 
 ## Deploying
 
-### Preperation/Setup (only needed once):
+### Preperation/Setup (only needed once, substitute your email address):
 
 ```
-git remote add staging git@heroku.com:id-staging.git
-git remote add production git@heroku.com:id-production.git
+export HEROKU_EMAIL_ADDRESS=...
+heroku sudo sharing:add $HEROKU_EMAIL_ADDRESS -a id-staging
+heroku git:remote -a id-staging -r staging
+heroku sudo sharing:add $HEROKU_EMAIL_ADDRESS -a id-production
+heroku git:remote -a id-production -r production
 ```
 
 ### Deployment
