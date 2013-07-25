@@ -28,6 +28,25 @@ heroku config:add HEROKU_OAUTH_SECRET=...
 git push heroku master
 ```
 
+## Deploying
+
+### Preperation/Setup (only needed once):
+
+```
+git remote add staging git@heroku.com:id-staging.git
+git remote add production git@heroku.com:id-production.git
+```
+
+### Deployment
+
+```
+foreman run bin/test
+git push staging master
+api-test-login --staging
+git push production master
+api-test-login --production
+```
+
 ## Debugging Production
 
 ### Airbrake
