@@ -18,17 +18,17 @@
             - if @scope && @scope.is_a?(Array)
               - @scope.each do |scope|
                 - if scope == "global"
-                  li Read and write access to <strong>all</strong> your apps and your account.
+                  li Read and write access to <strong>all</strong> of your account, apps and resources.
                 - elsif scope == "identity"
-                  li Read access to your account information.
+                  li Read-only access to your account information.
                 - elsif scope == "read"
-                  li Read access to <strong>all</strong> your apps.
+                  li Read-only access to <strong>all</strong> of your account, apps and resources, excluding configuration variables.
                 - elsif scope == "read-protected"
-                  li Read access to the <strong>config vars</strong> of <strong>all</strong> your apps.
+                  li Read-only access to <strong>all</strong> of your account, apps and resources, including configuration variables.
                 - elsif scope == "write"
-                  li Read and write access to <strong>all</strong> your apps.
+                  li Read and write access to <strong>all</strong> of your account, apps and resources, excluding configuration variables.
                 - elsif scope == "write-protected"
-                  li Read and write access to the <strong>config vars</strong> of <strong>all</strong> your apps.
+                  li Read and write access to <strong>all</strong> of your account, apps and resources, including configuration variables.
                 - else
                   li Unknown scope: <strong>#{scope}</strong>.
             - else
