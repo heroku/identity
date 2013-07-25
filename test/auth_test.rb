@@ -12,6 +12,7 @@ describe Identity::Auth do
   end
 
   before do
+    stub(Identity::Config).heroku_cookie_domain { ".example.org" }
     stub_heroku_api
     rack_mock_session.clear_cookies
   end
