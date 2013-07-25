@@ -26,6 +26,10 @@ module Identity
       ENV["HEROKU_OAUTH_SECRET"] || raise("missing=HEROKU_OAUTH_SECRET")
     end
 
+    def heroku_cookie_domain
+      ENV["HEROKU_DOMAIN"] || ".heroku.com"
+    end
+
     def mixpanel_token
       ENV["MIXPANEL_TOKEN"]
     end
