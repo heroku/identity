@@ -23,7 +23,7 @@ gem "sprockets-sass"
 gem "yui-compressor"
 
 group :test do
-  gem "debugger"
+  #gem "debugger"
   gem "rack-test"
   gem "rr"
   gem "webmock"
