@@ -81,6 +81,18 @@ describe Identity::Auth do
           "?code=454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
           last_response.headers["Location"]
       end
+
+      it "does not create an authorization if a user confirms via GET" do
+        post "/login", email: "kerry@heroku.com", password: "abcdefgh"
+
+        # post once to get parameters stored to session
+        post "/oauth/authorize", client_id: "untrusted"
+
+        # then try again, but with the wrong request method (should be POST)
+        get "/oauth/authorize", authorize: "Allow Access"
+        assert_equal 200, last_response.status
+        assert_match /Allow Access/, last_response.body
+      end
     end
   end
 
