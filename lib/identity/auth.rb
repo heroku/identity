@@ -98,6 +98,10 @@ module Identity
     end
 
     namespace "/oauth" do
+      # OAuth 2 spec stipulates that the authorize endpoint MUST support GET
+      # (but that also means be very wary of CSRF):
+      #
+      #     http://tools.ietf.org/html/rfc6749#section-3.1
       get "/authorize" do
         call_authorize
       end
