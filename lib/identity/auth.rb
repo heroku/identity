@@ -98,9 +98,12 @@ module Identity
     end
 
     namespace "/oauth" do
+      # OAuth 2 spec stipulates that the authorize endpoint MUST support GET
+      # (but that also means be very wary of CSRF):
+      #
+      #     http://tools.ietf.org/html/rfc6749#section-3.1
       get "/authorize" do
-        # same as POST
-        call(env.merge("REQUEST_METHOD" => "POST"))
+        call_authorize
       end
 
       if Identity::Config.development?
@@ -124,51 +127,7 @@ module Identity
       # successful login. If Identity's access token has expired, it is
       # refreshed.
       post "/authorize" do
-        # if the user is submitting a confirmation form, pull from session,
-        # otherwise get params from the request
-        authorize_params = if params[:authorize]
-          @cookie.authorize_params || {}
-        else
-          filter_params(%w{client_id response_type scope state}).tap do |p|
-            p["scope"] = p["scope"].split(/[, ]+/).sort.uniq if p["scope"]
-          end
-        end
-
-        # clear anything that might be left over in the session
-        @cookie.authorize_params = nil
-
-        begin
-          # have the user login if we have no session for them
-          raise Identity::Errors::NoSession if !@cookie.access_token
-
-          # Try to perform an access token refresh if we know it's expired. At
-          # the time of this writing, refresh tokens last 30 days (much longer
-          # than the short-lived 2 hour access tokens).
-          if Time.now > @cookie.access_token_expires_at
-            perform_oauth_refresh_dance
-          end
-
-          # redirects back to the oauth client on success
-          authorize(authorize_params, params[:authorize] == "Allow Access")
-        # given client_id wasn't found (API throws a 400 status)
-        rescue Excon::Errors::BadRequest
-          flash[:error] = "Unknown OAuth client."
-          redirect to("/login")
-        # we couldn't track the user's session meaning that it's likely been
-        # destroyed or expired, redirect to login
-        rescue Excon::Errors::NotFound
-          redirect to("/login")
-        # refresh token dance was unsuccessful
-        rescue Excon::Errors::Unauthorized, Identity::Errors::NoSession
-          @cookie.authorize_params = authorize_params
-          redirect to("/login")
-        # client not yet authorized; show the user a confirmation dialog
-        rescue Identity::Errors::UnauthorizedClient => e
-          @cookie.authorize_params = authorize_params
-          @client = e.client
-          @scope  = @cookie && @cookie.authorize_params["scope"] || nil
-          slim :"clients/authorize", layout: :"layouts/zen_backdrop"
-        end
+        call_authorize
       end
 
       # Exchanges a code and client_secret for a token set by proxying the
@@ -224,6 +183,54 @@ module Identity
     end
 
     private
+
+    def call_authorize
+      # if the user is submitting a confirmation form, pull from session,
+      # otherwise get params from the request
+      authorize_params = if params[:authorize]
+        @cookie.authorize_params || {}
+      else
+        filter_params(%w{client_id response_type scope state}).tap do |p|
+          p["scope"] = p["scope"].split(/[, ]+/).sort.uniq if p["scope"]
+        end
+      end
+
+      # clear anything that might be left over in the session
+      @cookie.authorize_params = nil
+
+      begin
+        # have the user login if we have no session for them
+        raise Identity::Errors::NoSession if !@cookie.access_token
+
+        # Try to perform an access token refresh if we know it's expired. At
+        # the time of this writing, refresh tokens last 30 days (much longer
+        # than the short-lived 2 hour access tokens).
+        if Time.now > @cookie.access_token_expires_at
+          perform_oauth_refresh_dance
+        end
+
+        # redirects back to the oauth client on success
+        authorize(authorize_params, params[:authorize] == "Allow Access")
+      # given client_id wasn't found (API throws a 400 status)
+      rescue Excon::Errors::BadRequest
+        flash[:error] = "Unknown OAuth client."
+        redirect to("/login")
+      # we couldn't track the user's session meaning that it's likely been
+      # destroyed or expired, redirect to login
+      rescue Excon::Errors::NotFound
+        redirect to("/login")
+      # refresh token dance was unsuccessful
+      rescue Excon::Errors::Unauthorized, Identity::Errors::NoSession
+        @cookie.authorize_params = authorize_params
+        redirect to("/login")
+      # client not yet authorized; show the user a confirmation dialog
+      rescue Identity::Errors::UnauthorizedClient => e
+        @cookie.authorize_params = authorize_params
+        @client = e.client
+        @scope  = @cookie && @cookie.authorize_params["scope"] || nil
+        slim :"clients/authorize", layout: :"layouts/zen_backdrop"
+      end
+    end
 
     def filter_params(*safe_params)
       safe_params.flatten!

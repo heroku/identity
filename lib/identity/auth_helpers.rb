@@ -42,7 +42,10 @@ module Identity
 
         # if there is no authorization raise an error so that we can show a
         # confirmation dialog to the user
-        if !authorization && !confirm
+        #
+        # SECURITY NOTE: the confirm parameter is *only* respected if the
+        # request came in on a POST, otherwise a CSRF attack is possible
+        if !authorization && (!confirm || request.request_method != "POST")
           raise Identity::Errors::UnauthorizedClient.new(client)
         end
       end
