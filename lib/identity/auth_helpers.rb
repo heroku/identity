@@ -6,7 +6,7 @@ module Identity
     # API.
     def authorize(params, confirm=false)
       api = HerokuAPI.new(pass: @cookie.access_token,
-        ip: request.ip, request_ids: request_ids, version: 3)
+        ip: request.ip, request_ids: request_ids, version: 2)
 
       halt 400, "Need client_id" unless params["client_id"]
 
@@ -37,7 +37,7 @@ module Identity
               a["client"]["legacy_id"] == params["client_id"] &&
               a["scopes"] == (params["scope"] || ["global"])
           }
-          log(:legacy_client_id, client_id: a["client"]["id"]) if authorization
+          log :legacy_client_id if authorization
         end
 
         # if there is no authorization raise an error so that we can show a
