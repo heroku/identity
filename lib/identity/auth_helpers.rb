@@ -37,7 +37,9 @@ module Identity
               a["client"]["legacy_id"] == params["client_id"] &&
               a["scopes"] == (params["scope"] || ["global"])
           }
-          log(:legacy_client_id, client_id: a["client"]["id"]) if authorization
+          if authorization
+            log(:legacy_client_id, client_id: authorzation["client"]["id"])
+          end
         end
 
         # if there is no authorization raise an error so that we can show a
