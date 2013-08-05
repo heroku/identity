@@ -38,7 +38,7 @@ module Identity
               a["scopes"] == (params["scope"] || ["global"])
           }
           if authorization
-            log(:legacy_client_id, client_id: authorzation["client"]["id"])
+            log(:legacy_client_id, client_id: authorization["client"]["id"])
           end
         end
 
