@@ -242,7 +242,7 @@ describe Identity::Auth do
       post "/login", email: "kerry@heroku.com", password: "abcdefgh"
       assert_equal "1",
         rack_mock_session.cookie_jar["heroku_session"]
-      assert_equal "0a80ac35-b9d8-4fab-9261-883bea77ad3a",
+      assert_equal "8bb579ed-e3a4-41ed-9c1c-719e96618f71",
         rack_mock_session.cookie_jar["heroku_session_nonce"]
     end
 
