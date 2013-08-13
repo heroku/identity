@@ -135,7 +135,7 @@ describe Identity::Auth do
               expires_in: 2592000,
             },
             session: {
-              id:         "session123@heroku.com",
+              id:         "8bb579ed-e3a4-41ed-9c1c-719e96618f71",
             },
             user: {
               session_nonce: "0a80ac35-b9d8-4fab-9261-883bea77ad3a",
@@ -178,7 +178,7 @@ describe Identity::Auth do
               expires_in: 2592000,
             },
             session: {
-              id:         "session123@heroku.com",
+              id:         "8bb579ed-e3a4-41ed-9c1c-719e96618f71",
             },
             user: {
               session_nonce: "0a80ac35-b9d8-4fab-9261-883bea77ad3a",
