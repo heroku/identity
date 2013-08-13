@@ -88,7 +88,7 @@ If you don't receive an email, and it's not in your spam folder, this could mean
   post "/oauth/sessions" do
     status(201)
     MultiJson.encode({
-      id:          "session123@heroku.com",
+      id:          "8bb579ed-e3a4-41ed-9c1c-719e96618f71",
       description: "Session @ 127.0.0.1",
       expires_in:  2592000,
     })
@@ -120,7 +120,7 @@ If you don't receive an email, and it's not in your spam folder, this could mean
         expires_in: 2592000,
       },
       session: {
-        id:         "session123@heroku.com",
+        id:         "8bb579ed-e3a4-41ed-9c1c-719e96618f71",
       },
       user: {
         session_nonce: "0a80ac35-b9d8-4fab-9261-883bea77ad3a",
