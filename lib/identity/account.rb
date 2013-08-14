@@ -15,6 +15,7 @@ module Identity
 
     before do
       @cookie = Cookie.new(session)
+      @oauth_dance_id = request.cookies["oauth_dance_id"]
     end
 
     namespace "/account" do
