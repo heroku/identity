@@ -162,7 +162,7 @@ module Identity
             token_type:    "Bearer",
 
             # heroku extra response
-            session_nonce: token["session"]["id"],
+            session_nonce: token["session"].try(:[], "id")
           }
 
           # some basic sanity checks
