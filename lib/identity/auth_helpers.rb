@@ -196,7 +196,6 @@ module Identity
         value:     value)
     end
 
-    private
 
     # merges extra params into a base URI
     def build_uri(base, params)
