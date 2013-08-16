@@ -163,8 +163,8 @@ module Identity
             token_type:    "Bearer",
 
             # heroku extra response
-            user_id:       token["user"].try(:[], "id"),
-            session_nonce: token["session"].try(:[], "id"),
+            user_id:       token["user"]["id"],
+            session_nonce: token["session"].try(:[], "id")
           }
 
           # some basic sanity checks
