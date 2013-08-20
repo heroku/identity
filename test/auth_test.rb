@@ -55,7 +55,8 @@ describe Identity::Auth do
         stub_heroku_api do
           get("/oauth/clients/:id") {
             MultiJson.encode({
-              trusted: false
+              trusted: false,
+              redirect_uri: "https://dashboard.heroku.com/oauth/callback/heroku"
             })
           }
         end
@@ -80,6 +81,17 @@ describe Identity::Auth do
         assert_equal "https://dashboard.heroku.com/oauth/callback/heroku" +
           "?code=454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
           last_response.headers["Location"]
+      end
+
+      it "contains a button that denies access" do
+        post "/login", email: "kerry@heroku.com", password: "abcdefgh"
+
+        # post once to get parameters stored to session
+        post "/oauth/authorize", client_id: "untrusted"
+
+        #check that the deny link points to the right place
+        assert last_response.body.include? \
+          "https://dashboard.heroku.com/oauth/callback/heroku?error=access_denied"
       end
 
       it "does not create an authorization if a user confirms via GET" do
