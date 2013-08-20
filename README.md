@@ -42,7 +42,7 @@ heroku git:remote -a id-production -r production
 
 ### Deployment
 
-Note: requires api-admin (install/build from [http://github.com/heroku/api-admin])
+Note: requires api-admin (install/build from http://github.com/heroku/api-admin)
 
 ```
 foreman run bin/test
