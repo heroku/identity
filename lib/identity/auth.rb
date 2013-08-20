@@ -229,7 +229,7 @@ module Identity
         @cookie.authorize_params = authorize_params
         @client = e.client
         @scope  = @cookie && @cookie.authorize_params["scope"] || nil
-        @deny = build_uri(@client["redirect_uri"], {error: "access_denied"})
+        @deny = build_uri(@client["redirect_uri"], { error: "access_denied" })
         slim :"clients/authorize", layout: :"layouts/zen_backdrop"
       end
     end
