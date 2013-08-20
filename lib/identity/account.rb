@@ -6,6 +6,7 @@ module Identity
     register ErrorHandling
     register Sinatra::Namespace
 
+    include APIHelpers
     include AuthHelpers
     include LogHelpers
 
