@@ -232,6 +232,9 @@ module Identity
         @scope  = @cookie && @cookie.authorize_params["scope"] || nil
         @deny_url = build_uri(@client["redirect_uri"], { error: "access_denied" })
         slim :"clients/authorize", layout: :"layouts/zen_backdrop"
+      rescue Excon::Errors::UnprocessableEntity => e
+        flash[:error] = decode_error(e.response.body)
+        redirect to("/login")
       end
     end
 
