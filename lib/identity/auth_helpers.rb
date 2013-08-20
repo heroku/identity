@@ -78,6 +78,14 @@ module Identity
       redirect to(uri)
     end
 
+    # merges extra params into a base URI
+    def build_uri(base, params)
+      uri        = URI.parse(base)
+      uri_params = Rack::Utils.parse_query(uri.query).merge(params)
+      uri.query  = Rack::Utils.build_query(uri_params)
+      uri.to_s
+    end
+
     def delete_heroku_cookie(key)
       response.delete_cookie(key,
         domain: Config.heroku_cookie_domain)
@@ -194,15 +202,6 @@ module Identity
         expires:   Time.now + 2592000,
         http_only: true,
         value:     value)
-    end
-
-
-    # merges extra params into a base URI
-    def build_uri(base, params)
-      uri        = URI.parse(base)
-      uri_params = Rack::Utils.parse_query(uri.query).merge(params)
-      uri.query  = Rack::Utils.build_query(uri_params)
-      uri.to_s
     end
   end
 end
