@@ -1,5 +1,5 @@
-require 'cgi'
 require "addressable/uri"
+require 'cgi'
 
 module Identity
   class Account < Sinatra::Base
