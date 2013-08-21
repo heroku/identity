@@ -16,13 +16,6 @@ describe Identity::Account do
     rack_mock_session.clear_cookies
   end
 
-  describe "GET /account" do
-    it "responds with 401 without a session" do
-      get "/account"
-      assert_equal 401, last_response.status
-    end
-  end
-
   describe "POST /account" do
     it "creates an account and renders a notice" do
       post "/account", email: "kerry@heroku.com"
