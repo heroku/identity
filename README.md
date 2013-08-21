@@ -54,13 +54,13 @@ api-test-login --production
 
 ## Debugging Production
 
-### Airbrake
+### Honeybadger
 
-Uncaught errors are sent to Airbrake, which can be accessed via:
+Uncaught errors are sent to Honeybadger, which can be accessed via:
 
-    heroku addons:open airbrake -a id-production
+    heroku addons:open honeybadger -a id-production
 
-_Note that this command itself requires that Identity be functional. @todo: provide a direct API request that can be executed to get the Airbrake SSO URL in case of an emergency._
+_Note that this command itself requires that Identity be functional. @todo: provide a direct API request that can be executed to get the Honeybadger SSO URL in case of an emergency._
 
 ### Logs
 

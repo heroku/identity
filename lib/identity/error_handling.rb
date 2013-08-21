@@ -34,7 +34,6 @@ module Identity
           message: e.message,
           backtrace: e.backtrace.inspect
         }.merge(context))
-        Airbrake.notify(e) if Config.airbrake_api_key
         Honeybadger.notify(e, context: context) if Config.honeybadger_api_key
         slim :"errors/500", layout: :"layouts/classic"
       end
