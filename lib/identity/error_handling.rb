@@ -21,12 +21,28 @@ module Identity
 
       app.error do
         e = env["sinatra.error"]
-        Airbrake.notify(e) if Config.airbrake_api_key
-        Identity.log(:exception,
+        Identity.log(
+          :exception,
           class: e.class.name, message: e.message,
-          request_id: request.env["REQUEST_IDS"], backtrace: e.backtrace.inspect)
+          request_id: request.env["REQUEST_IDS"],
+          backtrace: e.backtrace.inspect
+        )
+        Airbrake.notify(e) if Config.airbrake_api_key
+        Honeybadger.notify(e, context: {
+          method:          request.request_method,
+          module:          self.class.name,
+          request_id:      env["REQUEST_IDS"],
+          route_signature: env["HTTP_X_ROUTE_SIGNATURE"],
+          session_id:      @cookie ? @cookie.session_id : nil,
+          user_id:         @cookie ? @cookie.user_id : nil,
+        }) if Config.honeybadger_api_key
         slim :"errors/500", layout: :"layouts/classic"
       end
+    end
+
+    def route(verb, path, *)
+      condition { env["HTTP_X_ROUTE_SIGNATURE"] = path.to_s }
+      super
     end
   end
 end

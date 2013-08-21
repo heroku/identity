@@ -87,5 +87,13 @@ module Identity
     def signup_source=(slug)
       @session["signup_source"] = slug
     end
+
+    def user_id
+      @session["user_id"]
+    end
+
+    def user_id=(id)
+      @session["user_id"] = id
+    end
   end
 end
