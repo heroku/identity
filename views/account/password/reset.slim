@@ -16,10 +16,10 @@
       input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
       fieldset
         .field
-          input#reset_email.text type="text" name="email" size="46" value="email address"
+          input#reset_email.text type="text" name="email" size="46" value="email address" tabindex="1"
       fieldset.submit
         p
           a href="/login" Log In
           | &nbsp;or&nbsp;
           a href="/signup" Sign Up
-        input.submit type="submit" value="Reset Password"
+        input.submit type="submit" value="Reset Password" tabindex="2"
