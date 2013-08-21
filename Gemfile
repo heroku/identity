@@ -8,6 +8,7 @@ gem "coffee-script"
 gem "compass"
 gem "excon"
 gem "fernet"
+gem "honeybadger"
 gem "multi_json"
 gem "oj" # fast json
 gem "puma"

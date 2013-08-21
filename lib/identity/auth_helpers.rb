@@ -146,6 +146,7 @@ module Identity
         @cookie.access_token_expires_at =
           Time.now + token["access_token"]["expires_in"]
         @cookie.refresh_token           = token["refresh_token"]["token"]
+        @cookie.user_id                 = token["user"]["id"]
 
         # some basic sanity checks
         raise "missing=access_token"  unless @cookie.access_token
