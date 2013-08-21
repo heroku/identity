@@ -45,7 +45,7 @@ heroku git:remote -a id-production -r production
 Note: requires api-admin (install/build from http://github.com/heroku/api-admin)
 
 ```
-foreman run bin/test
+rake test
 git push staging master
 api-test-login --staging
 git push production master
@@ -75,7 +75,7 @@ Identity's logs are also drained to the [platform Splunk installation](https://s
 ## Test
 
 ``` bash
-bin/test
+rake test
 ```
 
 ## Installations
