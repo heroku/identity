@@ -30,6 +30,10 @@ module Identity
       ENV["HEROKU_COOKIE_DOMAIN"] || ".heroku.com"
     end
 
+    def honeybadger_api_key
+      ENV["HONEYBADGER_API_KEY"]
+    end
+
     def mixpanel_token
       ENV["MIXPANEL_TOKEN"]
     end
