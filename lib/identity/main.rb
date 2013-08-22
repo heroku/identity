@@ -1,6 +1,6 @@
 module Identity
   Main = Rack::Builder.new do
-    use Rack::Instruments, context: { app: "identity" }
+    use Identity::Instruments, context: { app: "identity" }
     use Rack::SSL if Config.production?
     use Rack::Deflater
 
