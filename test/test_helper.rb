@@ -1,7 +1,7 @@
 # seed the environment
 ENV["COOKIE_ENCRYPTION_KEY"] = "another-super-secret-ultra-secure-key"
 ENV["DASHBOARD_URL"]         = "https://dashboard.heroku.com"
-ENV["HEROKU_API_URL"]        = "https://id.heroku.com"
+ENV["HEROKU_API_URL"]        = "https://api.heroku.com"
 ENV["HEROKU_OAUTH_ID"]       = "46307a2b-0397-4739-b2b7-2f67d1cff597"
 ENV["HEROKU_OAUTH_SECRET"]   = "b6c6aa58-3219-4642-add9-6d8008b268f6"
 # set before using Bundler

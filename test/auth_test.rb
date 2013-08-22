@@ -127,22 +127,23 @@ describe Identity::Auth do
           # only check parameters on the 2nd request, as ID does one OAuth
           # dance to procure its own token
           if (i += 1) > 1
-            raise("missing_param=code")       unless params[:code]
-            raise("missing_param=grant_type") unless params[:grant_type]
-            raise("extra_param=refresh_token") if params[:refresh_token]
+            raise("missing_param=grant:code") unless @body["grant"]["code"]
+            raise("missing_param=grant:type") unless @body["grant"]["type"]
+            raise("extra_param=refresh_token:token") \
+              if @body["refresh_token"]["token"]
           end
           status(201)
           MultiJson.encode({
             authorization: {
-              id: "authorization123@heroku.com",
+              id: "68e3146b-be7e-4520-b60b-c4f06623084f",
             },
             access_token: {
-              id:         "access-token123@heroku.com",
+              id:         "47a0db3a-37cf-450a-b204-855ee943ce32",
               token:      "e51e8a64-29f1-4bbf-997e-391d84aa12a9",
               expires_in: 7200,
             },
             refresh_token: {
-              id:         "refresh-token123@heroku.com",
+              id:         "dc89141f-263c-4009-95ef-db0fe653b8ef",
               token:      "faa180e4-5844-42f2-ad66-0c574a1dbed2",
               expires_in: 2592000,
             },
@@ -170,22 +171,23 @@ describe Identity::Auth do
           # only check parameters on the 2nd request, as ID does one OAuth
           # dance to procure its own token
           if (i += 1) > 1
-            raise("missing_param=grant_type") unless params[:grant_type]
-            raise("missing_param=refresh_token") unless params[:refresh_token]
-            raise("extra_param=code") if params[:code]
+            raise("missing_param=grant:type") unless @body["grant"]["type"]
+            raise("missing_param=refresh_token:token") \
+              unless @body["refresh_token"]["token"]
+            raise("extra_param=grant:code") if @body["grant"]["code"]
           end
           status(201)
           MultiJson.encode({
             authorization: {
-              id: "authorization123@heroku.com",
+              id: "68e3146b-be7e-4520-b60b-c4f06623084f",
             },
             access_token: {
-              id:         "access-token123@heroku.com",
+              id:         "47a0db3a-37cf-450a-b204-855ee943ce32",
               token:      "e51e8a64-29f1-4bbf-997e-391d84aa12a9",
               expires_in: 7200,
             },
             refresh_token: {
-              id:         "refresh-token123@heroku.com",
+              id:         "dc89141f-263c-4009-95ef-db0fe653b8ef",
               token:      "faa180e4-5844-42f2-ad66-0c574a1dbed2",
               expires_in: 2592000,
             },
