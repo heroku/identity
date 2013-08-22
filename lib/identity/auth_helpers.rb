@@ -5,8 +5,15 @@ module Identity
     # Performs the authorization step of the OAuth dance against the Heroku
     # API.
     def authorize(params, confirm=false)
-      api = HerokuAPI.new(pass: @cookie.access_token,
-        ip: request.ip, request_ids: request_ids, version: 3)
+      api = HerokuAPI.new(
+        pass: @cookie.access_token,
+        ip: request.ip,
+        request_ids: request_ids,
+        version: 3,
+        headers: {
+          # must ask for legacy IDs to get `legacy_id` field below
+          "X-Heroku-Legacy-Ids" => "true"
+        })
 
       halt 400, "Need client_id" unless params["client_id"]
 
