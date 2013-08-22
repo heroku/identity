@@ -25,7 +25,7 @@ gem "sprockets"
 gem "sprockets-sass"
 gem "yui-compressor"
 
-group :test do
+group :development, :test do
   #gem "debugger"
   gem "rack-test"
   gem "rr"

@@ -6,7 +6,7 @@ module Identity
     # API.
     def authorize(params, confirm=false)
       api = HerokuAPI.new(pass: @cookie.access_token,
-        ip: request.ip, request_ids: request_ids, version: 2)
+        ip: request.ip, request_ids: request_ids, version: 3)
 
       halt 400, "Need client_id" unless params["client_id"]
 
@@ -55,13 +55,13 @@ module Identity
       res = log :create_authorization, by_proxy: true,
         client_id: params["client_id"], session_id: @cookie.session_id do
           api.post(path: "/oauth/authorizations", expects: [201, 401],
-            body: URI.encode_www_form(
-              params.merge({
-                # scope is space-delimited when sending to the API
-                scope:      params["scope"] ? params["scope"].join(" ") : nil,
-                session_id: @cookie.session_id
-              }.reject { |k, v| v = nil })
-            ))
+            body: MultiJson.encode({
+              client:        { id: params["client_id"] },
+              scope:         params["scope"] ? params["scope"].join(" ") : nil,
+              state:         params["state"],
+              response_type: params["response_type"],
+              session:       { id: @cookie.session_id },
+            }))
       end
 
       logout if res.status == 401
@@ -71,7 +71,7 @@ module Identity
 
       authorization = MultiJson.decode(res.body)
 
-      redirect_params = { code: authorization["grants"][0]["code"] }
+      redirect_params = { code: authorization["grant"]["code"] }
       redirect_params.merge!(state: params["state"]) if params["state"]
       uri = build_uri(authorization["client"]["redirect_uri"], redirect_params)
       log :redirecting, uri: uri
@@ -102,7 +102,7 @@ module Identity
           pass:        pass,
           request_ids: request_ids,
           user:        user,
-          version:     2,
+          version:     3,
         }
 
         if otp_code
@@ -120,22 +120,21 @@ module Identity
 
         res = log :create_authorization do
           api.post(path: "/oauth/authorizations", expects: 201,
-            body: URI.encode_www_form({
-              client_id:     Config.heroku_oauth_id,
+            body: MultiJson.encode({
+              client:        { id: Config.heroku_oauth_id },
               response_type: "code",
-              session_id:    @cookie.session_id,
+              session:       { id: @cookie.session_id },
             }))
         end
 
-        grant_code = MultiJson.decode(res.body)["grants"][0]["code"]
+        grant_code = MultiJson.decode(res.body)["grant"]["code"]
 
         # exchange authorization grant code for an access/refresh token set
         res = log :create_token do
           api.post(path: "/oauth/tokens", expects: 201,
-            body: URI.encode_www_form({
-              code:          grant_code,
-              client_secret: Config.heroku_oauth_secret,
-              grant_type:    "authorization_code",
+            body: MultiJson.encode({
+              grant:  { code: grant_code, type: "authorization_code" },
+              client: { secret: Config.heroku_oauth_secret },
             }))
         end
 
@@ -168,12 +167,12 @@ module Identity
       log :oauth_refresh_dance do
         res = log :refresh_token do
           api = HerokuAPI.new(pass: @cookie.access_token,
-            ip: request.ip, request_ids: request_ids, version: 2)
+            ip: request.ip, request_ids: request_ids, version: 3)
           api.post(path: "/oauth/tokens", expects: 201,
-            body: URI.encode_www_form({
-              client_secret: Config.heroku_oauth_secret,
-              grant_type:    "refresh_token",
-              refresh_token: @cookie.refresh_token,
+            body: MultiJson.encode({
+              client:        { secret: Config.heroku_oauth_secret },
+              grant:         { type:   "refresh_token" },
+              refresh_token: { token:  @cookie.refresh_token },
             }))
         end
 
