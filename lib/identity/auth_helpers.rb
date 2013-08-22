@@ -5,15 +5,8 @@ module Identity
     # Performs the authorization step of the OAuth dance against the Heroku
     # API.
     def authorize(params, confirm=false)
-      api = HerokuAPI.new(
-        pass: @cookie.access_token,
-        ip: request.ip,
-        request_ids: request_ids,
-        version: 3,
-        headers: {
-          # must ask for legacy IDs to get `legacy_id` field below
-          "X-Heroku-Legacy-Ids" => "true"
-        })
+      api = HerokuAPI.new(pass: @cookie.access_token,
+        ip: request.ip, request_ids: request_ids, version: 2)
 
       halt 400, "Need client_id" unless params["client_id"]
 
@@ -62,13 +55,13 @@ module Identity
       res = log :create_authorization, by_proxy: true,
         client_id: params["client_id"], session_id: @cookie.session_id do
           api.post(path: "/oauth/authorizations", expects: [201, 401],
-            body: MultiJson.encode({
-              client:        { id: params["client_id"] },
-              scope:         params["scope"] ? params["scope"].join(" ") : nil,
-              state:         params["state"],
-              response_type: params["response_type"],
-              session:       { id: @cookie.session_id },
-            }))
+            body: URI.encode_www_form(
+              params.merge({
+                # scope is space-delimited when sending to the API
+                scope:      params["scope"] ? params["scope"].join(" ") : nil,
+                session_id: @cookie.session_id
+              }.reject { |k, v| v = nil })
+            ))
       end
 
       logout if res.status == 401
@@ -78,7 +71,7 @@ module Identity
 
       authorization = MultiJson.decode(res.body)
 
-      redirect_params = { code: authorization["grant"]["code"] }
+      redirect_params = { code: authorization["grants"][0]["code"] }
       redirect_params.merge!(state: params["state"]) if params["state"]
       uri = build_uri(authorization["client"]["redirect_uri"], redirect_params)
       log :redirecting, uri: uri
@@ -109,7 +102,7 @@ module Identity
           pass:        pass,
           request_ids: request_ids,
           user:        user,
-          version:     3,
+          version:     2,
         }
 
         if otp_code
@@ -127,21 +120,22 @@ module Identity
 
         res = log :create_authorization do
           api.post(path: "/oauth/authorizations", expects: 201,
-            body: MultiJson.encode({
-              client:        { id: Config.heroku_oauth_id },
+            body: URI.encode_www_form({
+              client_id:     Config.heroku_oauth_id,
               response_type: "code",
-              session:       { id: @cookie.session_id },
+              session_id:    @cookie.session_id,
             }))
         end
 
-        grant_code = MultiJson.decode(res.body)["grant"]["code"]
+        grant_code = MultiJson.decode(res.body)["grants"][0]["code"]
 
         # exchange authorization grant code for an access/refresh token set
         res = log :create_token do
           api.post(path: "/oauth/tokens", expects: 201,
-            body: MultiJson.encode({
-              grant:  { code: grant_code, type: "authorization_code" },
-              client: { secret: Config.heroku_oauth_secret },
+            body: URI.encode_www_form({
+              code:          grant_code,
+              client_secret: Config.heroku_oauth_secret,
+              grant_type:    "authorization_code",
             }))
         end
 
@@ -174,12 +168,12 @@ module Identity
       log :oauth_refresh_dance do
         res = log :refresh_token do
           api = HerokuAPI.new(pass: @cookie.access_token,
-            ip: request.ip, request_ids: request_ids, version: 3)
+            ip: request.ip, request_ids: request_ids, version: 2)
           api.post(path: "/oauth/tokens", expects: 201,
-            body: MultiJson.encode({
-              client:        { secret: Config.heroku_oauth_secret },
-              grant:         { type:   "refresh_token" },
-              refresh_token: { token:  @cookie.refresh_token },
+            body: URI.encode_www_form({
+              client_secret: Config.heroku_oauth_secret,
+              grant_type:    "refresh_token",
+              refresh_token: @cookie.refresh_token,
             }))
         end
 

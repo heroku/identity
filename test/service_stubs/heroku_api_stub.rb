@@ -24,10 +24,6 @@ class HerokuAPIStub < Sinatra::Base
     end
   end
 
-  before do
-    @body = MultiJson.decode(request.body.read) rescue {}
-  end
-
   post "/auth/reset_password" do
     MultiJson.encode({
       message: <<-eos
@@ -58,21 +54,23 @@ If you don't receive an email, and it's not in your spam folder, this could mean
     authorized!
     status(201)
     MultiJson.encode({
-      id:         "68e3146b-be7e-4520-b60b-c4f06623084f",
+      id:         "authorization123@heroku.com",
       scopes:     ["global"],
       created_at: Time.now,
       updated_at: Time.now,
-      access_token: nil,
+      access_tokens: [],
       client: {
         id:           123,
         name:         "dashboard",
         redirect_uri: "https://dashboard.heroku.com/oauth/callback/heroku",
       },
-      grant: {
+      grants: [
+        {
           code:       "454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
           expires_in: 300,
-      },
-      refresh_token: nil,
+        }
+      ],
+      refresh_tokens: []
     })
   end
 
@@ -109,7 +107,7 @@ If you don't receive an email, and it's not in your spam folder, this could mean
     status(201)
     MultiJson.encode({
       authorization: {
-        id: "68e3146b-be7e-4520-b60b-c4f06623084f",
+        id: "authorization123@heroku.com",
       },
       access_token: {
         id:         "access-token123@heroku.com",
