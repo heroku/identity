@@ -15,10 +15,10 @@ module Identity
         "X-Forwarded-For" => ip,
       }.merge!(headers)
 
-      if version == 2
-        headers.merge!("Content-Type" => "application/x-www-form-urlencoded")
-      else
+      if version == 3
         headers.merge!("Content-Type" => "application/json")
+      else
+        headers.merge!("Content-Type" => "application/x-www-form-urlencoded")
       end
 
       if options[:user] || options[:pass]
