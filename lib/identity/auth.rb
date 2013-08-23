@@ -154,7 +154,6 @@ module Identity
                 refresh_token: {
                   token: params[:refresh_token]
                 },
-                session_id: @cookie.session_id,
               }))
           end
 

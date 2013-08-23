@@ -64,7 +64,7 @@ module Identity
           api.post(path: "/oauth/authorizations", expects: [201, 401],
             body: MultiJson.encode({
               client:        { id: params["client_id"] },
-              scope:         params["scope"] ? params["scope"].join(" ") : nil,
+              scope:         params["scope"],
               state:         params["state"],
               response_type: params["response_type"],
               session:       { id: @cookie.session_id },
