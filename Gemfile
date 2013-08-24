@@ -3,7 +3,6 @@ source "https://rubygems.org"
 ruby "2.0.0"
 
 gem "addressable"
-gem "airbrake"
 gem "coffee-script"
 gem "compass"
 gem "excon"

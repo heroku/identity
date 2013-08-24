@@ -2,10 +2,6 @@ module Identity
   module Config
     extend self
 
-    def airbrake_api_key
-      ENV["AIRBRAKE_API_KEY"]
-    end
-
     def cookie_encryption_key
       ENV["COOKIE_ENCRYPTION_KEY"] || raise("missing=COOKIE_ENCRYPTION_KEY")
     end
