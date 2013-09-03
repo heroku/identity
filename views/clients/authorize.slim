@@ -7,7 +7,7 @@
       .field
         h1 Authorize #{@client["name"]}?
 
-        - if @client["description"].present?
+        - if @client["description"]
           p #{@client["description"]}
 
         p
