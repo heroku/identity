@@ -7,9 +7,6 @@
       .field
         h1 Authorize #{@client["name"]}?
 
-        - if @client["description"].present?
-          p #{@client["description"]}
-
         p
           strong #{@client["name"]}
           | &nbsp;is requesting the following access:
