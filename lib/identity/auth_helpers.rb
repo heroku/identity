@@ -76,11 +76,7 @@ module Identity
       # successful authorization, clear any params in session
       @cookie.authorize_params = nil
 
-      # cookies with a domain scoped to all heroku domains, used to set a
-      # session nonce value so that consumers can recognize when the logged
-      # in user has changed
-      set_heroku_cookie("heroku_session", "1")
-      set_heroku_cookie("heroku_session_nonce", @cookie.session_id)
+      set_heroku_cookies(@cookie.session_id)
 
       authorization = MultiJson.decode(res.body)
 
@@ -165,11 +161,7 @@ module Identity
         raise "missing=expires_in"    unless @cookie.access_token_expires_at
         raise "missing=refresh_token" unless @cookie.refresh_token
 
-        # cookies with a domain scoped to all heroku domains, used to set a
-        # session nonce value so that consumers can recognize when the logged
-        # in user has changed
-        set_heroku_cookie("heroku_session", "1")
-        set_heroku_cookie("heroku_session_nonce", @cookie.session_id)
+        set_heroku_cookies(@cookie.session_id)
 
         log :oauth_dance_complete, session_id: @cookie.session_id
       end
@@ -199,14 +191,18 @@ module Identity
         raise "missing=access_token"  unless @cookie.access_token
         raise "missing=expires_in"    unless @cookie.access_token_expires_at
 
-        # cookies with a domain scoped to all heroku domains, used to set a
-        # session nonce value so that consumers can recognize when the logged
-        # in user has changed
-        set_heroku_cookie("heroku_session", "1")
-        set_heroku_cookie("heroku_session_nonce", @cookie.session_id)
+        set_heroku_cookies(@cookie.session_id)
 
         log :oauth_refresh_dance_complete, session_id: @cookie.session_id
       end
+    end
+
+    # cookies with a domain scoped to all heroku domains, used to set a
+    # session nonce value so that consumers can recognize when the logged
+    # in user has changed
+    def set_heroku_cookies(session_id)
+      set_heroku_cookie("heroku_session", "1")
+      set_heroku_cookie("heroku_session_nonce", session_id)
     end
 
     def set_heroku_cookie(key, value)
