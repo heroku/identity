@@ -76,6 +76,12 @@ module Identity
       # successful authorization, clear any params in session
       @cookie.authorize_params = nil
 
+      # cookies with a domain scoped to all heroku domains, used to set a
+      # session nonce value so that consumers can recognize when the logged
+      # in user has changed
+      set_heroku_cookie("heroku_session", "1")
+      set_heroku_cookie("heroku_session_nonce", @cookie.session_id)
+
       authorization = MultiJson.decode(res.body)
 
       redirect_params = { code: authorization["grant"]["code"] }
