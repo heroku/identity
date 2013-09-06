@@ -69,6 +69,10 @@ module Identity
           flash[:error] = "There was a problem with your login."
           redirect to("/login")
         # client not yet authorized; show the user a confirmation dialog
+        rescue Identity::Errors::SuspendedAccount => e
+          flash[:error] = e.message
+          redirect to("/login")
+        # client not yet authorized; show the user a confirmation dialog
         rescue Identity::Errors::UnauthorizedClient => e
           @client = e.client
           @scope  = @cookie && @cookie.authorize_params["scope"] || nil
