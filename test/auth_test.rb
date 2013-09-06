@@ -260,6 +260,18 @@ describe Identity::Auth do
         rack_mock_session.cookie_jar["heroku_session_nonce"]
     end
 
+    it "doesnt 500 when a user is suspended" do
+      stub_heroku_api do
+        post("/oauth/tokens") {
+          err = MultiJson.encode({ id: "suspended", error: "you suspended!" })
+          response = OpenStruct.new(:body => err)
+          raise Excon::Errors::UnprocessableEntity.new("UnprocessableEntity", nil, response)
+        }
+      end
+      post "/login", email: "kerry@heroku.com", password: "abcdefgh"
+      assert_equal 302, last_response.status
+    end
+
     describe "for accounts with two-factor enabled" do
       before do
         stub_heroku_api do

@@ -9,4 +9,12 @@ module Identity::Errors
       @client = client
     end
   end
+
+  class SuspendedAccount < StandardError
+    attr_accessor :message
+
+    def initialize(msg)
+      @message = msg
+    end
+  end
 end

@@ -116,37 +116,47 @@ module Identity
           options[:headers].merge!({ "Heroku-Two-Factor-Code" => otp_code })
         end
         api = HerokuAPI.new(options)
+        token = nil
 
-        # create a session on which we can group any authorization grants and
-        # tokens which will be created during this Identity, err, session
-        res = log :create_session do
-          api.post(path: "/oauth/sessions", expects: 201)
+        begin
+          # create a session on which we can group any authorization grants and
+          # tokens which will be created during this Identity, err, session
+          res = log :create_session do
+            api.post(path: "/oauth/sessions", expects: 201)
+          end
+          session = MultiJson.decode(res.body)
+          @cookie.session_id = session["id"]
+
+          res = log :create_authorization do
+            api.post(path: "/oauth/authorizations", expects: 201,
+              body: MultiJson.encode({
+                client:        { id: Config.heroku_oauth_id },
+                response_type: "code",
+                session:       { id: @cookie.session_id },
+              }))
+          end
+
+          grant_code = MultiJson.decode(res.body)["grant"]["code"]
+
+          # exchange authorization grant code for an access/refresh token set
+          res = log :create_token do
+            api.post(path: "/oauth/tokens", expects: 201,
+              body: MultiJson.encode({
+                grant:  { code: grant_code, type: "authorization_code" },
+                client: { secret: Config.heroku_oauth_secret },
+              }))
+          end
+          # store appropriate tokens to session
+          token = MultiJson.decode(res.body)
+        rescue Excon::Errors::UnprocessableEntity => e
+
+          err = MultiJson.decode(e.response.body)
+          if err['id'] == "suspended"
+            raise Identity::Errors::SuspendedAccount.new(err['error'])
+          else
+            raise e
+          end
         end
-        session = MultiJson.decode(res.body)
-        @cookie.session_id = session["id"]
-
-        res = log :create_authorization do
-          api.post(path: "/oauth/authorizations", expects: 201,
-            body: MultiJson.encode({
-              client:        { id: Config.heroku_oauth_id },
-              response_type: "code",
-              session:       { id: @cookie.session_id },
-            }))
-        end
-
-        grant_code = MultiJson.decode(res.body)["grant"]["code"]
-
-        # exchange authorization grant code for an access/refresh token set
-        res = log :create_token do
-          api.post(path: "/oauth/tokens", expects: 201,
-            body: MultiJson.encode({
-              grant:  { code: grant_code, type: "authorization_code" },
-              client: { secret: Config.heroku_oauth_secret },
-            }))
-        end
-
-        # store appropriate tokens to session
-        token = MultiJson.decode(res.body)
 
         @cookie.access_token            = token["access_token"]["token"]
         @cookie.access_token_expires_at =
