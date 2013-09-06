@@ -152,7 +152,7 @@ module Identity
 
           err = MultiJson.decode(e.response.body)
           if err['id'] == "suspended"
-            raise Identity::Errors::SuspendedAccount.new(err['error'])
+            raise Identity::Errors::SuspendedAccount.new(err['message'])
           else
             raise e
           end
