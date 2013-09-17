@@ -68,7 +68,7 @@ module Identity
         rescue Excon::Errors::Unauthorized
           flash[:error] = "There was a problem with your login."
           redirect to("/login")
-        # client not yet authorized; show the user a confirmation dialog
+        # client is suspended; show an appropriate message
         rescue Identity::Errors::SuspendedAccount => e
           flash[:error] = e.message
           redirect to("/login")

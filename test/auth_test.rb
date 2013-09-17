@@ -264,8 +264,9 @@ describe Identity::Auth do
       stub_heroku_api do
         post("/oauth/tokens") {
           err = MultiJson.encode({ id: "suspended", error: "you suspended!" })
-          response = OpenStruct.new(:body => err)
-          raise Excon::Errors::UnprocessableEntity.new("UnprocessableEntity", nil, response)
+          response = OpenStruct.new(body: err)
+          raise Excon::Errors::UnprocessableEntity.new(
+            "UnprocessableEntity", nil, response)
         }
       end
       post "/login", email: "kerry@heroku.com", password: "abcdefgh"
@@ -280,7 +281,8 @@ describe Identity::Auth do
             pass if env["HTTP_HEROKU_TWO_FACTOR_CODE"] == "123456"
 
             # raise a 401 with a header telling the client to ask for the code
-            response = OpenStruct.new(:headers => { "Heroku-Two-Factor-Required" => "true" })
+            response = OpenStruct.new(
+              headers: { "Heroku-Two-Factor-Required" => "true" })
             raise Excon::Errors::Forbidden.new("Forbidden", nil, response)
           }
         end
