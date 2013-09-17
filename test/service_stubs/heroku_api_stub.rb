@@ -59,7 +59,7 @@ If you don't receive an email, and it's not in your spam folder, this could mean
     status(201)
     MultiJson.encode({
       id:         "68e3146b-be7e-4520-b60b-c4f06623084f",
-      scopes:     ["global"],
+      scope:      ["global"],
       created_at: Time.now,
       updated_at: Time.now,
       access_token: nil,
