@@ -34,7 +34,7 @@ module Identity
 
         authorization = authorizations.detect { |a|
           a["client"] && a["client"]["id"] == params["client_id"] &&
-            a["scopes"] == (params["scope"] || ["global"])
+            a["scope"] == (params["scope"] || ["global"])
         }
 
         # fall back to legacy_id (for now)
