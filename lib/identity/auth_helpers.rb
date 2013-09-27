@@ -149,10 +149,9 @@ module Identity
           # store appropriate tokens to session
           token = MultiJson.decode(res.body)
         rescue Excon::Errors::UnprocessableEntity => e
-
           err = MultiJson.decode(e.response.body)
           if err['id'] == "suspended"
-            raise Identity::Errors::SuspendedAccount.new(err['message'])
+            raise Identity::Errors::SuspendedAccount.new(err["message"])
           else
             raise e
           end
