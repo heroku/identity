@@ -64,9 +64,10 @@ If you don't receive an email, and it's not in your spam folder, this could mean
       updated_at: Time.now,
       access_token: nil,
       client: {
-        id:           123,
-        name:         "dashboard",
-        redirect_uri: "https://dashboard.heroku.com/oauth/callback/heroku",
+        id:                 123,
+        ignores_delinquent: false,
+        name:               "dashboard",
+        redirect_uri:       "https://dashboard.heroku.com/oauth/callback/heroku",
       },
       grant: {
           code:       "454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
