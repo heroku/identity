@@ -22,6 +22,14 @@ module Identity
       end
       client = MultiJson.decode(res.body)
 
+      # if the account is set to delinquent, and the client does not ignore
+      # delinquency, then redirect to the pay-balance page, which is given to
+      # us in the `Location` header
+      if res.headers["Heroku-Delinquent"] == "true" &&
+        !client["ignores_delinquent"]
+        redirect to(res.headers["Location"])
+      end
+
       # if the client is not trusted, then see if the user has already
       # authorized it
       if !client["trusted"]
