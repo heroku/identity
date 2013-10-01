@@ -22,9 +22,8 @@ module Identity
         set_cookie(headers, "heroku_session", "1")
         set_cookie(headers, "heroku_session_nonce", env[@key]["nonce"])
       else
-        %w(heroku_session heroku_session_nonce).each do |key|
-          delete_cookie(headers, key)
-        end
+        delete_cookie(headers, "heroku_session")
+        delete_cookie(headers, "heroku_session_nonce")
       end
 
       [status, headers, response]
