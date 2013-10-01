@@ -179,8 +179,7 @@ module Identity
         # cookies with a domain scoped to all heroku domains, used to set a
         # session nonce value so that consumers can recognize when the logged
         # in user has changed
-        set_heroku_cookie("heroku_session", "1")
-        set_heroku_cookie("heroku_session_nonce", @cookie.session_id)
+        env["heroku.cookie"] = { "nonce" => @cookie.session_id }
 
         log :oauth_dance_complete, session_id: @cookie.session_id
       end
@@ -209,12 +208,6 @@ module Identity
 
         raise "missing=access_token"  unless @cookie.access_token
         raise "missing=expires_in"    unless @cookie.access_token_expires_at
-
-        # cookies with a domain scoped to all heroku domains, used to set a
-        # session nonce value so that consumers can recognize when the logged
-        # in user has changed
-        set_heroku_cookie("heroku_session", "1")
-        set_heroku_cookie("heroku_session_nonce", @cookie.session_id)
 
         log :oauth_refresh_dance_complete, session_id: @cookie.session_id
       end
