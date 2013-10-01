@@ -80,11 +80,12 @@ If you don't receive an email, and it's not in your spam folder, this could mean
   get "/oauth/clients/:id" do |id|
     status(200)
     MultiJson.encode({
-      id:           id,
-      name:         "An OAuth Client",
-      description:  "This is a sample OAuth client rendered by the API stub.",
-      redirect_uri: "https://example.com/oauth/callback/heroku",
-      trusted:      true,
+      id:                 id,
+      name:               "An OAuth Client",
+      description:        "This is a sample OAuth client rendered by the API stub.",
+      ignores_delinquent: false,
+      redirect_uri:       "https://example.com/oauth/callback/heroku",
+      trusted:            true,
     })
   end
 

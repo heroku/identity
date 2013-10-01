@@ -50,6 +50,44 @@ describe Identity::Auth do
         last_response.headers["Location"]
     end
 
+    describe "for a delinquent account" do
+      it "redirects to `Location` for a client that does not `ignore_deliquent`" do
+        stub_heroku_api do
+          get("/oauth/clients/:id") {
+            headers["Heroku-Delinquent"] = "true"
+            headers["Location"] = "https://example.com"
+            MultiJson.encode({
+              ignores_delinquent: false
+            })
+          }
+        end
+        post "/login", email: "kerry@heroku.com", password: "abcdefgh"
+        post "/oauth/authorize", client_id: "dashboard"
+        assert_equal 302, last_response.status
+        assert_equal "https://example.com", last_response.headers["Location"]
+      end
+
+      it "redirects normally for a client that does `ignore_delinquent" do
+        stub_heroku_api do
+          get("/oauth/clients/:id") {
+            headers["Heroku-Delinquent"] = "true"
+            headers["Location"] = "https://example.com"
+            MultiJson.encode({
+              ignores_delinquent: true,
+              redirect_uri:       "https://dashboard.heroku.com",
+              trusted:            true,
+            })
+          }
+        end
+        post "/login", email: "kerry@heroku.com", password: "abcdefgh"
+        post "/oauth/authorize", client_id: "dashboard"
+        assert_equal 302, last_response.status
+        assert_equal "https://dashboard.heroku.com/oauth/callback/heroku" +
+          "?code=454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
+          last_response.headers["Location"]
+        end
+    end
+
     describe "for an untrusted client" do
       before do
         stub_heroku_api do
