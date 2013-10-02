@@ -1,4 +1,15 @@
 module Identity
+  # This middleware helps with set/unset logic for the infamous Heroku cookie
+  # used by Identity and other Heroku properties. The purpose of the Heroku
+  # cookie is to set a general cookie available on the `.heroku.com` domain
+  # that helps signal to other properties that the current user is logged in.
+  #
+  # A tiny bit of historical info: this started out as just `heroku_session`
+  # which is just a simple boolean. It was eventually expanded to
+  # `heroku_session_nonce` where a unique nonce value for the current user is
+  # stored; other properties can observe the nonce value for changes to quickly
+  # determine whether or not the logged in user has changed since the last time
+  # the browser visited.
   class HerokuCookie
     def initialize(app, opts={})
       @app = app
