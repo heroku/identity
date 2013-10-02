@@ -1,6 +1,7 @@
 require_relative "identity/config"
 require_relative "identity/csrf"
 require_relative "identity/cookie"
+require_relative "identity/cookie_fixer"
 require_relative "identity/error_handling"
 require_relative "identity/errors"
 require_relative "identity/excon_instrumentor"

@@ -3,6 +3,7 @@ require 'cgi'
 
 module Identity
   class Account < Sinatra::Base
+    register CookieFixer
     register ErrorHandling
     register Sinatra::Namespace
 

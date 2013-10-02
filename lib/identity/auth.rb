@@ -1,5 +1,6 @@
 module Identity
   class Auth < Sinatra::Base
+    register CookieFixer
     register ErrorHandling
     register Sinatra::Namespace
 
