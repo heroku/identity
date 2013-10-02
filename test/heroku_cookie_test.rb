@@ -21,12 +21,10 @@ describe Identity::HerokuCookie do
   end
 
   it "persists the Heroku cookie through a standard request" do
-    cookie = cookies_for_nonce("1234")
-
     app = middleware(-> (env) {
       [200, {}, {}]
     })
-    _, headers, _ = app.call({ "HTTP_COOKIE" => cookie })
+    _, headers, _ = app.call({ "HTTP_COOKIE" => cookies_for_nonce("1234") })
     assert_includes headers["Set-Cookie"], "heroku_session=1;"
     assert_includes headers["Set-Cookie"], "heroku_session_nonce=1234;"
   end
