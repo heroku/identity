@@ -212,13 +212,5 @@ module Identity
         log :oauth_refresh_dance_complete, session_id: @cookie.session_id
       end
     end
-
-    def set_heroku_cookie(key, value)
-      response.set_cookie(key,
-        domain:    Config.heroku_cookie_domain,
-        expires:   Time.now + 2592000,
-        http_only: true,
-        value:     value)
-    end
   end
 end
