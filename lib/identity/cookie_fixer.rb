@@ -15,7 +15,7 @@ module Identity
   module CookieFixer
     def self.registered(app)
       app.instance_eval do
-        include LogHelpers
+        include Helpers::Log
       end
 
       app.after do

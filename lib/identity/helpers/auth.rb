@@ -1,11 +1,11 @@
-module Identity
-  module AuthHelpers
-    include LogHelpers
+module Identity::Helpers
+  module Auth
+    include Log
 
     # Performs the authorization step of the OAuth dance against the Heroku
     # API.
     def authorize(params, confirm=false)
-      api = HerokuAPI.new(
+      api = Identity::HerokuAPI.new(
         pass: @cookie.access_token,
         ip: request.ip,
         request_ids: request_ids,
@@ -103,7 +103,7 @@ module Identity
 
     def delete_heroku_cookie(key)
       response.delete_cookie(key,
-        domain: Config.heroku_cookie_domain)
+        domain: Identity::Config.heroku_cookie_domain)
     end
 
     # Performs the complete OAuth dance against the Heroku API in order to
@@ -123,7 +123,7 @@ module Identity
         if otp_code
           options[:headers].merge!({ "Heroku-Two-Factor-Code" => otp_code })
         end
-        api = HerokuAPI.new(options)
+        api = Identity::HerokuAPI.new(options)
         token = nil
 
         begin
@@ -138,7 +138,7 @@ module Identity
           res = log :create_authorization do
             api.post(path: "/oauth/authorizations", expects: 201,
               body: MultiJson.encode({
-                client:        { id: Config.heroku_oauth_id },
+                client:        { id: Identity::Config.heroku_oauth_id },
                 response_type: "code",
                 session:       { id: @cookie.session_id },
               }))
@@ -151,7 +151,7 @@ module Identity
             api.post(path: "/oauth/tokens", expects: 201,
               body: MultiJson.encode({
                 grant:  { code: grant_code, type: "authorization_code" },
-                client: { secret: Config.heroku_oauth_secret },
+                client: { secret: Identity::Config.heroku_oauth_secret },
               }))
           end
           # store appropriate tokens to session
@@ -189,11 +189,11 @@ module Identity
     def perform_oauth_refresh_dance
       log :oauth_refresh_dance do
         res = log :refresh_token do
-          api = HerokuAPI.new(pass: @cookie.access_token,
+          api = Identity::HerokuAPI.new(pass: @cookie.access_token,
             ip: request.ip, request_ids: request_ids, version: 3)
           api.post(path: "/oauth/tokens", expects: 201,
             body: MultiJson.encode({
-              client:        { secret: Config.heroku_oauth_secret },
+              client:        { secret: Identity::Config.heroku_oauth_secret },
               grant:         { type:   "refresh_token" },
               refresh_token: { token:  @cookie.refresh_token },
             }))
