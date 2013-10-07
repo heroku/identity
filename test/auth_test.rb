@@ -6,13 +6,14 @@ describe Identity::Auth do
   def app
     Rack::Builder.new do
       use Rack::Session::Cookie, domain: "example.org"
+      use Identity::Middleware::HerokuCookie,
+        domain: "example.org", key: "heroku.cookie"
       use Rack::Flash
       run Identity::Auth
     end
   end
 
   before do
-    stub(Identity::Config).heroku_cookie_domain { ".example.org" }
     stub_heroku_api
     rack_mock_session.clear_cookies
   end

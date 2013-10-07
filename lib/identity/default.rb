@@ -1,5 +1,6 @@
 module Identity
   class Default < Sinatra::Base
+    register CookieFixer
     register ErrorHandling
 
     configure do
