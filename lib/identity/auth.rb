@@ -4,9 +4,9 @@ module Identity
     register ErrorHandling
     register Sinatra::Namespace
 
-    include APIHelpers
-    include AuthHelpers
-    include LogHelpers
+    include Helpers::API
+    include Helpers::Auth
+    include Helpers::Log
 
     configure do
       set :views, "#{Config.root}/views"
