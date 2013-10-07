@@ -1,4 +1,4 @@
-module Identity
+module Identity::Middleware
   # This middleware helps with set/unset logic for the infamous Heroku cookie
   # used by Identity and other Heroku properties. The purpose of the Heroku
   # cookie is to set a general cookie available on the `.heroku.com` domain

@@ -15,7 +15,7 @@ module Identity
       http_only: true,
       path: '/',
       expire_after: 2592000
-    use HerokuCookie,
+    use Middleware::HerokuCookie,
       domain: Config.heroku_cookie_domain,
       expire_after: 2592000,
       key: "heroku.cookie"

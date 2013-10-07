@@ -1,6 +1,6 @@
-require_relative "test_helper"
+require_relative "../test_helper"
 
-describe Identity::HerokuCookie do
+describe Identity::Middleware::HerokuCookie do
   it "sets the Heroku cookie when appropriate" do
     app = middleware(-> (env) {
       env["heroku.cookie"] = { "nonce" => "1234" }
@@ -46,7 +46,7 @@ describe Identity::HerokuCookie do
   end
 
   def middleware(app)
-    Identity::HerokuCookie.new(
+    Identity::Middleware::HerokuCookie.new(
       app,
       domain: "example.com",
       expire_after: 2592000,
