@@ -1,5 +1,5 @@
-module Identity
-  module LogHelpers
+module Identity::Helpers
+  module Log
     def log(action, data={}, &block)
       data.merge! app: "identity", request_id: request_ids
 

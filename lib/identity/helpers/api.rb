@@ -1,5 +1,5 @@
-module Identity
-  module APIHelpers
+module Identity::Helpers
+  module API
     def decode_error(body)
       # error might look like:
       #   1. { "id":..., "message":... } (V3)
