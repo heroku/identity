@@ -6,9 +6,9 @@ module Identity
   # in place, thus confusing other web properties. This fixer will take of that
   # situation.
   #
-  # The cookie fixer was added on Oct 2nd, 2013. I'm arbitrarily choosing some
+  # The cookie fixer was added on Oct 7th, 2013. I'm arbitrarily choosing some
   # amount of time, one month, after which we should remove it. Therefore, if
-  # you're reading this after Nov 2nd, 2013, please strip this class out.
+  # you're reading this after Nov 7th, 2013, please strip this class out.
   #
   # For more details:
   #     https://github.com/heroku/identity/pull/72
