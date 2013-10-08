@@ -13,7 +13,7 @@ module Identity
     end
 
     before do
-      @cookie = Cookie.new(session)
+      @cookie = Cookie.new(env["rack.session"])
       @oauth_dance_id = request.cookies["oauth_dance_id"]
     end
 

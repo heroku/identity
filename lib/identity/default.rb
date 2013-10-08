@@ -8,7 +8,7 @@ module Identity
     end
 
     before do
-      @cookie = Cookie.new(session)
+      @cookie = Cookie.new(env["rack.session"])
     end
 
     get "/" do
