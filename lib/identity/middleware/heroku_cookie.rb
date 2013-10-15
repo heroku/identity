@@ -27,14 +27,28 @@ module Identity::Middleware
         }
       end
 
+      log :read_heroku_cookie,
+        nonce: env[@key] ? env[@key]["nonce"] : "unset",
+        request_id: env["REQUEST_IDS"],
+        oauth_dance_id: request.cookies["oauth_dance_id"]
+
       status, headers, response = @app.call(env)
 
       if env[@key]
         set_cookie(headers, "heroku_session", "1")
         set_cookie(headers, "heroku_session_nonce", env[@key]["nonce"])
+
+        log :write_heroku_cookie,
+          nonce: env[@key]["nonce"],
+          request_id: env["REQUEST_IDS"],
+          oauth_dance_id: request.cookies["oauth_dance_id"]
       else
         delete_cookie(headers, "heroku_session")
         delete_cookie(headers, "heroku_session_nonce")
+
+        log :delete_heroku_cookie,
+          request_id: env["REQUEST_IDS"],
+          oauth_dance_id: request.cookies["oauth_dance_id"]
       end
 
       [status, headers, response]
@@ -46,6 +60,11 @@ module Identity::Middleware
       Rack::Utils.delete_cookie_header!(headers, key,
         domain: @domain,
       )
+    end
+
+    def log(action, env, data={}, &block)
+      data.merge! app: "identity"
+      Slides.log(action, data, &block)
     end
 
     def set_cookie(headers, key, value)
