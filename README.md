@@ -30,7 +30,7 @@ git push heroku master
 
 ## Deploying
 
-### Preperation/Setup (only needed once, substitute your email address):
+### Preparation/Setup (only needed once, substitute your email address):
 
 ```
 export HEROKU_EMAIL_ADDRESS=...
