@@ -28,6 +28,12 @@ heroku config:add HEROKU_OAUTH_SECRET=...
 git push heroku master
 ```
 
+Your OAuth client will also need to be able to manage authorizations, which is set by an internal flag. Get [heroku-sudo](https://github.com/heroku/heroku-sudo), and flag your client:
+
+```
+heroku sudo clients:update <oauth-client-id> --can-manage-authorizations true
+```
+
 ## Deploying
 
 ### Preperation/Setup (only needed once, substitute your email address):
