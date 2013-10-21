@@ -51,6 +51,16 @@ describe Identity::Auth do
         last_response.headers["Location"]
     end
 
+    it "passes state" do
+      post "/login", email: "kerry@heroku.com", password: "abcdefgh"
+
+      post "/oauth/authorize", client_id: "dashboard", state: "my-state"
+      assert_equal 302, last_response.status
+      assert_equal "https://dashboard.heroku.com/oauth/callback/heroku" +
+        "?code=454118bc-902d-4a2c-9d5b-e2a2abb91f6e&state=my-state",
+        last_response.headers["Location"]
+    end
+
     describe "for a delinquent account" do
       it "redirects to `Location` for a client that does not `ignore_deliquent`" do
         stub_heroku_api do
