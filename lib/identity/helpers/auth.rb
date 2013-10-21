@@ -73,7 +73,6 @@ module Identity::Helpers
             body: MultiJson.encode({
               client:        { id: params["client_id"] },
               scope:         params["scope"],
-              state:         params["state"],
               response_type: params["response_type"],
               session:       { id: @cookie.session_id },
             }))
