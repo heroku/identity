@@ -76,14 +76,14 @@ module Identity
         end
       end
 
-      post "/accept/:id/:hash" do |id, hash|
+      post "/accept/ok" do
         begin
           api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
             version: 2)
           res = api.post(path: "/invitation2/save", expects: 200,
             body: URI.encode_www_form({
-              "id"                          => id,
-              "token"                       => hash,
+              "id"                          => params[:id],
+              "token"                       => params[:hash],
               "user[password]"              => params[:password],
               "user[password_confirmation]" => params[:password_confirmation],
               "user[receive_newsletter]"    => params[:receive_newsletter],

@@ -76,9 +76,9 @@ describe Identity::Account do
     end
   end
 
-  describe "POST /account/accept/:id/:hash" do
+  describe "POST /account/accept/ok" do
     before do
-      post "/account/accept/123/456abc"
+      post "/account/accept/ok"
     end
 
     it "completes then shows interstitial page" do
