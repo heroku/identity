@@ -3,7 +3,7 @@
 
 .panel.panel-small
   h2 Welcome to Heroku
-  form method="post" action="/accept/ok"
+  form method="post" action="/account/accept/ok"
     input type="hidden" name="id" value=@user["id"]
     input type="hidden" name="hash" value=@user["hash"]
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
