@@ -126,7 +126,7 @@ module Identity
         # some problem occurred with the signup
         rescue Excon::Errors::UnprocessableEntity => e
           flash[:error] = decode_error(e.response.body)
-          redirect to("/account/accept/#{id}/#{token}")
+          redirect to("/account/accept/#{params[:id]}/#{params[:token]}")
         end
       end
 
