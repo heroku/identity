@@ -3,7 +3,9 @@
 
 .panel.panel-small
   h2 Welcome to Heroku
-  form method="post"
+  form method="post" action="/accept/ok"
+    input type="hidden" name="id" value=@user["id"]
+    input type="hidden" name="hash" value=@user["hash"]
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
     .overview
       - if @user["invited_by"] && @user["invited_by"]["email"]
