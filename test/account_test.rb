@@ -77,11 +77,16 @@ describe Identity::Account do
   end
 
   describe "POST /account/accept/:id/:hash" do
-    it "completes then redirects" do
+    before do
       post "/account/accept/123/456abc"
-      assert_equal 302, last_response.status
-      assert_match %r{https://dashboard.heroku.com$},
-        last_response.headers["Location"]
+    end
+
+    it "completes then shows interstitial page" do
+      assert_equal 200, last_response.status
+    end
+
+    it "render interstitial and check meta content" do
+      assert_match %{meta content=\"3;URL=https://dashboard.heroku.com\" http-equiv=\"refresh\"}, last_response.body
     end
   end
 
