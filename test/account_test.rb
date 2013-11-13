@@ -86,7 +86,9 @@ describe Identity::Account do
     end
 
     it "render interstitial and check meta content" do
-      assert_match %{meta content=\"3;URL=https://dashboard.heroku.com\" http-equiv=\"refresh\"}, last_response.body
+      assert_match <<-eos.strip, last_response.body
+meta content="3;url=https://dashboard.heroku.com" http-equiv="refresh"
+      eos
     end
   end
 
