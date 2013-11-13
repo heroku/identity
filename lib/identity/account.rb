@@ -93,20 +93,18 @@ module Identity
           # log the user in right away
           perform_oauth_dance(json["email"], params[:password], nil)
 
-          @redirect_uri = begin
+          @redirect_uri = if @cookie.authorize_params
             # if we know that we're in the middle of an authorization attempt,
             # continue it
-            if @cookie.authorize_params
-              authorize(@cookie.authorize_params)
+            authorize(@cookie.authorize_params)
             # users who signed up from a particular source may have a specialized
             # redirect location; otherwise go to Dashboard
-            elsif json["signup_source"]
-              json["signup_source"]["redirect_uri"]
-            elsif slug = json["signup_source_slug"]
-              "#{Config.dashboard_url}/signup/finished?#{slug}"
-            else
-              "#{Config.dashboard_url}/signup/finished"
-            end
+          elsif json["signup_source"]
+            json["signup_source"]["redirect_uri"]
+          elsif slug = json["signup_source_slug"]
+            "#{Config.dashboard_url}/signup/finished?#{slug}"
+          else
+            "#{Config.dashboard_url}/signup/finished"
           end
           slim :"account/signup_interstitial", layout: :"layouts/zen_backdrop"
         # given client_id wasn't found (API throws a 400 status)
