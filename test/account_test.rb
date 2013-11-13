@@ -69,7 +69,7 @@ describe Identity::Account do
     end
   end
 
-  describe "GET /account/accept/:id/:hash" do
+  describe "GET /account/accept/:id/:token" do
     it "shows a form to finish signup" do
       get "/account/accept/123/456abc"
       assert_equal 200, last_response.status
@@ -92,7 +92,7 @@ meta content="3;url=https://dashboard.heroku.com" http-equiv="refresh"
     end
   end
 
-  describe "GET /account/email/confirm/:hash" do
+  describe "GET /account/email/confirm/:token" do
     it "requires login" do
       get "/account/email/confirm/c45685917ef644198a0fececa10d479a"
       assert_equal 302, last_response.status
@@ -109,9 +109,9 @@ meta content="3;url=https://dashboard.heroku.com" http-equiv="refresh"
         last_response.headers["Location"]
     end
 
-    it "shows a helpful page for a hash that wasn't found" do
+    it "shows a helpful page for a token that wasn't found" do
       stub_heroku_api do
-        post("/confirm_change_email/:hash") {
+        post("/confirm_change_email/:token") {
           raise Excon::Errors::NotFound, "Not found"
         }
       end
@@ -148,7 +148,7 @@ meta content="3;url=https://dashboard.heroku.com" http-equiv="refresh"
     end
   end
 
-  describe "GET /account/password/reset/:hash" do
+  describe "GET /account/password/reset/:token" do
     it "renders a password reset form" do
       stub_heroku_api
       get "/account/password/reset/c45685917ef644198a0fececa10d479a"
@@ -156,7 +156,7 @@ meta content="3;url=https://dashboard.heroku.com" http-equiv="refresh"
     end
   end
 
-  describe "POST /account/password/reset/:hash" do
+  describe "POST /account/password/reset/:token" do
     it "changes a password and redirects to login" do
       stub_heroku_api
       post "/account/password/reset/c45685917ef644198a0fececa10d479a",

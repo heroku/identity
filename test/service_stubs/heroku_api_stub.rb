@@ -37,15 +37,15 @@ If you don't receive an email, and it's not in your spam folder, this could mean
     })
   end
 
-  get "/auth/finish_reset_password/:hash" do |hash|
+  get "/auth/finish_reset_password/:token" do |token|
     MultiJson.encode({ email: "kerry@heroku.com" })
   end
 
-  post "/auth/finish_reset_password/:hash" do |hash|
+  post "/auth/finish_reset_password/:token" do |token|
     MultiJson.encode({ email: "kerry@heroku.com" })
   end
 
-  post "/confirm_change_email/:hash" do |hash|
+  post "/confirm_change_email/:token" do |token|
     302
   end
 
