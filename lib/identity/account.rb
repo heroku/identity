@@ -58,14 +58,14 @@ module Identity
         end
       end
 
-      get "/accept/:id/:hash" do |id, hash|
+      get "/accept/:id/:token" do |id, token|
         begin
           api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
             version: 2)
           res = api.get(path: "/invitation2/show", expects: 200,
             body: URI.encode_www_form({
               "id"    => id,
-              "token" => hash,
+              "token" => token,
             }))
           @user = MultiJson.decode(res.body)
           slim :"account/accept", layout: :"layouts/classic"
@@ -83,7 +83,7 @@ module Identity
           res = api.post(path: "/invitation2/save", expects: 200,
             body: URI.encode_www_form({
               "id"                          => params[:id],
-              "token"                       => params[:hash],
+              "token"                       => params[:token],
               "user[password]"              => params[:password],
               "user[password_confirmation]" => params[:password_confirmation],
               "user[receive_newsletter]"    => params[:receive_newsletter],
@@ -126,18 +126,18 @@ module Identity
         # some problem occurred with the signup
         rescue Excon::Errors::UnprocessableEntity => e
           flash[:error] = decode_error(e.response.body)
-          redirect to("/account/accept/#{id}/#{hash}")
+          redirect to("/account/accept/#{id}/#{token}")
         end
       end
 
-      get "/email/confirm/:hash" do |hash|
+      get "/email/confirm/:token" do |token|
         begin
           # confirming an e-mail change requires authentication
           raise Identity::Errors::NoSession if !@cookie.access_token
           api = HerokuAPI.new(user: nil, pass: @cookie.access_token,
             ip: request.ip, request_ids: request_ids, version: 2)
           # currently returns a 302, but will return a 200
-          api.post(path: "/confirm_change_email/#{hash}", expects: [200, 302])
+          api.post(path: "/confirm_change_email/#{token}", expects: [200, 302])
           redirect to(Config.dashboard_url)
         # user tried to access the change e-mail request under the wrong
         # account
@@ -183,11 +183,11 @@ module Identity
         end
       end
 
-      get "/password/reset/:hash" do |hash|
+      get "/password/reset/:token" do |token|
         begin
           api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
             version: 2)
-          res = api.get(path: "/auth/finish_reset_password/#{hash}",
+          res = api.get(path: "/auth/finish_reset_password/#{token}",
             expects: 200)
 
           @user = MultiJson.decode(res.body)
@@ -197,11 +197,11 @@ module Identity
         end
       end
 
-      post "/password/reset/:hash" do |hash|
+      post "/password/reset/:token" do |token|
         begin
           api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
             version: 2)
-          res = api.post(path: "/auth/finish_reset_password/#{hash}",
+          res = api.post(path: "/auth/finish_reset_password/#{token}",
             expects: 200, body: URI.encode_www_form({
               :password              => params[:password],
               :password_confirmation => params[:password_confirmation],
@@ -213,7 +213,7 @@ module Identity
           slim :"account/password/not_found", layout: :"layouts/zen_backdrop"
         rescue Excon::Errors::UnprocessableEntity => e
           flash[:error] = decode_error(e.response.body)
-          redirect to("/account/password/reset/#{hash}")
+          redirect to("/account/password/reset/#{token}")
         end
       end
     end
