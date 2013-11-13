@@ -68,6 +68,8 @@ module Identity
               "token" => token,
             }))
           @user = MultiJson.decode(res.body)
+          @id = id
+          @token = token
           slim :"account/accept", layout: :"layouts/classic"
         # Core should return a 404, but returns a 422
         rescue Excon::Errors::NotFound, Excon::Errors::UnprocessableEntity => e
@@ -82,16 +84,16 @@ module Identity
             version: 2)
           res = api.post(path: "/invitation2/save", expects: 200,
             body: URI.encode_www_form({
-              "id"                          => params[:id],
-              "token"                       => params[:token],
-              "user[password]"              => params[:password],
-              "user[password_confirmation]" => params[:password_confirmation],
-              "user[receive_newsletter]"    => params[:receive_newsletter],
+              "id"                          => request.POST[:id],
+              "token"                       => request.POST[:token],
+              "user[password]"              => request.POST[:password],
+              "user[password_confirmation]" => request.POST[:password_confirmation],
+              "user[receive_newsletter]"    => request.POST[:receive_newsletter],
             }))
           json = MultiJson.decode(res.body)
 
           # log the user in right away
-          perform_oauth_dance(json["email"], params[:password], nil)
+          perform_oauth_dance(json["email"], request.POST[:password], nil)
 
           @redirect_uri = if @cookie.authorize_params
             # if we know that we're in the middle of an authorization attempt,
@@ -126,7 +128,7 @@ module Identity
         # some problem occurred with the signup
         rescue Excon::Errors::UnprocessableEntity => e
           flash[:error] = decode_error(e.response.body)
-          redirect to("/account/accept/#{params[:id]}/#{params[:token]}")
+          redirect to("/account/accept/#{request.POST[:id]}/#{request.POST[:token]}")
         end
       end
 
