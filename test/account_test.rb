@@ -76,7 +76,7 @@ describe Identity::Account do
     end
   end
 
-  describe "POST /account/accept/:id/:hash" do
+  describe "POST /account/accept/ok" do
     before do
       post "/account/accept/ok"
     end
