@@ -4,6 +4,14 @@ Based on the concept of web-based Heroku user management not belonging in the AP
 
 OAuth session management is achieved by a "meta-OAuth" provider implementation. Identity first authorizes itself to get access to a user's account, then authorizes other consumers that use it as a target by proxying calls to the API (but using only the JSON authentication APIs). The one caveat here is that Identity must have the `can_manage_authorizations` flag set for it in API.
 
+## Issue and Security Vulnerability Reporting
+
+In general Heroku makes extensive use of GitHub issues, and for the
+vast majority of bugs we encourage reporters to use them here.  For
+the limited case of exploitable security vulnerabilities, we ask
+researchers to report problems to security@heroku.com.
+[We also have general reporting guidelines, which list the security team's PGP key](https://www.heroku.com/policy/security#vuln_report).
+
 ## Operations
 
 See [operations](https://github.com/heroku/identity/tree/master/operations.md).
