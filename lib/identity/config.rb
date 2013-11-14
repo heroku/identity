@@ -6,6 +6,10 @@ module Identity
       ENV["COOKIE_ENCRYPTION_KEY"] || raise("missing=COOKIE_ENCRYPTION_KEY")
     end
 
+    def cookie_expire_after
+      (ENV["COOKIE_EXPIRE_AFTER"] || 2592000).to_i
+    end
+
     def dashboard_url
       ENV["DASHBOARD_URL"] || raise("missing=DASHBOARD_URL")
     end

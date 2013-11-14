@@ -6,8 +6,6 @@ describe Identity::Auth do
   def app
     Rack::Builder.new do
       use Rack::Session::Cookie, domain: "example.org"
-      use Identity::Middleware::HerokuCookie,
-        domain: "example.org", key: "heroku.cookie"
       use Rack::Flash
       run Identity::Auth
     end
@@ -303,10 +301,9 @@ describe Identity::Auth do
 
     it "sets a heroku-wide session nonce in the cookie" do
       post "/login", email: "kerry@heroku.com", password: "abcdefgh"
-      assert_equal "1",
-        rack_mock_session.cookie_jar["heroku_session"]
-      assert_equal "8bb579ed-e3a4-41ed-9c1c-719e96618f71",
-        rack_mock_session.cookie_jar["heroku_session_nonce"]
+      assert_includes response_cookie, "heroku_session=1;"
+      assert_includes response_cookie,
+        "heroku_session_nonce=8bb579ed-e3a4-41ed-9c1c-719e96618f71;"
     end
 
     it "doesnt 500 when a user is suspended" do
@@ -371,8 +368,8 @@ describe Identity::Auth do
       post "/login", email: "kerry@heroku.com", password: "abcdefgh"
 
       delete "/logout"
-      assert_equal "", rack_mock_session.cookie_jar["heroku_session"]
-      assert_equal "", rack_mock_session.cookie_jar["heroku_session_nonce"]
+      assert_includes response_cookie, "heroku_session=;"
+      assert_includes response_cookie, "heroku_session_nonce=;"
     end
 
     it "redirects to a given url if it's safe" do
@@ -387,5 +384,11 @@ describe Identity::Auth do
       assert_equal 302, last_response.status
       assert_match %r{/login$}, last_response.headers["Location"]
     end
+  end
+
+  private
+
+  def response_cookie
+    last_response.headers["Set-Cookie"]
   end
 end

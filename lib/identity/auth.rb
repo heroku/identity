@@ -2,6 +2,7 @@ module Identity
   class Auth < Sinatra::Base
     register CookieFixer
     register ErrorHandling
+    register HerokuCookie
     register Sinatra::Namespace
 
     include Helpers::API

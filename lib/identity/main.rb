@@ -14,11 +14,7 @@ module Identity
         Config.old_cookie_encryption_key),
       http_only: true,
       path: '/',
-      expire_after: 2592000
-    use Middleware::HerokuCookie,
-      domain: Config.heroku_cookie_domain,
-      expire_after: 2592000,
-      key: "heroku.cookie"
+      expire_after: Config.cookie_expire_after
 
     # CSRF + Flash should come before the unadorned heroku cookies that follow
     use Identity::CSRF, skip: ["POST:/login", "POST:/oauth/.*"]
