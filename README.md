@@ -92,7 +92,7 @@ rake test
     * Mirrored by:
         * `id-production-eu`: ~~https://id.heroku.com~~ (not activated yet)
     * Consumed by **kernel** apps:
-       * `core`: https://api.heroku.com
+       * `api`: https://api.heroku.com
     * Consumed by **platform** apps:
         * `addons`: https://addons.heroku.com
         * `addons-staging`: https://addons.herokuapp.com
