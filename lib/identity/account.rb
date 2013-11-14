@@ -58,16 +58,18 @@ module Identity
         end
       end
 
-      get "/accept/:id/:hash" do |id, hash|
+      get "/accept/:id/:token" do |id, token|
         begin
           api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
             version: 2)
           res = api.get(path: "/invitation2/show", expects: 200,
             body: URI.encode_www_form({
               "id"    => id,
-              "token" => hash,
+              "token" => token,
             }))
           @user = MultiJson.decode(res.body)
+          @id = id
+          @token = token
           slim :"account/accept", layout: :"layouts/classic"
         # Core should return a 404, but returns a 422
         rescue Excon::Errors::NotFound, Excon::Errors::UnprocessableEntity => e
@@ -76,14 +78,14 @@ module Identity
         end
       end
 
-      post "/accept/:id/:hash" do |id, hash|
+      post "/accept/ok" do
         begin
           api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
             version: 2)
           res = api.post(path: "/invitation2/save", expects: 200,
             body: URI.encode_www_form({
-              "id"                          => id,
-              "token"                       => hash,
+              "id"                          => params[:id],
+              "token"                       => params[:token],
               "user[password]"              => params[:password],
               "user[password_confirmation]" => params[:password_confirmation],
               "user[receive_newsletter]"    => params[:receive_newsletter],
@@ -93,19 +95,20 @@ module Identity
           # log the user in right away
           perform_oauth_dance(json["email"], params[:password], nil)
 
-          # if we know that we're in the middle of an authorization attempt,
-          # continue it
-          if @cookie.authorize_params
+          @redirect_uri = if @cookie.authorize_params
+            # if we know that we're in the middle of an authorization attempt,
+            # continue it
             authorize(@cookie.authorize_params)
-          # users who signed up from a particular source may have a specialized
-          # redirect location; otherwise go to Dashboard
+            # users who signed up from a particular source may have a specialized
+            # redirect location; otherwise go to Dashboard
           elsif json["signup_source"]
-            redirect to(json["signup_source"]["redirect_uri"])
+            json["signup_source"]["redirect_uri"]
           elsif slug = json["signup_source_slug"]
-            redirect to("#{Config.dashboard_url}/signup/finished?#{slug}")
+            "#{Config.dashboard_url}/signup/finished?#{slug}"
           else
-            redirect to("#{Config.dashboard_url}/signup/finished")
+            "#{Config.dashboard_url}/signup/finished"
           end
+          slim :"account/signup_interstitial", layout: :"layouts/zen_backdrop"
         # given client_id wasn't found (API throws a 400 status)
         rescue Excon::Errors::BadRequest
           flash[:error] = "Unknown OAuth client."
@@ -125,18 +128,18 @@ module Identity
         # some problem occurred with the signup
         rescue Excon::Errors::UnprocessableEntity => e
           flash[:error] = decode_error(e.response.body)
-          redirect to("/account/accept/#{id}/#{hash}")
+          redirect to("/account/accept/#{params[:id]}/#{params[:token]}")
         end
       end
 
-      get "/email/confirm/:hash" do |hash|
+      get "/email/confirm/:token" do |token|
         begin
           # confirming an e-mail change requires authentication
           raise Identity::Errors::NoSession if !@cookie.access_token
           api = HerokuAPI.new(user: nil, pass: @cookie.access_token,
             ip: request.ip, request_ids: request_ids, version: 2)
           # currently returns a 302, but will return a 200
-          api.post(path: "/confirm_change_email/#{hash}", expects: [200, 302])
+          api.post(path: "/confirm_change_email/#{token}", expects: [200, 302])
           redirect to(Config.dashboard_url)
         # user tried to access the change e-mail request under the wrong
         # account
@@ -182,11 +185,11 @@ module Identity
         end
       end
 
-      get "/password/reset/:hash" do |hash|
+      get "/password/reset/:token" do |token|
         begin
           api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
             version: 2)
-          res = api.get(path: "/auth/finish_reset_password/#{hash}",
+          res = api.get(path: "/auth/finish_reset_password/#{token}",
             expects: 200)
 
           @user = MultiJson.decode(res.body)
@@ -196,11 +199,11 @@ module Identity
         end
       end
 
-      post "/password/reset/:hash" do |hash|
+      post "/password/reset/:token" do |token|
         begin
           api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
             version: 2)
-          res = api.post(path: "/auth/finish_reset_password/#{hash}",
+          res = api.post(path: "/auth/finish_reset_password/#{token}",
             expects: 200, body: URI.encode_www_form({
               :password              => params[:password],
               :password_confirmation => params[:password_confirmation],
@@ -212,7 +215,7 @@ module Identity
           slim :"account/password/not_found", layout: :"layouts/zen_backdrop"
         rescue Excon::Errors::UnprocessableEntity => e
           flash[:error] = decode_error(e.response.body)
-          redirect to("/account/password/reset/#{hash}")
+          redirect to("/account/password/reset/#{token}")
         end
       end
     end
