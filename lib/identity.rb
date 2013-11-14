@@ -7,12 +7,11 @@ require_relative "identity/errors"
 require_relative "identity/excon_instrumentor"
 require_relative "identity/fernet_cookie_coder"
 require_relative "identity/heroku_api"
+require_relative "identity/heroku_cookie"
 
 require_relative "identity/helpers/log"
 require_relative "identity/helpers/api"
 require_relative "identity/helpers/auth"
-
-require_relative "identity/middleware/heroku_cookie"
 
 # modules
 require_relative "identity/account"

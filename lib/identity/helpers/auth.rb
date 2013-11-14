@@ -100,11 +100,6 @@ module Identity::Helpers
       uri.to_s
     end
 
-    def delete_heroku_cookie(key)
-      response.delete_cookie(key,
-        domain: Identity::Config.heroku_cookie_domain)
-    end
-
     # Performs the complete OAuth dance against the Heroku API in order to
     # provision an identity client token that can be used by Identity to manage
     # the user's client identities.

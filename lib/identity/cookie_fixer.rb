@@ -1,3 +1,5 @@
+require_relative "heroku_cookie"
+
 module Identity
   # This is a temporary "fixer" class to resync any account's Identity and
   # Heroku session cookies that have drifted. Under older implementations, the
@@ -19,8 +21,8 @@ module Identity
       end
 
       app.after do
-        if @cookie && @cookie.session_id && !env["heroku.cookie"]
-          env["heroku.cookie"] = { "nonce" => @cookie.session_id }
+        if @cookie && @cookie.session_id && !env[HerokuCookie::KEY]
+          env[HerokuCookie::KEY] = { "nonce" => @cookie.session_id }
           log :fixed_heroku_cookie, session_id: @cookie.session_id
         end
       end
