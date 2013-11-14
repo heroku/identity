@@ -12,10 +12,6 @@ the limited case of exploitable security vulnerabilities, we ask
 researchers to report problems to security@heroku.com.
 [We also have general reporting guidelines, which list the security team's PGP key](https://www.heroku.com/policy/security#vuln_report).
 
-## Operations
-
-See [operations](https://github.com/heroku/identity/tree/master/operations.md).
-
 ## Usage
 
 ``` bash
@@ -36,56 +32,7 @@ heroku config:add HEROKU_OAUTH_SECRET=...
 git push heroku master
 ```
 
-Your OAuth client will also need to be able to manage authorizations, which is set by an internal flag. Get [heroku-sudo](https://github.com/heroku/heroku-sudo), and flag your client:
-
-```
-heroku sudo clients:update <oauth-client-id> --can-manage-authorizations true
-```
-
-## Deploying
-
-### Preparation/Setup (only needed once, substitute your email address):
-
-```
-export HEROKU_EMAIL_ADDRESS=...
-heroku sudo sharing:add $HEROKU_EMAIL_ADDRESS -a id-staging
-heroku git:remote -a id-staging -r staging
-heroku sudo sharing:add $HEROKU_EMAIL_ADDRESS -a id-production
-heroku git:remote -a id-production -r production
-```
-
-### Deployment
-
-Note: requires api-admin (install/build from http://github.com/heroku/api-admin)
-
-```
-rake test
-git push staging master
-api-test-login --staging
-git push production master
-api-test-login --production
-```
-
-## Debugging Production
-
-### Honeybadger
-
-Uncaught errors are sent to Honeybadger, which can be accessed via:
-
-    heroku addons:open honeybadger -a id-staging
-    heroku addons:open honeybadger -a id-production
-
-In case of a bad API or Identity deploy and SSO is down, there is also a backdoor into the Honeybadger projects. Get credentials from LastPass.
-
-### Logs
-
-Identity keeps fairly detailed logs for each request:
-
-    heroku logs --tail -n 1000 -a id-production
-
-### Splunk
-
-Identity's logs are also drained to the [platform Splunk installation](https://splunk.herokai.com). Identity also injects its request IDs into the Heroku API, so if the UUID of any given Identity request is obtained (i.e. find the `id=<uuid>` attribute in any emitted log line), it can used to bring up all corresponding Identity _and_ API logs in Splunk.
+Your OAuth client will also need to be able to manage authorizations, which is set by an internal flag.
 
 ## Test
 
