@@ -154,7 +154,6 @@ If you don't receive an email, and it's not in your spam folder, this could mean
         redirect_uri: "https://dashboard.heroku.com"
       }
     })
-    422
   end
 end
 
