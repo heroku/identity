@@ -78,6 +78,10 @@ module Identity
         end
       end
 
+      get "/accept/ok" do
+        redirect to("https://dashboard.heroku.com/"), 302
+      end
+
       post "/accept/ok" do
         begin
           api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
