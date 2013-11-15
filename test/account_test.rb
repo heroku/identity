@@ -92,6 +92,15 @@ meta content="3;url=https://dashboard.heroku.com" http-equiv="refresh"
     end
   end
 
+  describe "GET /account/accept/ok" do
+    it "redirects to dashboard.heroku.com/" do
+      get "/account/accept/ok"
+      assert_equal 302, last_response.status
+      assert_equal "https://dashboard.heroku.com/",
+        last_response.headers["Location"]
+    end
+  end
+
   describe "GET /account/email/confirm/:token" do
     it "requires login" do
       get "/account/email/confirm/c45685917ef644198a0fececa10d479a"
