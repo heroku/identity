@@ -264,7 +264,7 @@ module Identity
       @cookie.clear
 
       # clear heroku globally-scoped cookies
-      env["heroku.cookie"] = nil
+      env[HerokuCookie::KEY] = nil
 
       url = if params[:url] && safe_redirect?(params[:url])
         params[:url]
