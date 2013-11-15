@@ -10,15 +10,15 @@ describe Identity::HerokuCookie do
   it "sets the Heroku cookie when appropriate" do
     @app = new_app({ "oauth_session_id" => "1234" })
     get "/"
-    assert_includes response_cookie, "heroku_session=1;"
-    assert_includes response_cookie, "heroku_session_nonce=1234;"
+    assert_includes response_cookie, "heroku_session=1; domain=.heroku.com; path=/;"
+    assert_includes response_cookie, "heroku_session_nonce=1234; domain=.heroku.com; path=/;"
   end
 
   it "deletes the Heroku cookie when appropriate" do
     @app = new_app({})
     get "/"
-    assert_includes response_cookie, "heroku_session=;"
-    assert_includes response_cookie, "heroku_session_nonce=;"
+    assert_includes response_cookie, "heroku_session=; domain=.heroku.com; path=/;"
+    assert_includes response_cookie, "heroku_session_nonce=; domain=.heroku.com; path=/;"
   end
 
   private
