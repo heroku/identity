@@ -41,6 +41,7 @@ module Identity
       def delete_heroku_cookie(headers, key)
         Rack::Utils.delete_cookie_header!(headers, key,
           domain: Config.heroku_cookie_domain,
+          path:   "/",
         )
       end
 
@@ -48,6 +49,7 @@ module Identity
         Rack::Utils.set_cookie_header!(headers, key,
           domain:  Config.heroku_cookie_domain,
           expires: Time.now + Config.cookie_expire_after,
+          path:    "/",
           value:   value
         )
       end
