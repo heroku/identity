@@ -8,37 +8,27 @@ describe Identity::HerokuCookie do
   end
 
   it "sets the Heroku cookie when appropriate" do
-    @app = new_app({ "nonce" => "1234" })
+    @app = new_app({ "oauth_session_id" => "1234" })
     get "/"
     assert_includes response_cookie, "heroku_session=1;"
     assert_includes response_cookie, "heroku_session_nonce=1234;"
   end
 
   it "deletes the Heroku cookie when appropriate" do
-    @app = new_app(nil)
+    @app = new_app({})
     get "/"
     assert_includes response_cookie, "heroku_session=;"
     assert_includes response_cookie, "heroku_session_nonce=;"
   end
 
-  it "persists the Heroku cookie through a standard request" do
-    @app = new_app(nil)
-    header "Cookie", "heroku_session=1;heroku_session_nonce=1234"
-    get "/"
-    assert_includes response_cookie, "heroku_session=1;"
-    assert_includes response_cookie, "heroku_session_nonce=1234;"
-  end
-
   private
 
-  def new_app(heroku_cookie)
+  def new_app(cookie)
     Sinatra.new do
       register Identity::HerokuCookie
 
       get "/" do
-        if heroku_cookie
-          env[Identity::HerokuCookie::KEY] = heroku_cookie
-        end
+        @cookie = Identity::Cookie.new(cookie)
       end
     end
   end

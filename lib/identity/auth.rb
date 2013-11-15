@@ -1,6 +1,5 @@
 module Identity
   class Auth < Sinatra::Base
-    register CookieFixer
     register ErrorHandling
     register HerokuCookie
     register Sinatra::Namespace
@@ -262,9 +261,6 @@ module Identity
 
     def logout
       @cookie.clear
-
-      # clear heroku globally-scoped cookies
-      env[HerokuCookie::KEY] = nil
 
       url = if params[:url] && safe_redirect?(params[:url])
         params[:url]

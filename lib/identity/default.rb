@@ -1,7 +1,7 @@
 module Identity
   class Default < Sinatra::Base
-    register CookieFixer
     register ErrorHandling
+    register HerokuCookie
 
     configure do
       set :views, "#{Config.root}/views"
