@@ -11,33 +11,19 @@ module Identity
   # determine whether or not the logged in user has changed since the last time
   # the browser visited.
   module HerokuCookie
-    KEY = "heroku.cookie"
-
     def self.registered(app)
       app.instance_eval do
         include Helpers::Log
         include Methods
       end
 
-      app.before do
-        if nonce = request.cookies["heroku_session_nonce"]
-          env[KEY] = {
-            "nonce" => nonce
-          }
-        end
-
-        log :read_heroku_cookie,
-          nonce: env[KEY] ? env[KEY]["nonce"] : "unset",
-          oauth_dance_id: request.cookies["oauth_dance_id"]
-      end
-
       app.after do
-        if env[KEY]
+        if @cookie && @cookie.session_id
           set_heroku_cookie(headers, "heroku_session", "1")
-          set_heroku_cookie(headers, "heroku_session_nonce", env[KEY]["nonce"])
+          set_heroku_cookie(headers, "heroku_session_nonce", @cookie.session_id)
 
           log :write_heroku_cookie,
-            nonce: env[KEY]["nonce"],
+            nonce: @cookie.session_id,
             oauth_dance_id: request.cookies["oauth_dance_id"]
         else
           delete_heroku_cookie(headers, "heroku_session")

@@ -170,11 +170,6 @@ module Identity::Helpers
         raise "missing=expires_in"    unless @cookie.access_token_expires_at
         raise "missing=refresh_token" unless @cookie.refresh_token
 
-        # cookies with a domain scoped to all heroku domains, used to set a
-        # session nonce value so that consumers can recognize when the logged
-        # in user has changed
-        env["heroku.cookie"] = { "nonce" => @cookie.session_id }
-
         log :oauth_dance_complete, session_id: @cookie.session_id
       end
     end
