@@ -81,7 +81,7 @@ module Identity
       # This endpoint is unreachable except if a user manually hits it by
       # manipulating their browser during the signup process.
       get "/accept/ok" do
-        redirect to("https://dashboard.heroku.com/"), 302
+        redirect to("https://dashboard.heroku.com/")
       end
 
       post "/accept/ok" do
