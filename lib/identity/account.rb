@@ -78,6 +78,12 @@ module Identity
         end
       end
 
+      # This endpoint is unreachable except if a user manually hits it by
+      # manipulating their browser during the signup process.
+      get "/accept/ok" do
+        redirect to("https://dashboard.heroku.com/")
+      end
+
       post "/accept/ok" do
         begin
           api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
