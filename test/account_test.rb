@@ -96,7 +96,7 @@ meta content="3;url=https://dashboard.heroku.com" http-equiv="refresh"
     it "redirects to dashboard.heroku.com/" do
       get "/account/accept/ok"
       assert_equal 302, last_response.status
-      assert_equal "https://dashboard.heroku.com/",
+      assert_equal "https://dashboard.heroku.com",
         last_response.headers["Location"]
     end
   end
