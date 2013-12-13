@@ -117,39 +117,23 @@ module Identity::Helpers
         if otp_code
           options[:headers].merge!({ "Heroku-Two-Factor-Code" => otp_code })
         end
-        api = Identity::HerokuAPI.new(options)
-        token = nil
+
+        api  = Identity::HerokuAPI.new(options)
+        auth = nil
 
         begin
-          # create a session on which we can group any authorization grants and
-          # tokens which will be created during this Identity, err, session
-          res = log :create_session do
-            api.post(path: "/oauth/sessions", expects: 201)
-          end
-          session = MultiJson.decode(res.body)
-          @cookie.session_id = session["id"]
-
           res = log :create_authorization do
             api.post(path: "/oauth/authorizations", expects: 201,
               body: MultiJson.encode({
-                client:        { id: Identity::Config.heroku_oauth_id },
-                response_type: "code",
-                session:       { id: @cookie.session_id },
+                client:         { id: Identity::Config.heroku_oauth_id },
+                create_session: true,
+                create_tokens:  true,
+                response_type:  "code",
+                session:        { id: @cookie.session_id },
               }))
           end
 
-          grant_code = MultiJson.decode(res.body)["grant"]["code"]
-
-          # exchange authorization grant code for an access/refresh token set
-          res = log :create_token do
-            api.post(path: "/oauth/tokens", expects: 201,
-              body: MultiJson.encode({
-                grant:  { code: grant_code, type: "authorization_code" },
-                client: { secret: Identity::Config.heroku_oauth_secret },
-              }))
-          end
-          # store appropriate tokens to session
-          token = MultiJson.decode(res.body)
+          auth = MultiJson.decode(res.body)
         rescue Excon::Errors::UnprocessableEntity => e
           err = MultiJson.decode(e.response.body)
           if err['id'] == "suspended"
@@ -159,11 +143,12 @@ module Identity::Helpers
           end
         end
 
-        @cookie.access_token            = token["access_token"]["token"]
+        @cookie.session_id              = auth["session"]["id"]
+        @cookie.access_token            = auth["access_token"]["token"]
         @cookie.access_token_expires_at =
-          Time.now + token["access_token"]["expires_in"]
-        @cookie.refresh_token           = token["refresh_token"]["token"]
-        @cookie.user_id                 = token["user"]["id"]
+          Time.now + auth["access_token"]["expires_in"]
+        @cookie.refresh_token           = auth["refresh_token"]["token"]
+        @cookie.user_id                 = auth["user"]["id"]
 
         # some basic sanity checks
         raise "missing=access_token"  unless @cookie.access_token
