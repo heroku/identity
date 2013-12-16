@@ -129,7 +129,6 @@ module Identity::Helpers
                 create_session: true,
                 create_tokens:  true,
                 response_type:  "code",
-                session:        { id: @cookie.session_id },
               }))
           end
 
