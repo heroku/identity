@@ -57,7 +57,8 @@ If you don't receive an email, and it's not in your spam folder, this could mean
   post "/oauth/authorizations" do
     authorized!
     status(201)
-    MultiJson.encode({
+
+    authorization = {
       id:         "68e3146b-be7e-4520-b60b-c4f06623084f",
       scope:      ["global"],
       created_at: Time.now,
@@ -74,7 +75,31 @@ If you don't receive an email, and it's not in your spam folder, this could mean
           expires_in: 300,
       },
       refresh_token: nil,
-    })
+      user: {
+        id: "06dcaabe-f7cd-473a-aa10-df54045ff69c"
+      },
+    }
+
+    if @body["create_session"]
+      authorization.merge!(
+        session: { id: "8bb579ed-e3a4-41ed-9c1c-719e96618f71" })
+    end
+
+    if @body["create_tokens"]
+      authorization.merge!(
+        access_token: {
+          id:         "access-token123@heroku.com",
+          token:      "e51e8a64-29f1-4bbf-997e-391d84aa12a9",
+          expires_in: 7200,
+        },
+        refresh_token: {
+          id:         "refresh-token123@heroku.com",
+          token:      "faa180e4-5844-42f2-ad66-0c574a1dbed2",
+          expires_in: 2592000
+        })
+    end
+
+    MultiJson.encode(authorization)
   end
 
   get "/oauth/clients/:id" do |id|
@@ -86,15 +111,6 @@ If you don't receive an email, and it's not in your spam folder, this could mean
       ignores_delinquent: false,
       redirect_uri:       "https://example.com/oauth/callback/heroku",
       trusted:            true,
-    })
-  end
-
-  post "/oauth/sessions" do
-    status(201)
-    MultiJson.encode({
-      id:          "8bb579ed-e3a4-41ed-9c1c-719e96618f71",
-      description: "Session @ 127.0.0.1",
-      expires_in:  2592000,
     })
   end
 
