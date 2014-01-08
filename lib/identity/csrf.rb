@@ -14,10 +14,6 @@ module Identity
         expected_token: env['rack.session']['csrf.token'],
         id: env["REQUEST_IDS"]
       [403, { 'Content-Type' => 'text/html', 'Content-Length' => '0' }, []]
-    rescue Exception => e
-      Identity.log(:exception, class: e.class.name, message: e.message,
-        csrf: true, backtrace: e.backtrace.inspect)
-      [500, { 'Content-Type' => 'text/html', 'Content-Length' => '0' }, []]
     end
   end
 end
