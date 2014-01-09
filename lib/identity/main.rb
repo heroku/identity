@@ -1,5 +1,6 @@
 module Identity
   Main = Rack::Builder.new do
+    use Identity::RescueErrors
     use Rack::Instruments,
       context: { app: "identity" },
       response_request_id: true
