@@ -5,7 +5,7 @@ describe Identity::Account do
 
   def app
     Rack::Builder.new do
-      use Rack::Session::Cookie
+      use Rack::Session::Cookie, secret: "my-secret"
       use Rack::Flash
       run Identity::Account
     end
