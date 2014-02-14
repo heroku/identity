@@ -5,7 +5,7 @@ describe Identity::Auth do
 
   def app
     Rack::Builder.new do
-      use Rack::Session::Cookie, domain: "example.org"
+      use Rack::Session::Cookie, domain: "example.org", secret: "my-secret"
       use Rack::Flash
       run Identity::Auth
     end
