@@ -27,8 +27,8 @@ $(document).ready(function() {
 
   var passwordMessaging = function(value)
   {    
-    var minLength  = value.length >= 6,
-        goodLength = value.length >= 8,
+    var minLength  = value.length >= 8,
+        goodLength = value.length >= 12,
         hasNumeric = value.match(/\d/),
         hasAlpha   = value.match(/[a-z]/),
         hasCapital = value.match(/[A-Z]/),
@@ -43,7 +43,7 @@ $(document).ready(function() {
           strong:  'Strong password',
           good:    'Good password',
           weak:    'Weak password',
-          defaulty: 'minimum 6 characters letters,<br>numbers, and symbols'
+          defaulty: 'minimum 8 characters letters,<br>numbers, and symbols'
         },
         passwordRating;
 
