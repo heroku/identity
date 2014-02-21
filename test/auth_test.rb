@@ -334,6 +334,12 @@ describe Identity::Auth do
         end
       end
 
+      it "redirects to /login if we have no email or password" do
+        get "/login/two-factor"
+        assert_equal 302, last_response.status
+        assert_match %r{/login$}, last_response.headers["Location"]
+      end
+
       it "redirects to /login/two-factor to prompt for the code" do
         post "/login", email: "kerry@heroku.com", password: "abcdefgh"
         assert_equal 302, last_response.status
