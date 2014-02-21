@@ -23,7 +23,11 @@ module Identity
       end
 
       get "/two-factor" do
-        slim :"two-factor", layout: :"layouts/zen_backdrop"
+        if @cookie.email && @cookie.password
+          slim :"two-factor", layout: :"layouts/zen_backdrop"
+        else
+          redirect to("/login")
+        end
       end
 
       # Creates a session for a user by receiving their username and password.
