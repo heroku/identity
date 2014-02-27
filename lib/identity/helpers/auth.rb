@@ -122,7 +122,7 @@ module Identity::Helpers
         auth = nil
 
         begin
-          res = log :create_authorization do
+          res = log :create_authorization, user: user do
             api.post(path: "/oauth/authorizations", expects: 201,
               body: MultiJson.encode({
                 client:         { id: Identity::Config.heroku_oauth_id },
@@ -154,7 +154,7 @@ module Identity::Helpers
         raise "missing=expires_in"    unless @cookie.access_token_expires_at
         raise "missing=refresh_token" unless @cookie.refresh_token
 
-        log :oauth_dance_complete, session_id: @cookie.session_id
+        log :oauth_dance_complete, session_id: @cookie.session_id, user: user
       end
     end
 
