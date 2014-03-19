@@ -70,7 +70,13 @@ module Identity
           @user = MultiJson.decode(res.body)
           @id = id
           @token = token
-          slim :"account/accept", layout: :"layouts/classic"
+
+          experimental_signup = @user["signup_source_slug"] == Config.experimental_signup_slug
+          if experimental_signup
+            redirect to("#{Config.experimental_signup_url}/account/accept/#{@id}/#{@token}")
+          else
+            slim :"account/accept", layout: :"layouts/classic"
+          end
         # Core should return a 404, but returns a 422
         rescue Excon::Errors::NotFound, Excon::Errors::UnprocessableEntity => e
           flash[:error] = decode_error(e.response.body)

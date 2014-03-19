@@ -18,6 +18,14 @@ module Identity
       ENV["HEROKU_API_URL"] || raise("missing=HEROKU_API_URL")
     end
 
+    def experimental_signup_url
+      ENV["EXPERIMENTAL_SIGNUP_URL"] || "https://signup.heroku.com"
+    end
+
+    def experimental_signup_slug
+      ENV["EXPERIMENTAL_SIGNUP_SLUG"] || "dc"
+    end
+
     def heroku_oauth_id
       ENV["HEROKU_OAUTH_ID"] || raise("missing=HEROKU_OAUTH_ID")
     end
