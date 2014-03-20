@@ -83,7 +83,7 @@ describe Identity::Account do
       stub_heroku_api do
         get "/invitation2/show" do
           MultiJson.encode({
-            signup_source_slug: "experimental", 
+            signup_source_slug: "experimental?foo=bar",
           })
         end
       end
