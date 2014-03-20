@@ -74,6 +74,24 @@ describe Identity::Account do
       get "/account/accept/123/456abc"
       assert_equal 200, last_response.status
     end
+
+    it "redirects to experimental signup when appropriate" do
+      stub(Identity::Config).experimental_signup_slug { "experimental" }
+      stub(Identity::Config).experimental_signup_url {
+        "http://experiment.heroku.com"
+      }
+      stub_heroku_api do
+        get "/invitation2/show" do
+          MultiJson.encode({
+            signup_source_slug: "experimental", 
+          })
+        end
+      end
+      get "/account/accept/123/456abc"
+      assert_equal 302, last_response.status
+      assert_equal "http://experiment.heroku.com/account/accept/123/456abc",
+        last_response.headers["Location"]
+    end
   end
 
   describe "POST /account/accept/ok" do
