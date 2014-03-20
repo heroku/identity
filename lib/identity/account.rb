@@ -74,7 +74,8 @@ module Identity
           # Try an "experimental" signup flow if the user matched a configured
           # signup slug. Currently in use by Devcenter to improve the user
           # on-boarding experience.
-          if @user["signup_source_slug"] == Config.experimental_signup_slug
+          slug = @user["signup_source_slug"]
+          if slug && slug == Config.experimental_signup_slug
             redirect to("#{Config.experimental_signup_url}#{request.path_info}")
           else
             slim :"account/accept", layout: :"layouts/classic"

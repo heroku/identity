@@ -19,11 +19,11 @@ module Identity
     end
 
     def experimental_signup_url
-      ENV["EXPERIMENTAL_SIGNUP_URL"] || "https://signup.heroku.com"
+      ENV["EXPERIMENTAL_SIGNUP_URL"] || raise("missing=EXPERIMENTAL_SIGNUP_URL")
     end
 
     def experimental_signup_slug
-      ENV["EXPERIMENTAL_SIGNUP_SLUG"] || "dc"
+      ENV["EXPERIMENTAL_SIGNUP_SLUG"]
     end
 
     def heroku_oauth_id
