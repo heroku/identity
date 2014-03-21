@@ -75,6 +75,8 @@ module Identity
           # signup slug. Currently in use by Devcenter to improve the user
           # on-boarding experience.
           slug = @user["signup_source_slug"]
+          # the split here cleans out the campaign stuff added in
+          # #generate_referral_slug
           if slug && slug.split('?').first == Config.experimental_signup_slug
             redirect to("#{Config.experimental_signup_url}#{request.path_info}")
           else
