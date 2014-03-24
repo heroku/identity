@@ -13,7 +13,7 @@ module Identity
         actual_token: req.params['_csrf'],
         expected_token: env['rack.session']['csrf.token'],
         id: env["REQUEST_IDS"],
-        referrer: request.referrer
+        referrer: env["HTTP_REFERER"]
       [403, { 'Content-Type' => 'text/html', 'Content-Length' => '0' }, []]
     end
   end
