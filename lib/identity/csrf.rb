@@ -12,7 +12,8 @@ module Identity
       Identity.log :invalid_csrf_token,
         actual_token: req.params['_csrf'],
         expected_token: env['rack.session']['csrf.token'],
-        id: env["REQUEST_IDS"]
+        id: env["REQUEST_IDS"],
+        referrer: env["HTTP_REFERER"]
       [403, { 'Content-Type' => 'text/html', 'Content-Length' => '0' }, []]
     end
   end
