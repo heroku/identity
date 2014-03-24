@@ -3,6 +3,7 @@
 == render :slim, :"_flash", layout: false
 #login.dialog
   form.panel-body method="post" action="/login"
+    input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
     fieldset
       .field
         label for="email" Email
