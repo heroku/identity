@@ -19,7 +19,6 @@ module Identity
 
     # CSRF + Flash should come before the unadorned heroku cookies that follow
     use Identity::CSRF, skip: [
-      "POST:/login",
       # skip CSRF for POST /oauth/token (the second step of a standard OAuth
       # flow)
       "POST:/oauth/.*"
