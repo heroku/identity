@@ -95,6 +95,8 @@ module Identity
         redirect to(Config.dashboard_url)
       end
 
+      # This endpoint is NOT protected against CSRF, because Dev Center wants to
+      # reach it from a different app to test a different onboarding experience. 
       post "/accept/ok" do
         begin
           api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
