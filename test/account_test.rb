@@ -95,17 +95,34 @@ describe Identity::Account do
   end
 
   describe "POST /account/accept/ok" do
-    before do
-      post "/account/accept/ok"
-    end
-
     it "completes then shows interstitial page" do
+      post "/account/accept/ok"
       assert_equal 200, last_response.status
     end
 
     it "render interstitial and check meta content" do
+      post "/account/accept/ok"
       assert_match <<-eos.strip, last_response.body
 meta content="3;url=https://dashboard.heroku.com" http-equiv="refresh"
+      eos
+    end
+
+    it "redirects to experimental signup when appropriate" do
+      stub(Identity::Config).experimental_signup_slug { "experimental" }
+      stub(Identity::Config).experimental_signup_url {
+        "https://experiment.heroku.com"
+      }
+      stub_heroku_api do
+        post "/invitation2/save" do
+          MultiJson.encode({
+            email: "some@example.com",
+            signup_source_slug: "experimental?foo=bar",
+          })
+        end
+      end
+      post "/account/accept/ok"
+      assert_match <<-eos.strip, last_response.body
+meta content="3;url=https://experiment.heroku.com/account/accept/ok" http-equiv="refresh"
       eos
     end
   end
