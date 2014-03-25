@@ -74,10 +74,7 @@ module Identity
           # Try an "experimental" signup flow if the user matched a configured
           # signup slug. Currently in use by Devcenter to improve the user
           # on-boarding experience.
-          slug = @user["signup_source_slug"]
-          # the split here cleans out the campaign stuff added in
-          # #generate_referral_slug
-          if slug && slug.split('?').first == Config.experimental_signup_slug
+          if experimental_signup_slug?(@user["signup_source_slug"])
             redirect to("#{Config.experimental_signup_url}#{request.path_info}")
           else
             slim :"account/accept", layout: :"layouts/classic"
@@ -96,7 +93,7 @@ module Identity
       end
 
       # This endpoint is NOT protected against CSRF, because Dev Center wants to
-      # reach it from a different app to test a different onboarding experience. 
+      # reach it from a different app to test a different onboarding experience.
       post "/accept/ok" do
         begin
           api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
@@ -281,6 +278,12 @@ module Identity
       else
         return "#{original_slug}?#{uri.query}"
       end
+    end
+
+    def experimental_signup_slug?(slug)
+      # the split here cleans out the campaign stuff added in
+      # #generate_referral_slug
+      slug && slug.split('?').first == Config.experimental_signup_slug
     end
   end
 end
