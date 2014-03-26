@@ -25,7 +25,10 @@ $(document).ready(function() {
 
   var applyPasswordMeter = function() {
     var $button = $('input#change_passwd'),
-        $hint = $('span.hint');
+        $hint = $('span.hint'),
+        $pwd = $('#user_password'),
+        $pwdCon = $('#user_password_confirmation'),
+        $pwdFields = $('#user_password, #user_password_confirmation');
 
     var passwordMessaging = function(value)
     {
@@ -65,19 +68,19 @@ $(document).ready(function() {
       $hint.html(hints[passwordRating]).addClass(passwordRating);
     };
 
-    $('#user_password').bind('keyup', function(){ passwordMessaging(this.value) });
-    $('#user_password_confirmation').bind('keyup', function(){
-      var password = $('#user_password').val(),
-          password_confirmation = $('#user_password_confirmation').val();
+    $pwd.bind('keyup', function(){ passwordMessaging(this.value) });
+    $pwdCon.bind('keyup', function(){
+      var password = $pwd.val(),
+          password_confirmation = $pwdCon.val();
 
       if(password && password === password_confirmation)
         passwordMessaging(this.value);
     });
-    $passwordFields = $('#user_password, #user_password_confirmation');
+
 
     $button.bind('click', function(e){
-      var password = $('#user_password').val(),
-          password_confirmation = $('#user_password_confirmation').val();
+      var password = $pwd.val(),
+          password_confirmation = $pwdCon.val();
 
       if(password && password_confirmation && password !== password_confirmation)
       {
@@ -91,11 +94,9 @@ $(document).ready(function() {
       }
     });
 
-    $passwordFields.bind('focus', function(){
-      if( $('.new-password .hint.bad-match').size() )
-      {
-        $('.new-password .hint').removeClass('bad-match')
-
+    $pwdFields.bind('focus', function(){
+      if ($hint.hasClass('bad-match')) {
+        $hint.removeClass('bad-match');
         passwordMessaging('');
       }
     });
