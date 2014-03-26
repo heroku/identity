@@ -30,7 +30,7 @@ $(document).ready(function() {
         $pwdCon = $('#user_password_confirmation'),
         $pwdFields = $('#user_password, #user_password_confirmation');
 
-    var passwordMessaging = function() {
+    var ratePassword = function() {
       var value = $pwd.val(),
           minLength  = value.length >= 8,
           goodLength = value.length >= 12,
@@ -63,17 +63,17 @@ $(document).ready(function() {
         $button.attr('disabled','true').addClass('disabled');
       }
 
-      $hint.html(hints[passwordRating]).addClass(passwordRating);
+      $hint.html(hints[passwordRating]).addClass(ratePassword);
     };
 
-    $pwd.bind('keyup', passwordMessaging);
+    $pwd.bind('keyup', ratePassword);
 
     $pwdCon.bind('keyup', function() {
       var password = $pwd.val(),
           password_confirmation = $pwdCon.val();
 
       if(password && password === password_confirmation) {
-        passwordMessaging();
+        ratePassword();
       }
     });
 
@@ -95,12 +95,12 @@ $(document).ready(function() {
     $pwdFields.bind('focus', function() {
       if ($hint.hasClass('bad-match')) {
         $hint.removeClass('bad-match');
-        passwordMessaging();
+        ratePassword();
       }
     });
 
     if ($pwd.length > 0) {
-      passwordMessaging();
+      ratePassword();
     }
   }
 
