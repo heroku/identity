@@ -24,7 +24,8 @@ $(document).ready(function() {
   // ********************* PASSWORD METER
 
   var applyPasswordMeter = function() {
-    var $button = $('input#change_passwd');
+    var $button = $('input#change_passwd'),
+        $hint = $('span.hint');
 
     var passwordMessaging = function(value)
     {
@@ -37,9 +38,7 @@ $(document).ready(function() {
 
       var weak = minLength,
           good = goodLength && hasAlpha && hasNumeric,
-          strong = goodLength && hasAlpha && hasNumeric && hasCapital && hasNonAlphaNumeric;
-
-      var $hint = $('span.hint'),
+          strong = goodLength && hasAlpha && hasNumeric && hasCapital && hasNonAlphaNumeric,
           hints = {
             strong:  'Strong password',
             good:    'Good password',
@@ -82,7 +81,7 @@ $(document).ready(function() {
 
       if(password && password_confirmation && password !== password_confirmation)
       {
-        $('.new-password .hint')
+        $hint
           .text('Passwords do not match')
           .removeClass('weak')
           .removeClass('good')
