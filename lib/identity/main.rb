@@ -21,7 +21,15 @@ module Identity
     use Identity::CSRF, skip: [
       # skip CSRF for POST /oauth/token (the second step of a standard OAuth
       # flow)
-      "POST:/oauth/.*"
+      "POST:/oauth/.*",
+
+      # skip CSRF for POST /account/accept/ok (where users confirm their account
+      # and set their password) so Dev Center can submit this form from a
+      # different app and provide a different on-boarding experience.
+      # It seems dangerous, but the form can only be used once and needs
+      # a unique user_id / token combination to work that is only shared with
+      # the user's email address after signing up.
+      "POST:/account/accept/ok"
     ]
     use Rack::Flash
 
