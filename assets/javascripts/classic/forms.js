@@ -66,7 +66,7 @@ $(document).ready(function() {
       $hint.html(hints[passwordRating]).addClass(passwordRating);
     };
 
-    $pwd.bind('keyup', function(){ passwordMessaging() });
+    $pwd.bind('keyup', passwordMessaging);
 
     $pwdCon.bind('keyup', function() {
       var password = $pwd.val(),
