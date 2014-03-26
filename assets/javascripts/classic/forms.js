@@ -63,7 +63,7 @@ $(document).ready(function() {
         $button.attr('disabled','true').addClass('disabled');
       }
 
-      $hint.html(hints[passwordRating]).addClass(ratePassword);
+      $hint.html(hints[passwordRating]).addClass(passwordRating);
     };
 
     $pwd.bind('keyup', ratePassword);
