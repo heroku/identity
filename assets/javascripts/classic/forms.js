@@ -75,12 +75,13 @@ $(document).ready(function() {
     });
     $passwordFields = $('#user_password, #user_password_confirmation');
 
-    $passwordFields.bind('blur', function(){
+    $button.bind('click', function(e){
       var password = $('#user_password').val(),
           password_confirmation = $('#user_password_confirmation').val();
 
       if(password && password_confirmation && password !== password_confirmation)
       {
+        e.preventDefault();
         $hint
           .text('Passwords do not match')
           .removeClass('weak')
