@@ -34,7 +34,8 @@ module Identity::Helpers
       # authorized it
       if !client["trusted"]
         res = log :get_authorizations do
-          api.get(path: "/oauth/authorizations", expects: [200, 401])
+          api.get(path: "/oauth/authorizations", expects: [200, 401],
+            headers: { "Range" => "id ..; max=1000" })
         end
 
         logout if res.status == 401
