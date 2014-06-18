@@ -22,8 +22,8 @@ module Identity
       ENV["EXPERIMENTAL_SIGNUP_URL"] || raise("missing=EXPERIMENTAL_SIGNUP_URL")
     end
 
-    def experimental_signup_slug
-      ENV["EXPERIMENTAL_SIGNUP_SLUG"]
+    def experimental_signup_slugs
+      ENV["EXPERIMENTAL_SIGNUP_SLUG"].to_s.split(',')
     end
 
     def heroku_oauth_id
