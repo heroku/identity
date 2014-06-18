@@ -76,7 +76,7 @@ describe Identity::Account do
     end
 
     it "redirects to experimental signup when appropriate" do
-      stub(Identity::Config).experimental_signup_slug { "experimental" }
+      stub(Identity::Config).experimental_signup_slugs { ["experimental"] }
       stub(Identity::Config).experimental_signup_url {
         "http://experiment.heroku.com"
       }
@@ -108,7 +108,7 @@ meta content="3;url=https://dashboard.heroku.com" http-equiv="refresh"
     end
 
     it "redirects to experimental signup when appropriate" do
-      stub(Identity::Config).experimental_signup_slug { "experimental" }
+      stub(Identity::Config).experimental_signup_slugs { ["experimental"] }
       stub(Identity::Config).experimental_signup_url {
         "https://experiment.heroku.com"
       }

@@ -283,9 +283,11 @@ module Identity
     end
 
     def experimental_signup_slug?(slug)
+      return false unless slug
       # the split here cleans out the campaign stuff added in
       # #generate_referral_slug
-      slug && slug.split('?').first == Config.experimental_signup_slug
+      clean_slug = slug.split('?').first
+      Config.experimental_signup_slugs.include?(clean_slug)
     end
   end
 end
