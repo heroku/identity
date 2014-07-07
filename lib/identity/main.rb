@@ -37,6 +37,7 @@ module Identity
       mount Account
       mount Assets
       mount Auth
+      mount Robots
       run   Default # index + error handlers
     }
   end
