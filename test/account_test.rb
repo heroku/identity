@@ -218,6 +218,16 @@ meta content="3;url=https://experiment.heroku.com/account/accept/ok" http-equiv=
   end
 
   describe "GET /signup/:slug" do
+    it "redirects to the signup app preserving query params if the slug is experimental" do
+      stub(Identity::Config).experimental_signup_slugs { ["experimental"] }
+      stub(Identity::Config).experimental_signup_url {
+        "https://experiment.heroku.com"
+      }
+      get "/signup/experimental?foo=bar"
+      assert_equal 302, last_response.status
+      assert_equal "https://experiment.heroku.com/signup/experimental?foo=bar", last_response.headers["Location"]
+    end
+
     it "shows a new account page" do
       get "/signup/facebook"
       assert_equal 200, last_response.status

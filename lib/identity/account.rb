@@ -244,8 +244,17 @@ module Identity
     end
 
     get "/signup/:slug" do |slug|
-      @cookie.signup_source = slug
-      slim :signup, layout: :"layouts/zen_backdrop"
+      # Try an "experimental" signup flow if the user matched a configured
+      # signup slug. Currently in use by Devcenter to improve the user
+      # on-boarding experience.
+      if experimental_signup_slug?(slug)
+        signup_url = "#{Config.experimental_signup_url}#{request.path}"
+        signup_url += "?#{request.query_string}" if params.any?
+        redirect to(signup_url)
+      else
+        @cookie.signup_source = slug
+        slim :signup, layout: :"layouts/zen_backdrop"
+      end
     end
 
     private
