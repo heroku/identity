@@ -35,9 +35,13 @@ module Identity
           headers: {
             "Accept" => request.env["HTTP_ACCEPT"] || "application/json"
           })
-        res = api.get(path: "/account", expects: 200)
-        content_type(:json)
-        res.body
+        res = api.get(path: "/account")
+        if res.status != 200
+          return 401
+        else
+          content_type(:json)
+          res.body
+        end
       end
 
       post do

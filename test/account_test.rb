@@ -21,6 +21,29 @@ describe Identity::Account do
       get "/account"
       assert_equal 401, last_response.status
     end
+
+    it "responds with a 401 with an invalid session" do
+      stub_heroku_api do
+        get "/account" do
+          halt 401
+        end
+      end
+      authorize "", "secret"
+      get "/account"
+      assert_equal 401, last_response.status
+    end
+
+    it "proxies to the API" do
+      stub_heroku_api do
+        get "/account" do
+          "{}"
+        end
+      end
+      authorize "", "secret"
+      get "/account"
+      assert_equal 200, last_response.status
+      assert_equal "{}", last_response.body
+    end
   end
 
   describe "POST /account" do
