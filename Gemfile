@@ -12,6 +12,7 @@ gem "multi_json"
 gem "oj" # fast json
 gem "puma"
 gem "rack"
+gem "geocoder" # must be loaded after rack
 gem "rack_csrf",       require: "rack/csrf"
 gem "rack-flash3",     require: "rack/flash"
 gem "rack-instruments"

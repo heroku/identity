@@ -70,7 +70,7 @@ module Identity
           @user = MultiJson.decode(res.body)
           @id = id
           @token = token
-
+          @display_newsletter = display_newsletter?(request.location)
           # Try an "experimental" signup flow if the user matched a configured
           # signup slug. Currently in use by Devcenter to improve the user
           # on-boarding experience.
@@ -297,6 +297,10 @@ module Identity
       # #generate_referral_slug
       clean_slug = slug.split('?').first
       Config.experimental_signup_slugs.include?(clean_slug)
+    end
+
+    def display_newsletter?(location)
+      location && %w{ Canada Germany Netherlands }.include?(location.country)
     end
   end
 end

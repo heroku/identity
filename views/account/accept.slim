@@ -21,9 +21,12 @@
       .field
         label for="user_password_confirmation" Confirm Password
         input#user_password_confirmation.text type="password" name="password_confirmation" size="30"
-      .field.newsletter
-        input#receive_newsletter type="checkbox" name="receive_newsletter" value="true"
-        label for="receive_newsletter" Sign me up for Heroku email – we'll send you our latest updates, newsletters, events and more.
+      - if !@display_newsletter
+        .field.newsletter
+          input#receive_newsletter type="checkbox" name="receive_newsletter" value="true"
+          label for="receive_newsletter" Sign me up for Heroku email – we'll send you our latest updates, newsletters, events and more.
+      - else
+        input#receive_newsletter style="display:none" checked="true" type="checkbox" name="receive_newsletter" value="true"
     fieldset.submit
       p#terms Signing up signifies that you have read and agree to the <a href="https://www.heroku.com/policy/tos">Terms of Service</a> and <a href="https://www.heroku.com/policy/privacy">Privacy Policy</a>.
       input#change_passwd.submit.disabled type="submit" value="Save"

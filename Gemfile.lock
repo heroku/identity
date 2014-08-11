@@ -24,6 +24,7 @@ GEM
       multi_json (~> 1.0)
     fernet (1.5)
     fssm (0.2.10)
+    geocoder (1.2.3)
     hike (1.2.1)
     honeybadger (1.8.0)
       json
@@ -91,6 +92,7 @@ DEPENDENCIES
   compass
   excon
   fernet
+  geocoder
   honeybadger
   multi_json
   oj
