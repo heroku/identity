@@ -75,6 +75,26 @@ describe Identity::Account do
       assert_equal 200, last_response.status
     end
 
+    it "displays an unckecked checkbox for subcribing to newsletter when the request comes from a country which requires it" do
+      stub_heroku_api
+      any_instance_of(Geocoder::Result::Freegeoip) do |klass|
+        stub(klass).country { 'Spain' }
+      end
+      get "/account/accept/123/456abc"
+      assert_equal 200, last_response.status
+      assert last_response.body.include?('<input id="receive_newsletter" name="receive_newsletter" type="checkbox" value="true" />')
+    end
+
+    it "subscribes the user to the newsletter if the request doesn't come from a country which allows it" do
+      stub_heroku_api
+      any_instance_of(Geocoder::Result::Freegeoip) do |klass|
+        stub(klass).country { 'Canada' }
+      end
+      get "/account/accept/123/456abc"
+      assert_equal 200, last_response.status
+      assert last_response.body.include?('<input checked="true" id="receive_newsletter" name="receive_newsletter" style="display:none" type="checkbox" value="true" />')
+    end
+
     it "redirects to experimental signup when appropriate" do
       stub(Identity::Config).experimental_signup_slugs { ["experimental"] }
       stub(Identity::Config).experimental_signup_url {
