@@ -300,9 +300,7 @@ module Identity
     end
 
     def display_newsletter?(location)
-      %w{ Canada Germany Netherlands }.include?(location.country)
-    rescue
-      true
+      location && %w{ Canada Germany Netherlands }.include?(location.country)
     end
   end
 end
