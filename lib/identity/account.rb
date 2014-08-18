@@ -35,12 +35,12 @@ module Identity
           headers: {
             "Accept" => request.env["HTTP_ACCEPT"] || "application/json"
           })
-        res = api.get(path: "/account")
-        if res.status != 200
-          return 401
-        else
+        begin
+          res = api.get(path: "/account", expects: 200)
           content_type(:json)
           res.body
+        rescue Excon::Errors::Unauthorized
+          return 401
         end
       end
 
