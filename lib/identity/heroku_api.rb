@@ -29,8 +29,14 @@ module Identity
         headers["Authorization"] = options[:authorization]
       end
 
-      super(Config.heroku_api_url, headers: headers, instrumentor:
-        ExconInstrumentor.new(request_id: request_ids))
+      uri = URI.parse(Config.heroku_api_url)
+      super(
+        host: uri.host,
+        path: uri.path,
+        port: uri.port,
+        scheme: uri.scheme,
+        headers: headers,
+        instrumentor: ExconInstrumentor.new(request_id: request_ids))
     end
   end
 end
