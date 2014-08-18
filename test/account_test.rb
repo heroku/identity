@@ -204,14 +204,15 @@ meta content="3;url=https://experiment.heroku.com/account/accept/ok" http-equiv=
       assert_equal 200, last_response.status
     end
 
-    it "renders when the api responded with an error" do
+    it "redirects when the api responded with an error" do
       stub_heroku_api do
         post("/auth/reset_password") {
           [422, MultiJson.encode({ message: "Password too short." })]
         }
       end
       post "/account/password/reset", email: "kerry@heroku.com"
-      assert_equal 200, last_response.status
+      assert_equal 302, last_response.status
+      assert last_response.headers["Location"] =~ %r{/account/password/reset$}
     end
   end
 
