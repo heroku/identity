@@ -21,6 +21,29 @@ describe Identity::Account do
       get "/account"
       assert_equal 401, last_response.status
     end
+
+    it "responds with a 401 with an invalid session" do
+      stub_heroku_api do
+        get "/account" do
+          halt 401
+        end
+      end
+      authorize "", "secret"
+      get "/account"
+      assert_equal 401, last_response.status
+    end
+
+    it "proxies to the API" do
+      stub_heroku_api do
+        get "/account" do
+          "{}"
+        end
+      end
+      authorize "", "secret"
+      get "/account"
+      assert_equal 200, last_response.status
+      assert_equal "{}", last_response.body
+    end
   end
 
   describe "POST /account" do
@@ -181,14 +204,15 @@ meta content="3;url=https://experiment.heroku.com/account/accept/ok" http-equiv=
       assert_equal 200, last_response.status
     end
 
-    it "renders when the api responded with an error" do
+    it "redirects when the api responded with an error" do
       stub_heroku_api do
         post("/auth/reset_password") {
           [422, MultiJson.encode({ message: "Password too short." })]
         }
       end
       post "/account/password/reset", email: "kerry@heroku.com"
-      assert_equal 200, last_response.status
+      assert_equal 302, last_response.status
+      assert last_response.headers["Location"] =~ %r{/account/password/reset$}
     end
   end
 

@@ -18,6 +18,8 @@ require "webmock/minitest"
 require_relative "../lib/identity"
 require_relative "service_stubs"
 
+WebMock.disable_net_connect!
+
 # suppress logging
 module Slides
   def self.log(action, data={}, &block)
