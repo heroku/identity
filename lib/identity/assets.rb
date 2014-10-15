@@ -36,6 +36,10 @@ module Identity
       respond_with_asset(@assets["zen_backdrop.js"])
     end
 
+    get "/assets/:release/purple.css" do
+      respond_with_asset(@assets["purple.css"])
+    end
+
     get "/favicon.ico" do
       respond_with_asset(@assets["favicon.ico"])
     end
