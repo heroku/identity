@@ -38,6 +38,7 @@ module Identity
       mount Assets
       mount Auth
       mount Robots
+      mount Design if Config.development?
       run   Default # index + error handlers
     }
   end
