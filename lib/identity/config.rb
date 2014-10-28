@@ -62,6 +62,10 @@ module Identity
       ENV["RACK_ENV"] == "production"
     end
 
+    def redirect_all_signups
+      !ENV["REDIRECT_ALL_SIGNUPS"].nil?
+    end
+
     def release
       @release ||= ENV["RELEASE"] || "1"
     end
