@@ -63,37 +63,45 @@ module Identity
       end
 
       get "/accept/:id/:token" do |id, token|
-        begin
-          api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
-            version: 2)
-          res = api.get(path: "/invitation2/show", expects: 200,
-            body: URI.encode_www_form({
-              "id"    => id,
-              "token" => token,
-            }))
-          @user = MultiJson.decode(res.body)
-          @id = id
-          @token = token
+        if Config.redirect_all_signups
+          redirect_to_signup_app(request.path)
+        else
+          begin
+            api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
+              version: 2)
+            res = api.get(path: "/invitation2/show", expects: 200,
+              body: URI.encode_www_form({
+                "id"    => id,
+                "token" => token,
+              }))
+            @user = MultiJson.decode(res.body)
+            @id = id
+            @token = token
 
-          # Try an "experimental" signup flow if the user matched a configured
-          # signup slug. Currently in use by Devcenter to improve the user
-          # on-boarding experience.
-          if experimental_signup_slug?(@user["signup_source_slug"])
-            redirect to("#{Config.experimental_signup_url}#{request.path_info}")
-          else
-            slim :"account/accept", layout: :"layouts/classic"
+            # Try an "experimental" signup flow if the user matched a configured
+            # signup slug. Currently in use by Devcenter to improve the user
+            # on-boarding experience.
+            if experimental_signup_slug?(@user["signup_source_slug"])
+              redirect to("#{Config.experimental_signup_url}#{request.path_info}")
+            else
+              slim :"account/accept", layout: :"layouts/classic"
+            end
+          # Core should return a 404, but returns a 422
+          rescue Excon::Errors::NotFound, Excon::Errors::UnprocessableEntity => e
+            flash[:error] = decode_error(e.response.body)
+            slim :login, layout: :"layouts/zen_backdrop"
           end
-        # Core should return a 404, but returns a 422
-        rescue Excon::Errors::NotFound, Excon::Errors::UnprocessableEntity => e
-          flash[:error] = decode_error(e.response.body)
-          slim :login, layout: :"layouts/zen_backdrop"
         end
       end
 
       # This endpoint is unreachable except if a user manually hits it by
       # manipulating their browser during the signup process.
       get "/accept/ok" do
-        redirect to(Config.dashboard_url)
+        if Config.redirect_all_signups
+          redirect_to_signup_app(request.path)
+        else
+          redirect to(Config.dashboard_url)
+        end
       end
 
       # This endpoint is NOT protected against CSRF, because Dev Center wants to
@@ -121,6 +129,8 @@ module Identity
             authorize(@cookie.authorize_params)
             # users who signed up from a particular source may have a specialized
             # redirect location; otherwise go to Dashboard
+          elsif Config.redirect_all_signups
+            redirect_to_signup_app(request.path)
           elsif json["signup_source"]
             json["signup_source"]["redirect_uri"]
           elsif experimental_signup_slug?(json["signup_source_slug"])
@@ -243,15 +253,21 @@ module Identity
     end
 
     get "/signup" do
-      @cookie.signup_source = params[:slug]
-      slim :signup, layout: :"layouts/zen_backdrop"
+      if Config.redirect_all_signups
+        redirect_to_signup_app("")
+      else
+        @cookie.signup_source = params[:slug]
+        slim :signup, layout: :"layouts/zen_backdrop"
+      end
     end
 
     get "/signup/:slug" do |slug|
-      # Try an "experimental" signup flow if the user matched a configured
-      # signup slug. Currently in use by Devcenter to improve the user
-      # on-boarding experience.
-      if experimental_signup_slug?(slug)
+      if Config.redirect_all_signups
+        redirect_to_signup_app("/#{params[:slug]}")
+      elsif experimental_signup_slug?(slug)
+        # Try an "experimental" signup flow if the user matched a configured
+        # signup slug. Currently in use by Devcenter to improve the user
+        # on-boarding experience.
         signup_url = "#{Config.experimental_signup_url}#{request.path}"
         signup_url += "?#{request.query_string}" if params.any?
         redirect to(signup_url)
@@ -301,6 +317,13 @@ module Identity
       # #generate_referral_slug
       clean_slug = slug.split('?').first
       Config.experimental_signup_slugs.include?(clean_slug)
+    end
+
+    # Redirects to the signup app adding a special param
+    def redirect_to_signup_app(next_path)
+      current_params = CGI.parse(URI.parse(request.fullpath).query.to_s)
+      next_params = URI.encode_www_form(current_params.merge({from: 'id'}))
+      redirect to("#{Config.experimental_signup_url}#{next_path}?#{next_params}")
     end
   end
 end
