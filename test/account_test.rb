@@ -46,130 +46,29 @@ describe Identity::Account do
     end
   end
 
-  describe "POST /account" do
-    it "creates an account and renders a notice" do
-      post "/account", email: "kerry@heroku.com"
-      assert_equal 200, last_response.status
-      assert_match %{Confirmation email sent}, last_response.body
-    end
-
-    it "forwards a signup_source slug" do
-      stub_heroku_api do
-        post("/signup") {
-          raise("need a slug") unless params[:slug]
-          pass
-        }
-      end
-      get "/signup", slug: "facebook"
-      post "/account", email: "kerry@heroku.com"
-    end
-
-    it "appends tracking data to the signup_source slug" do
-      rack_mock_session.set_cookie "utm_campaign=heroku-postgres"
-      stub_heroku_api do
-        post("/signup") {
-          unless params[:slug].include?("utm_campaign=heroku-postgres")
-            raise("expected utm_campaign in the slug")
-          end
-          pass
-        }
-      end
-      get "/signup"
-      post "/account", email: "kerry@heroku.com"
-    end
-
-    it "doesn't forward a signup_source slug if none given" do
-      stub_heroku_api do
-        post("/signup") {
-          if params[:slug]
-            raise("didn't expect a slug param, received: #{params[:slug]}")
-          end
-          pass
-        }
-      end
-      get "/signup"
-      post "/account", email: "kerry@heroku.com"
-    end
-  end
-
   describe "GET /account/accept/:id/:token" do
-    it "shows a form to finish signup" do
-      get "/account/accept/123/456abc"
-      assert_equal 200, last_response.status
-    end
-
-    it "redirects to experimental signup when appropriate" do
-      stub(Identity::Config).experimental_signup_slugs { ["experimental"] }
-      stub(Identity::Config).experimental_signup_url {
-        "http://experiment.heroku.com"
-      }
-      stub_heroku_api do
-        get "/invitation2/show" do
-          MultiJson.encode({
-            signup_source_slug: "experimental?foo=bar",
-          })
-        end
-      end
-      get "/account/accept/123/456abc"
-      assert_equal 302, last_response.status
-      assert_equal "http://experiment.heroku.com/account/accept/123/456abc",
-        last_response.headers["Location"]
-    end
-
-    it "redirects to the same path in the signup app when redirect_all_signups is enabled" do
+    it "redirects to the same path in the signup app" do
       stub(Identity::Config).redirect_all_signups { true }
       get "/account/accept/123/456abc"
       assert_equal 302, last_response.status
-      assert_equal "#{Identity::Config.experimental_signup_url}/account/accept/123/456abc?from=id", last_response.headers["Location"]
+      assert_equal "#{Identity::Config.signup_url}/account/accept/123/456abc?from=id", last_response.headers["Location"]
     end
   end
 
   describe "POST /account/accept/ok" do
-    it "completes then shows interstitial page" do
-      post "/account/accept/ok"
-      assert_equal 200, last_response.status
-    end
-
-    it "render interstitial and check meta content" do
-      post "/account/accept/ok"
-      assert_match <<-eos.strip, last_response.body
-meta content="3;url=https://dashboard.heroku.com" http-equiv="refresh"
-      eos
-    end
-
-    it "redirects to experimental signup when appropriate" do
-      stub(Identity::Config).experimental_signup_slugs { ["experimental"] }
-      stub(Identity::Config).experimental_signup_url {
-        "https://experiment.heroku.com"
-      }
-      stub_heroku_api do
-        post "/invitation2/save" do
-          MultiJson.encode({
-            email: "some@example.com",
-            signup_source_slug: "experimental?foo=bar",
-          })
-        end
-      end
-      post "/account/accept/ok"
-      assert_match <<-eos.strip, last_response.body
-meta content="3;url=https://experiment.heroku.com/account/accept/ok" http-equiv="refresh"
-      eos
-    end
-
-    it "redirects to the signup app when redirect_all_signups is enabled" do
+    it "redirects to the signup app" do
       stub(Identity::Config).redirect_all_signups { true }
       post "/account/accept/ok"
       assert_equal 302, last_response.status
-      assert_equal "#{Identity::Config.experimental_signup_url}/account/accept/ok?from=id", last_response.headers["Location"]
+      assert_equal "#{Identity::Config.signup_url}/account/accept/ok?from=id", last_response.headers["Location"]
     end
   end
 
   describe "GET /account/accept/ok" do
-    it "redirects to dashboard.heroku.com/" do
+    it "redirects to the signup app" do
       get "/account/accept/ok"
       assert_equal 302, last_response.status
-      assert_equal "https://dashboard.heroku.com",
-        last_response.headers["Location"]
+      assert_equal "#{Identity::Config.signup_url}/account/accept/ok?from=id", last_response.headers["Location"]
     end
   end
 
@@ -249,40 +148,18 @@ meta content="3;url=https://experiment.heroku.com/account/accept/ok" http-equiv=
   end
 
   describe "GET /signup" do
-    it "shows a new account page" do
-      get "/signup"
-      assert_equal 200, last_response.status
-    end
-
-    it "redirects to the root of the experimental_signup_url when redirect_all_signups is enabled" do
-      stub(Identity::Config).redirect_all_signups { true }
+    it "redirects to the root of the signup app" do
       get "/signup"
       assert_equal 302, last_response.status
-      assert_equal "#{Identity::Config.experimental_signup_url}?from=id", last_response.headers["Location"]
+      assert_equal "#{Identity::Config.signup_url}?from=id", last_response.headers["Location"]
     end
   end
 
   describe "GET /signup/:slug" do
-    it "redirects to the signup app preserving query params if the slug is experimental" do
-      stub(Identity::Config).experimental_signup_slugs { ["experimental"] }
-      stub(Identity::Config).experimental_signup_url {
-        "https://experiment.heroku.com"
-      }
-      get "/signup/experimental?foo=bar"
-      assert_equal 302, last_response.status
-      assert_equal "https://experiment.heroku.com/signup/experimental?foo=bar", last_response.headers["Location"]
-    end
-
-    it "redirects to the same slug in the experimental_signup_url when redirect_all_signups is enabled" do
-      stub(Identity::Config).redirect_all_signups { true }
+    it "redirects to the same slug in the signup app" do
       get "/signup/foo"
       assert_equal 302, last_response.status
-      assert_equal "#{Identity::Config.experimental_signup_url}/foo?from=id", last_response.headers["Location"]
-    end
-
-    it "shows a new account page" do
-      get "/signup/facebook"
-      assert_equal 200, last_response.status
+      assert_equal "#{Identity::Config.signup_url}/foo?from=id", last_response.headers["Location"]
     end
   end
 end

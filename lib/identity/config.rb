@@ -18,14 +18,6 @@ module Identity
       ENV["HEROKU_API_URL"] || raise("missing=HEROKU_API_URL")
     end
 
-    def experimental_signup_url
-      ENV["EXPERIMENTAL_SIGNUP_URL"] || raise("missing=EXPERIMENTAL_SIGNUP_URL")
-    end
-
-    def experimental_signup_slugs
-      ENV["EXPERIMENTAL_SIGNUP_SLUG"].to_s.split(',')
-    end
-
     def heroku_oauth_id
       ENV["HEROKU_OAUTH_ID"] || raise("missing=HEROKU_OAUTH_ID")
     end
@@ -72,6 +64,10 @@ module Identity
 
     def root
       @root ||= File.expand_path("../../../", __FILE__)
+    end
+
+    def signup_url
+      ENV["SIGNUP_URL"] || raise("missing=SIGNUP_URL")
     end
 
     # useful for staging environments with less-than-valid certs
