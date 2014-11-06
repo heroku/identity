@@ -12,6 +12,17 @@ body {
   }
 }
 
+h1.logo {
+  text-align: center;
+  a {
+    display: inline-block;
+    height: 66px;
+    width: 220px;
+    @include hide-text();
+    @include retina-background('../images/logo-gray', png, 220px);
+  }
+}
+
 .panel {
   max-width: $panel-width;
   margin: 0 auto $margin/2;
@@ -55,7 +66,8 @@ form {
 
   input[type="text"],
   input[type="email"],
-  input[type="password"] {
+  input[type="password"],
+  input[type="number"] {
     padding: $margin/2 $margin+4;
   }
 
@@ -76,6 +88,35 @@ form {
 
     }
   }
+
+  ul {
+    margin: 0;
+    padding: $margin/4 $margin/2 $margin/2;
+    color: $gray;
+  }
+
+  .split {
+    margin-top: $margin/2;
+    .btn {
+      width: 48%;
+      margin-right: 4%;
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
+  //Authorization form
+  &.authorize {
+    text-align: left;
+
+    ul {
+      border-bottom: 1px solid $border-color;
+      margin-bottom: $margin/2;
+    }
+
+  }
+
 }
 
 
