@@ -1,18 +1,18 @@
 - @title = "Login"
 
-== render :slim, :"_flash", layout: false
 #login.panel
   h1.logo
     a href="http://heroku.com" title="Heroku" Heroku
   h3 Log in to Heroku
   form role="form" method="post" action="/login"
+    == render :slim, :"_flash", layout: false
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
     .form-group
       label for="email" Email address
       .input-icon
         span
           span.glyphicon.glyphicon-user
-      input#email.form-control type="email" name="email" placeholder="Email address" tabindex="1"
+      input#email.form-control type="email" name="email" placeholder="Email address" tabindex="1" autofocus="true"
     .form-group
       label for="password" Password
       .input-icon

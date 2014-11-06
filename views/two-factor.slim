@@ -1,12 +1,16 @@
 - @title = "Two-factor Authentication"
 
-== render :slim, :"_flash", layout: false
 #login.panel
-  form.panel-body method="post" action="/login"
+  h1.logo
+    a href="http://heroku.com" title="Heroku" Heroku
+  h3 Two-factor authentication
+  form role="form" method="post" action="/login"
+    == render :slim, :"_flash", layout: false
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
-    fieldset
-      .field
-        label for="code" Two-factor authentication code:
-        input#code.text type="text" name="code" size="6" autocomplete="off" autofocus="true" placeholder="two-factor code"
-    fieldset.submit
-      input.submit type="submit" name="commit" value="Log In"
+    .form-group
+      label for="code" Two-factor authentication code:
+      .input-icon
+        span
+          span.glyphicon.glyphicon-user
+      input#code.form-control type="text" name="code" size="6" autocomplete="off" autofocus="true" placeholder="Two-factor code" tabindex="1"
+    button.btn.btn-primary.btn-lg.btn-block type="submit" name="commit" tabindex="2" Log In
