@@ -36,6 +36,10 @@ h1.logo {
     margin-bottom: 0;
   }
 
+  .panel-body {
+    padding: $margin/2 $margin;
+  }
+
   .panel-footer {
     padding: $margin/2;
     display: block;
@@ -104,6 +108,10 @@ form {
         margin-right: 0;
       }
     }
+  }
+
+  .overview {
+    margin-bottom: $margin/2;
   }
 
   //Authorization form

@@ -5,7 +5,6 @@
     a href="http://heroku.com" title="Heroku" Heroku
   h3 Authorize #{@client["name"]}?
 
-
   form.authorize role="form" method="post" action="/oauth/authorize"
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
 
