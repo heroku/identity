@@ -7,22 +7,20 @@ GEM
     Platform (0.4.0)
     addressable (2.3.6)
     backports (3.6.3)
+    bourbon (4.0.2)
+      sass (~> 3.3)
+      thor
     chunky_png (1.2.8)
     coffee-script (2.3.0)
       coffee-script-source
       execjs
     coffee-script-source (1.8.0)
-    compass (0.12.2)
-      chunky_png (~> 1.2)
-      fssm (>= 0.2.7)
-      sass (~> 3.1)
     crack (0.4.2)
       safe_yaml (~> 1.0.0)
     eventmachine (1.0.0)
     excon (0.39.4)
     execjs (2.2.2)
     fernet (1.5)
-    fssm (0.2.10)
     hike (1.2.1)
     honeybadger (1.8.0)
       json
@@ -47,7 +45,7 @@ GEM
       rack (>= 0.9)
     rr (1.0.4)
     safe_yaml (1.0.3)
-    sass (3.2.9)
+    sass (3.4.7)
     sinatra (1.3.3)
       rack (~> 1.3, >= 1.3.6)
       rack-protection (~> 1.2)
@@ -74,6 +72,7 @@ GEM
       sprockets (~> 2.0)
       tilt (~> 1.1)
     temple (0.5.5)
+    thor (0.19.1)
     tilt (1.3.3)
     timecop (0.3.5)
     webmock (1.18.0)
@@ -87,8 +86,8 @@ PLATFORMS
 
 DEPENDENCIES
   addressable
+  bourbon
   coffee-script
-  compass
   excon
   fernet
   honeybadger

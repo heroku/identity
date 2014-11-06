@@ -8,10 +8,8 @@ html
     script src="/assets/#{Identity::Config.release}/zen-backdrop.js" type="text/javascript"
     meta name="viewport" content="width=device-width, initial-scale=1"
 
-  body id=@body_id
+  body.gradient-primary id=@body_id
     == render :slim, :"_tag_manager", layout: false
     .container
-      h1.logo
-        a href="http://heroku.com" title="Heroku" Heroku
       .content
         == yield

@@ -1,0 +1,81 @@
+html,
+body {
+  height: 100%;
+}
+
+.container {
+  text-align: center;
+  padding-top: 100px;
+  .content > a {
+    color: $gray-light;
+    color: fade-out(white, .2);
+  }
+}
+
+.panel {
+  max-width: $panel-width;
+  margin: 0 auto $margin/2;
+  border-radius: 8px;
+
+  form {
+    padding: $margin;
+  }
+
+  h3 {
+    margin-bottom: 0;
+  }
+
+  .panel-footer {
+    padding: $margin/2;
+    display: block;
+    font-size: 17px;
+    color: $gray;
+    font-weight: 100;
+  }
+
+  a.panel-footer {
+    text-decoration: none;
+    > span {
+      color: $purple;
+      text-decoration: underline;
+    }
+  }
+
+}
+
+form {
+
+  label {
+    @include visually-hidden();
+  }
+
+  .form-group {
+    margin-bottom: $margin/2;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    padding: $margin/2 $margin+4;
+  }
+
+  .input-icon {
+    position: relative;
+
+    > span {
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 10px;
+
+      span {
+        border-right: 1px solid $border-color;
+        padding: 4px 10px 4px 4px;
+        color: $purple-light;
+      }
+
+    }
+  }
+}
+
+
