@@ -1,8 +1,6 @@
 - @title = "Login"
 
 #login.panel
-  h1.logo
-    a href="http://heroku.com" title="Heroku" Heroku
   h3 Log in to Heroku
   form role="form" method="post" action="/login"
     == render :slim, :"_flash", layout: false

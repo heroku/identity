@@ -1,8 +1,6 @@
 - @title = "Authorize '#{@client["name"]}'"
 
 #login.panel
-  h1.logo
-    a href="http://heroku.com" title="Heroku" Heroku
   h3 Authorize #{@client["name"]}?
 
   form.authorize role="form" method="post" action="/oauth/authorize"

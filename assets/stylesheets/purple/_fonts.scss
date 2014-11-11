@@ -1,4 +1,4 @@
-@include font-face(Glyphicons, '/assets/fonts/glyphicons-halflings-regular', $asset-pipeline: true);
+@include font-face(Glyphicons, '../glyphicons-halflings-regular', $asset-pipeline: true);
 
 .glyphicon {
   font-family: 'Glyphicons';
