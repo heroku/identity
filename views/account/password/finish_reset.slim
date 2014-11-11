@@ -3,8 +3,6 @@
 
 == render :slim, :"_flash", layout: false
 #reset_password.panel
-  h1.logo
-    a href="http://heroku.com" title="Heroku" Heroku
   h3 Reset Password
   form role="form" method="post"
     p.overview Resetting password for <strong>#{@user["email"]}</strong>.
