@@ -3,8 +3,7 @@
 
 - if !flash[:notice]
   div#reset_password.panel
-    h1.logo
-      a href="http://heroku.com" title="Heroku" Heroku
+    h3 Reset Password
     form role="form" method="post" action="/login"
       input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
 
@@ -19,7 +18,7 @@
         p.overview Enter your email address below and we'll send you a link to reset your password.
 
       .form-group
-        label for="password" Password
+        label for="email" Email address
         .input-icon
           span
             span.glyphicon.glyphicon-user
