@@ -11,5 +11,7 @@ html
   body.gradient-primary id=@body_id
     == render :slim, :"_tag_manager", layout: false
     .container
+      h1.logo
+        a href="http://heroku.com" title="Heroku" Heroku
       .content
         == yield
