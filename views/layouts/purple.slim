@@ -8,10 +8,13 @@ html
     script src="/assets/#{Identity::Config.release}/zen-backdrop.js" type="text/javascript"
     meta name="viewport" content="width=device-width, initial-scale=1"
 
-  body.gradient-primary id=@body_id
-    == render :slim, :"_tag_manager", layout: false
-    .container
-      h1.logo
-        a href="http://heroku.com" title="Heroku" Heroku
-      .content
-        == yield
+  body id=@body_id
+    .gradient-primary
+      == render :slim, :"_tag_manager", layout: false
+      .container
+        h1.logo
+          a href="http://heroku.com" title="Heroku" Heroku
+        .content
+          == yield
+        footer.logo-sfdc
+          a href="http://salesforce.com" title="Salesforce.com" Salesforce.com
