@@ -3,12 +3,21 @@ body {
   height: 100%;
 }
 
+.gradient-primary {
+  min-height: 100%;
+}
+
 .container {
+  position: relative;
+  height: 100%;
   text-align: center;
   padding-top: 60px;
-  .content > a {
-    color: $gray-light;
-    color: fade-out(white, .2);
+  .content {
+    margin-bottom: 90px;
+    > a {
+      color: $gray-light;
+      color: fade-out(white, .2);
+    }
   }
 }
 
@@ -21,6 +30,24 @@ h1.logo {
     width: 180px;
     @include hide-text();
     @include retina-background('../logo-gray', png, 180px);
+  }
+}
+
+.logo-sfdc {
+  margin: auto;
+  width: 100%;
+  max-width: $panel-width;
+  padding: $margin/1.5 0;
+  @include background(linear-gradient(90deg, fade-out(white, 1) 0%, fade-out(white, .8) 50%, fade-out(white, 1) 100%));
+  background-size: 100% 2px;
+  background-repeat: no-repeat;
+  a {
+    display: inline-block;
+    height: 76px;
+    width: 109px;
+    text-align: center;
+    @include hide-text();
+    @include retina-background('../logo-sfdc', png, 109px);
   }
 }
 
