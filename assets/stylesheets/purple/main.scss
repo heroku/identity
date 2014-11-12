@@ -34,6 +34,7 @@ h1.logo {
 }
 
 .logo-sfdc {
+  display: block;
   margin: auto;
   width: 100%;
   max-width: $panel-width;
@@ -89,7 +90,16 @@ h1.logo {
 form {
 
   label {
+    text-align: left;
     @include visually-hidden();
+    .ie & {
+      display: block;
+      position: relative;
+      clip: none;
+      height: auto;
+      width: auto;
+      margin: 5px 0;
+    }
   }
 
   .form-group {
@@ -100,7 +110,8 @@ form {
   input[type="email"],
   input[type="password"],
   input[type="number"] {
-    padding: $margin/2 $margin+4;
+    height: 44px;
+    padding-left: 48px;
   }
 
   .input-icon {
@@ -132,6 +143,9 @@ form {
     .btn {
       width: 48%;
       margin-right: 4%;
+      .ie & {
+        width: 46%;
+      }
       &:last-child {
         margin-right: 0;
       }
