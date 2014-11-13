@@ -18,13 +18,13 @@ html
     meta name="viewport" content="width=device-width, initial-scale=1"
 
   body id=@body_id
-    .gradient-primary
+    .page-wrap.gradient-primary
       == render :slim, :"_tag_manager", layout: false
       .container
         h1.logo
           a href="http://heroku.com" title="Heroku" Heroku
         .content
           == yield
-        footer.logo-sfdc
-          a href="http://salesforce.com" title="Salesforce.com"
-            | Heroku is a <span></span> company
+    footer.logo-sfdc
+      a href="http://salesforce.com" title="Salesforce.com"
+        | Heroku is a <span></span> company
