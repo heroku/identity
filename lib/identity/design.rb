@@ -40,8 +40,8 @@ module Identity
           slim :"account/password/finish_reset", layout: @layout || :"layouts/zen_backdrop"
         end
 
-        get "/password/not-found" do
-          slim :"account/password/not-found", layout: @layout || :"layouts/zen_backdrop"
+        get "/not-found" do
+          slim :"account/password/not_found", layout: @layout || :"layouts/zen_backdrop"
         end
 
         get "/reset" do
