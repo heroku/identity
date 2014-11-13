@@ -3,8 +3,14 @@ body {
   height: 100%;
 }
 
-.gradient-primary {
+.page-wrap {
   min-height: 100%;
+  margin-bottom: -$footer-height;
+  &:after {
+    content: "";
+    display: block;
+    height: $footer-height;
+  }
 }
 
 .container {
@@ -38,13 +44,14 @@ h1.logo {
   margin: auto;
   width: 100%;
   max-width: $panel-width;
+  height: $footer-height;
   padding: $margin/1.5 0;
+  text-align: center;
   @include background(linear-gradient(90deg, fade-out(white, 1) 0%, fade-out(white, .8) 50%, fade-out(white, 1) 100%));
   background-size: 100% 2px;
   background-repeat: no-repeat;
   a {
     display: block;
-    margin-top: 10px;
     color: #9E93AB;
     color: fade-out(white, .6);
     text-decoration: none;
