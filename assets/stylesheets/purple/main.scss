@@ -43,12 +43,23 @@ h1.logo {
   background-size: 100% 2px;
   background-repeat: no-repeat;
   a {
-    display: inline-block;
-    height: 76px;
-    width: 109px;
-    text-align: center;
-    @include hide-text();
-    @include retina-background('../logo-sfdc', png, 109px);
+    display: block;
+    margin-top: 10px;
+    color: #9E93AB;
+    color: fade-out(white, .6);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    font-size: 10px;
+    span {
+      display: inline-block;
+      height: 49px;
+      width: 70px;
+      text-align: center;
+      margin: 0 3px -22px;
+      @include hide-text();
+      @include retina-background('../logo-sfdc', png, 70px);
+    }
   }
 }
 
