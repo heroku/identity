@@ -2,5 +2,5 @@ language: ruby
 notifications:
   email: false
 rvm:
-  - 2.1.4
+  - 2.1.5
 script: rake test
