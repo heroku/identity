@@ -18,7 +18,6 @@ module Identity
       expire_after: Config.cookie_expire_after,
       key: 'identity-session'
 
-
     # CSRF + Flash should come before the unadorned heroku cookies that follow
     use Identity::CSRF, skip: [
       # skip CSRF for POST /oauth/token (the second step of a standard OAuth
