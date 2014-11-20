@@ -59,6 +59,27 @@ describe Identity::Auth do
         last_response.headers["Location"]
     end
 
+    it "redirects to login when a user is suspended" do
+      post "/login", email: "kerry@heroku.com", password: "abcdefgh"
+
+      stub_heroku_api do
+        post("/oauth/authorizations") {
+          err = MultiJson.encode({
+            id: "suspended",
+            message: "you are suspended"
+          })
+          response = OpenStruct.new(body: err)
+          raise Excon::Errors::UnprocessableEntity.new(
+            "UnprocessableEntity", nil, response)
+        }
+      end
+      post "/oauth/authorize", client_id: "dashboard"
+      assert_equal 302, last_response.status
+      follow_redirect!
+      assert_equal 200, last_response.status
+      assert_match /you are suspended/, last_response.body
+    end
+
     it "redirects to login when a user's password has expired" do
       post "/login", email: "kerry@heroku.com", password: "abcdefgh"
 
