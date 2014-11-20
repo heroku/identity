@@ -2,6 +2,8 @@ module Identity
   class Cookie
     def initialize(session)
       @session = session
+
+      self.created_at ||= Time.now
     end
 
     def access_token
@@ -33,6 +35,17 @@ module Identity
 
     def clear
       @session.clear
+    end
+
+    # not used yet, but will eventually be used to enforce a maximum duration
+    # on session lifetimes
+    def created_at
+      @session["created_at"] ? Time.parse(@session["created_at"]) : nil
+    end
+
+    def created_at=(created_at)
+      @session["created_at"] =
+        created_at ? created_at.iso8601 : nil
     end
 
     # used to store creds during two-factor auth

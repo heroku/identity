@@ -28,5 +28,6 @@ group :development, :test do
   #gem "debugger"
   gem "rack-test"
   gem "rr"
+  gem "timecop"
   gem "webmock"
 end
