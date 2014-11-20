@@ -73,8 +73,9 @@ module Identity
         rescue Excon::Errors::Unauthorized
           flash[:error] = "There was a problem with your login."
           redirect to("/login")
-        # client is suspended; show an appropriate message
-        rescue Identity::Errors::SuspendedAccount => e
+        # client is suspended or their password has expired; show an appropriate message
+        rescue Identity::Errors::PasswordExpired,
+               Identity::Errors::SuspendedAccount => e
           flash[:error] = e.message
           redirect to("/login")
         # client not yet authorized; show the user a confirmation dialog
@@ -239,6 +240,10 @@ module Identity
       # refresh token dance was unsuccessful
       rescue Excon::Errors::Unauthorized, Identity::Errors::NoSession
         @cookie.authorize_params = authorize_params
+        redirect to("/login")
+      rescue Identity::Errors::PasswordExpired,
+             Identity::Errors::SuspendedAccount => e
+        flash[:error] = e.message
         redirect to("/login")
       # client not yet authorized; show the user a confirmation dialog
       rescue Identity::Errors::UnauthorizedClient => e
