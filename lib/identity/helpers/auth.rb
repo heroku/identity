@@ -136,7 +136,10 @@ module Identity::Helpers
           auth = MultiJson.decode(res.body)
         rescue Excon::Errors::UnprocessableEntity => e
           err = MultiJson.decode(e.response.body)
-          if err['id'] == "suspended"
+          case err['id']
+          when 'password_expired'
+            raise Identity::Errors::PasswordExpired.new(err["message"])
+          when 'suspended'
             raise Identity::Errors::SuspendedAccount.new(err["message"])
           else
             raise e

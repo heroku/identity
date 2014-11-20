@@ -59,6 +59,27 @@ describe Identity::Auth do
         last_response.headers["Location"]
     end
 
+    it "redirects to login when a user's password has expired" do
+      post "/login", email: "kerry@heroku.com", password: "abcdefgh"
+
+      stub_heroku_api do
+        post("/oauth/authorizations") {
+          err = MultiJson.encode({
+            id: "password_expired",
+            message: "password expired"
+          })
+          response = OpenStruct.new(body: err)
+          raise Excon::Errors::UnprocessableEntity.new(
+            "UnprocessableEntity", nil, response)
+        }
+      end
+      post "/oauth/authorize", client_id: "dashboard"
+      assert_equal 302, last_response.status
+      follow_redirect!
+      assert_equal 200, last_response.status
+      assert_match /password expired/, last_response.body
+    end
+
     describe "for a delinquent account" do
       it "redirects to `Location` for a client that does not `ignore_deliquent`" do
         stub_heroku_api do
@@ -317,6 +338,25 @@ describe Identity::Auth do
       end
       post "/login", email: "kerry@heroku.com", password: "abcdefgh"
       assert_equal 302, last_response.status
+    end
+
+    it "redirects to login when a user's password has expired" do
+      stub_heroku_api do
+        post("/oauth/authorizations") {
+          err = MultiJson.encode({
+            id: "password_expired",
+            message: "password expired"
+          })
+          response = OpenStruct.new(body: err)
+          raise Excon::Errors::UnprocessableEntity.new(
+            "UnprocessableEntity", nil, response)
+        }
+      end
+      post "/login", email: "kerry@heroku.com", password: "abcdefgh"
+      assert_equal 302, last_response.status
+      follow_redirect!
+      assert_equal 200, last_response.status
+      assert_match /password expired/, last_response.body
     end
 
     describe "for accounts with two-factor enabled" do
