@@ -15,7 +15,9 @@ module Identity
         Config.old_cookie_encryption_key),
       http_only: true,
       path: '/',
-      expire_after: Config.cookie_expire_after
+      expire_after: Config.cookie_expire_after,
+      key: 'identity-sso-session'
+
 
     # CSRF + Flash should come before the unadorned heroku cookies that follow
     use Identity::CSRF, skip: [
