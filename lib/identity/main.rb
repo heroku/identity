@@ -16,7 +16,7 @@ module Identity
       http_only: true,
       path: '/',
       expire_after: Config.cookie_expire_after,
-      key: 'identity-sso-session'
+      key: 'identity-session'
 
 
     # CSRF + Flash should come before the unadorned heroku cookies that follow
