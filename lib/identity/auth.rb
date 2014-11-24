@@ -19,12 +19,12 @@ module Identity
 
     namespace "/login" do
       get do
-        slim :login, layout: :"layouts/zen_backdrop"
+        slim :login, layout: :"layouts/purple"
       end
 
       get "/two-factor" do
         if @cookie.email && @cookie.password
-          slim :"two-factor", layout: :"layouts/zen_backdrop"
+          slim :"two-factor", layout: :"layouts/purple"
         else
           redirect to("/login")
         end
@@ -82,7 +82,7 @@ module Identity
         rescue Identity::Errors::UnauthorizedClient => e
           @client = e.client
           @scope  = @cookie && @cookie.authorize_params["scope"] || nil
-          slim :"clients/authorize", layout: :"layouts/zen_backdrop"
+          slim :"clients/authorize", layout: :"layouts/purple"
         end
       end
     end
@@ -129,7 +129,7 @@ module Identity
             "write",
             "write-protected",
           ]
-          slim :"clients/authorize", layout: :"layouts/zen_backdrop"
+          slim :"clients/authorize", layout: :"layouts/purple"
         end
       end
 
@@ -251,7 +251,7 @@ module Identity
         @client = e.client
         @scope  = @cookie && @cookie.authorize_params["scope"] || nil
         @deny_url = build_uri(@client["redirect_uri"], { error: "access_denied" })
-        slim :"clients/authorize", layout: :"layouts/zen_backdrop"
+        slim :"clients/authorize", layout: :"layouts/purple"
       # for example, "invalid scope"
       rescue Excon::Errors::UnprocessableEntity => e
         flash[:error] = decode_error(e.response.body)

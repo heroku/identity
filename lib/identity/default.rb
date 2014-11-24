@@ -20,7 +20,7 @@ module Identity
     end
 
     not_found do
-      slim :"errors/404", layout: :"layouts/classic"
+      slim :"errors/404", layout: :"layouts/purple"
     end
   end
 end

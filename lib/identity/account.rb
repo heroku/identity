@@ -97,7 +97,7 @@ module Identity
         rescue Identity::Errors::UnauthorizedClient => e
           @client = e.client
           @scope  = @cookie && @cookie.authorize_params["scope"] || nil
-          slim :"clients/authorize", layout: :"layouts/zen_backdrop"
+          slim :"clients/authorize", layout: :"layouts/purple"
         # some problem occurred with the signup
         rescue Excon::Errors::UnprocessableEntity => e
           flash[:error] = decode_error(e.response.body)
@@ -120,7 +120,7 @@ module Identity
           flash[:error] = "This link can't be used with your current login."
           redirect to("/login")
         rescue Excon::Errors::NotFound, Excon::Errors::UnprocessableEntity => e
-          slim :"account/email/not_found", layout: :"layouts/zen_backdrop"
+          slim :"account/email/not_found", layout: :"layouts/purple"
         # it seems that the user's access token is no longer valid, refresh
         rescue Excon::Errors::Unauthorized
           begin
@@ -137,7 +137,7 @@ module Identity
       end
 
       get "/password/reset" do
-        slim :"account/password/reset", layout: :"layouts/zen_backdrop"
+        slim :"account/password/reset", layout: :"layouts/purple"
       end
 
       post "/password/reset" do
@@ -151,7 +151,7 @@ module Identity
 
           json = MultiJson.decode(res.body)
           flash.now[:notice] = json["message"]
-          slim :"account/password/reset", layout: :"layouts/zen_backdrop"
+          slim :"account/password/reset", layout: :"layouts/purple"
         rescue Excon::Errors::NotFound, Excon::Errors::UnprocessableEntity => e
           flash[:error] = decode_error(e.response.body)
           redirect to("/account/password/reset")
@@ -166,9 +166,9 @@ module Identity
             expects: 200)
 
           @user = MultiJson.decode(res.body)
-          slim :"account/password/finish_reset", layout: :"layouts/zen_backdrop"
+          slim :"account/password/finish_reset", layout: :"layouts/purple"
         rescue Excon::Errors::NotFound => e
-          slim :"account/password/not_found", layout: :"layouts/zen_backdrop"
+          slim :"account/password/not_found", layout: :"layouts/purple"
         end
       end
 
@@ -185,7 +185,7 @@ module Identity
           flash[:success] = "Your password has been changed."
           redirect to("/login")
         rescue Excon::Errors::NotFound => e
-          slim :"account/password/not_found", layout: :"layouts/zen_backdrop"
+          slim :"account/password/not_found", layout: :"layouts/purple"
         rescue Excon::Errors::UnprocessableEntity => e
           flash[:error] = decode_error(e.response.body)
           redirect to("/account/password/reset/#{token}")

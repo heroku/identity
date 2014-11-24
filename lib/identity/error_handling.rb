@@ -16,7 +16,7 @@ module Identity
         Identity.log(:exception, type: :unavailable,
           class: e.class.name, message: e.message,
           request_id: request.env["REQUEST_IDS"], backtrace: e.backtrace.inspect)
-        slim :"errors/503", layout: :"layouts/classic"
+        slim :"errors/503", layout: :"layouts/purple"
       end
 
       app.error do
@@ -35,7 +35,7 @@ module Identity
           backtrace: e.backtrace.inspect
         }.merge(context))
         Honeybadger.notify(e, context: context) if Config.honeybadger_api_key
-        slim :"errors/500", layout: :"layouts/classic"
+        slim :"errors/500", layout: :"layouts/purple"
       end
     end
 
