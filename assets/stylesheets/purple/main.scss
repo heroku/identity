@@ -83,8 +83,16 @@ h1.logo {
     margin: $margin 0 0;
   }
 
+  h4 {
+    color: #333;
+    font-weight: bold;
+  }
+
   .panel-body {
     padding: $margin/2 $margin;
+    &.panel-left {
+      text-align: left;
+    }
   }
 
   .panel-footer {
@@ -181,6 +189,9 @@ form {
     ul {
       border-bottom: 1px solid $border-color;
       margin-bottom: $margin/2;
+      strong {
+        color: #444;
+      }
     }
 
   }
