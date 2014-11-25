@@ -1,19 +1,19 @@
 - @title = "Reset Password"
 - @body_id = "reset_password"
 
-div#reset_password.panel
-  h3 Reset Password
-  form role="form" method="post"
-    input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
+- if !flash[:notice]
+  div#reset_password.panel
+    h3 Reset Password
+    form.panel-body.panel-left role="form" method="post" action="/login"
+      input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
 
-    - if flash[:notice]
-      div.alert.alert-warning
-        = flash[:notice]
-    - if flash[:error]
-      div.alert.alert-danger
-        = flash[:error]
+      - if flash[:notice]
+        p
+          = flash[:notice]
+      - if flash[:error]
+        p
+          = flash[:error]
 
-    - if !flash[:notice]
       - if !flash[:error]
         p.overview Enter your email address below and we'll send you a link to reset your password.
 
@@ -26,7 +26,7 @@ div#reset_password.panel
 
       button.btn.btn-primary.btn-lg.btn-block type="submit" tabindex="2" Reset Password
 
-  .panel-footer
-    a href="/login" Log In
-    | &nbsp;or&nbsp;
-    a href="/signup" Sign Up
+    .panel-footer
+      a href="/login" Log In
+      | &nbsp;or&nbsp;
+      a href="/signup" Sign Up
