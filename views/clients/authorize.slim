@@ -1,7 +1,8 @@
 - @title = "Authorize '#{@client["name"]}'"
 
 #login.panel
-  h3 Authorize #{@client["name"]}?
+  h3
+    | Authorize <strong>#{@client["name"]}?</strong>
 
   form.authorize role="form" method="post" action="/oauth/authorize"
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
