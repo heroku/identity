@@ -4,7 +4,7 @@
 - if !flash[:notice]
   div#reset_password.panel
     h3 Reset Password
-    form role="form" method="post" action="/login"
+    form role="form" method="post"
       input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
 
       - if flash[:notice]
