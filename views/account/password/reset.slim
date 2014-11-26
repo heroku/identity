@@ -3,7 +3,7 @@
 
 div#reset_password.panel
   h3 Reset Password
-  form.panel-body.panel-left role="form" method="post" action="/login"
+  form.panel-body.panel-left role="form" method="post"
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
 
     - if flash[:notice]
