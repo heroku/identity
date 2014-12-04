@@ -1,0 +1,30 @@
+doctype html
+/[if IE 7]
+  | <html class="ie lt-ie9 lt-ie8">
+/[if IE 8]
+  | <html class="ie lt-ie9">
+/[if IE 9]
+  | <html class="ie">
+| <!--[if (gte IE 9)|!(IE)]<!-->
+html
+  | <!--<![endif]-->
+
+  head
+    meta http-equiv="Content-type" content="text/html; charset=utf-8"
+    title Heroku | #{@title}
+    link href="/assets/#{Identity::Config.release}/purple.css" media="screen" rel="stylesheet" type="text/css"
+    script src="/assets/#{Identity::Config.release}/purple.js" type="text/javascript"
+    script src="/assets/#{Identity::Config.release}/modernizr.min.js" type="text/javascript"
+    meta name="viewport" content="width=device-width, initial-scale=1"
+
+  body id=@body_id
+    .page-wrap.gradient-primary
+      == render :slim, :"_tag_manager", layout: false
+      .container
+        h1.logo
+          a href="https://www.heroku.com" title="Heroku" Heroku
+        .content
+          == yield
+    footer.logo-sfdc
+      a href="http://salesforce.com" title="Salesforce.com"
+        | Heroku is a <span></span> company

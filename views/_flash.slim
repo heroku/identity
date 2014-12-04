@@ -1,9 +1,9 @@
 - if flash[:success]
-  div.notice.success
-    h3= flash[:success]
+  div.alert.alert-success
+    = flash[:success]
 - if flash[:notice]
-  div.notice
-    h3= flash[:notice]
+  div.alert.alert-warning
+    = flash[:notice]
 - if flash[:error]
-  div.notice.error
-    h3= flash[:error]
+  div.alert.alert-danger
+    = flash[:error]

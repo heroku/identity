@@ -1,0 +1,30 @@
+@mixin visually-hidden() {
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  height: 1px; width: 1px;
+  margin: -1px; padding: 0; border: 0;
+}
+
+@mixin tablet {
+  @media (max-width: 900px) {
+    @content;
+  }
+}
+
+@mixin mobile {
+  @media (max-width: 600px) {
+    @content;
+  }
+}
+
+@mixin retina-background ($url, $file-type, $width: auto, $repeat: repeat, $ratio: 1.5, $suffix: "@2x") {
+  background: url($url + "." + $file-type);
+  background-repeat: $repeat;
+
+  @include hidpi($ratio: 1.3) {
+    background: url($url + $suffix + "." + $file-type);
+    background-size: $width auto;
+  }
+
+}

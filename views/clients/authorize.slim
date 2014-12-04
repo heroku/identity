@@ -1,43 +1,43 @@
 - @title = "Authorize '#{@client["name"]}'"
 
-#login.dialog
-  form.panel-body method="post" action="/oauth/authorize"
+#login.panel
+  h3
+    | Authorize <strong>#{@client["name"]}?</strong>
+
+  form.authorize role="form" method="post" action="/oauth/authorize"
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
-    fieldset
-      .field
-        h1 Authorize #{@client["name"]}?
 
-        - if @client["description"]
-          p #{@client["description"]}
+    - if @client["description"]
+      p #{@client["description"]}
 
-        p
-          strong #{@client["name"]}
-          | &nbsp;is requesting the following access:
-          / The is_a array thing is a temporary safeguard against old cookies.
-          ul
-            - if @scope && @scope.is_a?(Array)
-              - @scope.each do |scope|
-                - if scope == "global"
-                  li Read and write access to <strong>all</strong> of your account, apps and resources.
-                - elsif scope == "identity"
-                  li Read-only access to your account information.
-                - elsif scope == "read"
-                  li Read-only access to <strong>all</strong> of your apps and resources, excluding account information and configuration variables.
-                - elsif scope == "read-protected"
-                  li Read-only access to <strong>all</strong> of your apps and resources, excluding account information. Includes configuration variables, which may include runtime secrets.
-                - elsif scope == "write"
-                  li Read and write access to <strong>all</strong> of your apps and resources, excluding account information and configuration variables.
-                - elsif scope == "write-protected"
-                  li Read and write access to <strong>all</strong> of your apps and resources, excluding account information. Includes configuration variables, which may include runtime secrets.
-                - else
-                  li Unknown scope: <strong>#{scope}</strong>.
+    p
+      strong #{@client["name"]}
+      | &nbsp;is requesting the following access:
+      / The is_a array thing is a temporary safeguard against old cookies.
+      ul
+        - if @scope && @scope.is_a?(Array)
+          - @scope.each do |scope|
+            - if scope == "global"
+              li Read and write access to <strong>all</strong> of your account, apps and resources.
+            - elsif scope == "identity"
+              li Read-only access to your account information.
+            - elsif scope == "read"
+              li Read-only access to <strong>all</strong> of your apps and resources, excluding account information and configuration variables.
+            - elsif scope == "read-protected"
+              li Read-only access to <strong>all</strong> of your apps and resources, excluding account information. Includes configuration variables, which may include runtime secrets.
+            - elsif scope == "write"
+              li Read and write access to <strong>all</strong> of your apps and resources, excluding account information and configuration variables.
+            - elsif scope == "write-protected"
+              li Read and write access to <strong>all</strong> of your apps and resources, excluding account information. Includes configuration variables, which may include runtime secrets.
             - else
-              li Read and write access to <strong>all</strong> your apps and your account.
+              li Unknown scope: <strong>#{scope}</strong>.
+        - else
+          li Read and write access to <strong>all</strong> your apps and your account.
 
-        p
+      p
+        small
           | You can revoke this authorization at any time from your <a href="http://dashboard.heroku.com/account">Dashboard account page</a> or using the <a href="https://github.com/heroku/heroku-oauth">heroku-oauth</a> CLI plugin.
 
-    fieldset.submit
-      p
-        a href=@deny_url Deny Access
-      input.submit type="submit" name="authorize" value="Allow Access"
+    fieldset.split
+      button.btn.btn-default.btn-lg href=@deny_url tabindex="2" Deny Access
+      button.btn.btn-primary.btn-lg type="submit" name="authorize" tabindex="1" Allow Access

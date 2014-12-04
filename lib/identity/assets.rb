@@ -20,20 +20,16 @@ module Identity
       end
     end
 
-    get "/assets/:release/classic.css" do
-      respond_with_asset(@assets["classic.css"])
+    get "/assets/:release/purple.js" do
+      respond_with_asset(@assets["purple.js"])
     end
 
-    get "/assets/:release/classic.js" do
-      respond_with_asset(@assets["classic.js"])
+    get "/assets/:release/modernizr.min.js" do
+      respond_with_asset(@assets["modernizr.min.js"])
     end
 
-    get "/assets/:release/zen-backdrop.css" do
-      respond_with_asset(@assets["zen_backdrop.css"])
-    end
-
-    get "/assets/:release/zen-backdrop.js" do
-      respond_with_asset(@assets["zen_backdrop.js"])
+    get "/assets/:release/purple.css" do
+      respond_with_asset(@assets["purple.css"])
     end
 
     get "/favicon.ico" do

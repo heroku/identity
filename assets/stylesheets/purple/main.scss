@@ -1,0 +1,200 @@
+html,
+body {
+  height: 100%;
+}
+
+.page-wrap {
+  min-height: 100%;
+  margin-bottom: -$footer-height;
+  &:after {
+    content: "";
+    display: block;
+    height: $footer-height;
+  }
+}
+
+.container {
+  position: relative;
+  height: 100%;
+  text-align: center;
+  padding-top: 60px;
+  .content {
+    margin-bottom: 90px;
+    > a {
+      color: $gray-light;
+      color: fade-out(white, .2);
+    }
+  }
+}
+
+h1.logo {
+  text-align: center;
+  margin: 0 0 $margin;
+  a {
+    display: inline-block;
+    height: 54px;
+    width: 180px;
+    @include hide-text();
+    @include retina-background('../logo-gray', png, 180px);
+  }
+}
+
+.logo-sfdc {
+  display: block;
+  margin: auto;
+  width: 100%;
+  max-width: $panel-width;
+  height: $footer-height;
+  padding: $margin/1.5 0;
+  text-align: center;
+  @include background(linear-gradient(90deg, fade-out(white, 1) 0%, fade-out(white, .8) 50%, fade-out(white, 1) 100%));
+  background-size: 100% 2px;
+  background-repeat: no-repeat;
+  a {
+    display: block;
+    color: #9E93AB;
+    color: fade-out(white, .6);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    font-size: 10px;
+    span {
+      display: inline-block;
+      height: 49px;
+      width: 70px;
+      text-align: center;
+      margin: 0 3px -22px;
+      @include hide-text();
+      @include retina-background('../logo-sfdc', png, 70px);
+    }
+  }
+}
+
+.panel {
+  max-width: $panel-width;
+  margin: 0 auto $margin/2;
+  border-radius: 8px;
+
+  form {
+    padding: $margin;
+  }
+
+  h3 {
+    margin: $margin 0 0;
+  }
+
+  h4 {
+    color: #333;
+    font-weight: bold;
+  }
+
+  .panel-body {
+    padding: $margin/2 $margin;
+    &.panel-left {
+      text-align: left;
+    }
+  }
+
+  .panel-footer {
+    padding: $margin/2;
+    display: block;
+    font-size: 17px;
+    color: $gray;
+    font-weight: 100;
+  }
+
+  a.panel-footer {
+    text-decoration: none;
+    > span {
+      color: $purple;
+      text-decoration: underline;
+    }
+  }
+
+}
+
+form {
+
+  label {
+    text-align: left;
+    @include visually-hidden();
+    .ie & {
+      display: block;
+      position: relative;
+      clip: none;
+      height: auto;
+      width: auto;
+      margin: 5px 0;
+    }
+  }
+
+  .form-group {
+    margin-bottom: $margin/2;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"] {
+    height: 44px;
+    padding-left: 48px;
+  }
+
+  .input-icon {
+    position: relative;
+
+    > span {
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 10px;
+
+      span {
+        border-right: 1px solid $border-color;
+        padding: 4px 10px 4px 4px;
+        color: $purple-light;
+      }
+
+    }
+  }
+
+  ul {
+    margin: 0;
+    padding: $margin/4 $margin/2 $margin/2;
+    color: $gray;
+  }
+
+  .split {
+    margin-top: $margin/2;
+    .btn {
+      width: 48%;
+      margin-right: 4%;
+      .ie & {
+        width: 46%;
+      }
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
+  .overview {
+    margin-bottom: $margin/2;
+  }
+
+  //Authorization form
+  &.authorize {
+    text-align: left;
+
+    ul {
+      border-bottom: 1px solid $border-color;
+      margin-bottom: $margin/2;
+      strong {
+        color: #444;
+      }
+    }
+
+  }
+
+}
+
