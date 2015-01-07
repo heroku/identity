@@ -112,9 +112,14 @@ h1.logo {
   }
 
   .panel-body {
-    padding: $margin/2 $margin;
+    padding: $margin/2 $margin $margin;
+
     &.panel-left {
       text-align: left;
+    }
+
+    &:last-child {
+      padding: $margin/1.5 $margin;
     }
   }
 
@@ -138,7 +143,6 @@ h1.logo {
       text-decoration: underline;
     }
   }
-
 }
 
 form {
@@ -213,16 +217,12 @@ form {
   //Authorization form
   &.authorize {
     text-align: left;
-
     ul {
-      border-bottom: 1px solid $border-color;
+      border-bottom: 1px solid rgba($border-color, .6);
       margin-bottom: $margin/2;
       strong {
         color: #444;
       }
     }
-
   }
-
 }
-
