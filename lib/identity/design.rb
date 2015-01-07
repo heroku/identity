@@ -29,6 +29,14 @@ module Identity
         slim :"two-factor", layout: @layout
       end
 
+      get "/two-factor/recovery" do
+        slim :"account/two-factor/recovery", layout: @layout
+      end
+
+      get "/two-factor/recovery/sms" do
+        slim :"account/two-factor/recovery_sms", layout: @layout
+      end
+
       get "/errors/:error" do # 404, 500, 503
         slim :"errors/#{params['error']}", layout: @layout
       end
