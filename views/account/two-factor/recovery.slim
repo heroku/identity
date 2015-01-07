@@ -2,7 +2,7 @@
 
 #login.panel
   h3 Two-factor recovery
-  form role="form" method="post" action="/login"
+  form.panel-body.panel-left role="form" method="post" action="/login"
     == render :slim, :"_flash", layout: false
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
     p.overview If you have lost access to your secure token you can either use a recovery code to log in or receive a code via SMS to your phone number (ending 839).
@@ -13,7 +13,8 @@
           span.glyphicon.glyphicon-time
       input#code.form-control type="text" name="code" size="6" autocomplete="off" autofocus="true" placeholder="16-digit recovery code" tabindex="1"
     button.btn.btn-primary.btn-lg.btn-block type="submit" name="commit" tabindex="2" Use Recovery Code
-  p or
+  p.divide
+    span or
   form role="form" method="post" action="/account/two-factor/recovery/sms"
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
     button.btn.btn-default.btn-lg.btn-block type="submit" name="commit" tabindex="3" Send Recovery SMS

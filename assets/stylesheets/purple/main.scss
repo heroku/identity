@@ -88,6 +88,29 @@ h1.logo {
     font-weight: bold;
   }
 
+  .divide {
+    position: relative;
+    margin-top: -$margin/2;
+    margin-bottom: -$margin/2;
+
+    span {
+      position: relative;
+      background: #fff;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: $margin;
+      right: $margin;
+      height: 1px;
+      background: rgba($border-color, .6);
+    }
+  }
+
   .panel-body {
     padding: $margin/2 $margin;
     &.panel-left {
@@ -101,6 +124,11 @@ h1.logo {
     font-size: 17px;
     color: $gray;
     font-weight: 100;
+  }
+
+  .help-block {
+    margin-top: -10px;
+    padding-bottom: $margin/2;
   }
 
   a.panel-footer {
