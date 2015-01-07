@@ -191,6 +191,19 @@ module Identity
           redirect to("/account/password/reset/#{token}")
         end
       end
+
+      get "/two-factor/recovery" do
+        slim :"account/two-factor/recovery", layout: :"layouts/purple"
+      end
+
+      post "/two-factor/recovery/sms" do
+        # TODO: Send SMS
+        redirect to("/account/two-factor/recovery/sms")
+      end
+
+      get "/two-factor/recovery/sms" do
+        slim :"account/two-factor/recovery_sms", layout: :"layouts/purple"
+      end
     end
 
     get "/signup" do
