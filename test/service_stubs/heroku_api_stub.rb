@@ -56,6 +56,16 @@ If you don't receive an email, and it's not in your spam folder, this could mean
 
   post "/oauth/authorizations" do
     authorized!
+
+    unless env['HTTP_HEROKU_TWO_FACTOR_CODE']
+      status(403)
+      response.headers['Heroku-Two-Factor-Required'] = 'true'
+      return MultiJson.encode(
+        message: 'A second factor is required.',
+        id: 'two_factor'
+      )
+    end
+
     status(201)
 
     authorization = {
