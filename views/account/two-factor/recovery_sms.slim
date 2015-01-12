@@ -1,11 +1,14 @@
 - @title = "Two-factor Authentication"
 
 #login.panel
-  h3 Two-factor recovery
+  h3 Two-factor authentication
   form.panel-body.panel-left role="form" method="post" action="/login"
     == render :slim, :"_flash", layout: false
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
-    p.overview An SMS containing a recovery code has been sent to your phone number (ending 839).
+    p.overview
+      ' We have sent an SMS to your phone number (ending
+      b 4839
+      ' ) with a 6-digit code to enter below.
     .form-group
       label for="code" 6-digit recovery code
       .input-icon
@@ -14,10 +17,9 @@
       input#code.form-control type="text" name="code" size="6" autocomplete="off" autofocus="true" placeholder="6-digit recovery code" tabindex="1"
     button.btn.btn-primary.btn-lg.btn-block type="submit" name="commit" tabindex="2" Use SMS Code
 
-  .help-block
-    p Didn't receive an SMS?
-    p
-      span
-        a href="/" Resend SMS
-        | &nbsp;or use a&nbsp;
-        a href="/account/two-factor/recovery" Recovery Code
+  .panel-footer
+    p.help-block Didn't receive the SMS?
+    p.help-block
+      a href="/account/two-factor/recovery/sms" Resend SMS
+      | &nbsp;or&nbsp;
+      a href="/account/two-factor/recovery" enter a recovery code

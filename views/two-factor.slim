@@ -13,4 +13,9 @@
       input#code.form-control type="text" name="code" size="6" autocomplete="off" autofocus="true" placeholder="Two-factor code" tabindex="1"
     button.btn.btn-primary.btn-lg.btn-block type="submit" name="commit" tabindex="2" Log In
 
-a href="/account/two-factor/recovery" Trouble with Two-factor authentication?
+  .panel-footer
+    p.help-block Don't have access to your authenticator app?
+    p.help-block
+      a href="/account/two-factor/recovery" Enter a recovery code
+      | &nbsp;or&nbsp;
+      a href="/account/two-factor/recovery/sms" get a code via SMS
