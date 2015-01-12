@@ -7,9 +7,7 @@
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
     .form-group
       label for="code" Two-factor authentication code:
-      .input-icon
-        span
-          span.glyphicon.glyphicon-time
+      .input-icon.icon-2fa
       input#code.form-control type="text" name="code" size="6" autocomplete="off" autofocus="true" placeholder="Two-factor code" tabindex="1"
     button.btn.btn-primary.btn-lg.btn-block type="submit" name="commit" tabindex="2" Log In
 
