@@ -197,7 +197,18 @@ module Identity
       end
 
       post "/two-factor/recovery/sms" do
-        # TODO: Send SMS
+        options = {
+          ip: request.ip,
+          request_ids: request_ids,
+          user: @cookie.email,
+          pass: @cookie.password,
+          version: 3,
+        }
+
+        api = HerokuAPI.new(options)
+        res = api.post(path: "/account/sms/recovery",
+          expects: 200)
+
         redirect to("/account/two-factor/recovery/sms")
       end
 
