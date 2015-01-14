@@ -3,15 +3,11 @@ module Identity::Errors
   end
 
   class PasswordExpired < StandardError
-    # Override this message so that the user doesn't see a URL that they're
-    # supposed to visit. Instead, just take them directly to the write place.
-    MESSAGE = <<-eos.strip
-      Your password has expired. Please reset it.
-    eos
-
     attr_accessor :message
 
     def initialize(_)
+      # Override this message so that the user doesn't see a URL that they're
+      # supposed to visit. Instead, just take them directly to the write place.
       @message = <<-eos.strip
         Your password has expired. Please reset it.
       eos
