@@ -134,16 +134,6 @@ module Identity::Helpers
           end
 
           auth = MultiJson.decode(res.body)
-        rescue Excon::Errors::UnprocessableEntity => e
-          err = MultiJson.decode(e.response.body)
-          case err['id']
-          when 'password_expired'
-            raise Identity::Errors::PasswordExpired.new(err["message"])
-          when 'suspended'
-            raise Identity::Errors::SuspendedAccount.new(err["message"])
-          else
-            raise e
-          end
         end
 
         @cookie.session_id              = auth["session"]["id"]

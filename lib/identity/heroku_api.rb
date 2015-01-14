@@ -38,5 +38,29 @@ module Identity
         headers: headers,
         instrumentor: ExconInstrumentor.new(request_id: request_ids))
     end
+
+    %i(delete get patch post put).each do |verb|
+      define_method(verb) do |*args|
+        convert_errors do
+          super(*args)
+        end
+      end
+    end
+
+    private
+
+    def convert_errors
+      yield
+    rescue Excon::Errors::UnprocessableEntity => e
+      err = MultiJson.decode(e.response.body)
+      case err['id']
+      when 'password_expired'
+        raise Identity::Errors::PasswordExpired
+      when 'suspended'
+        raise Identity::Errors::SuspendedAccount.new(err["message"])
+      else
+        raise e
+      end
+    end
   end
 end
