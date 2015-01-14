@@ -11,8 +11,10 @@ module Identity::Errors
 
     attr_accessor :message
 
-    def initialize
-      @message = MESSAGE
+    def initialize(_)
+      @message = <<-eos.strip
+        Your password has expired. Please reset it.
+      eos
     end
   end
 

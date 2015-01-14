@@ -49,23 +49,31 @@ module Identity
 
     private
 
+    # Maps V3 error identifiers to custom error classes.
+    #
+    # This is a relatively new concept where before we just had multiple
+    # conditionals inside of a single rescue of an Excon status-class error. We
+    # should try to aim to increasingly move toward this model for better
+    # clarity.
+    ERROR_MAP = {
+      password_expired:  Identity::Errors::PasswordExpired,
+      suspended:         Identity::Errors::SuspendedAccount,
+    }
+
     def convert_errors
       yield
     rescue Excon::Errors::HTTPStatusError => e
       error_id, error_message = begin
         data = MultiJson.decode(e.response.body)
-        [data["id"], data["message"]]
+        [data["id"].try(:to_sym), data["message"]]
       rescue MultiJson::ParseError
         [nil, nil]
       end
 
-      case error_id
-      when 'password_expired'
-        raise Identity::Errors::PasswordExpired
-      when 'suspended'
-        raise Identity::Errors::SuspendedAccount.new(error_message)
+      if klass = ERROR_MAP[error_id]
+        raise klass.new(error_message)
       else
-        raise e
+        raise
       end
     end
   end
