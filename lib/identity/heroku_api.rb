@@ -51,13 +51,19 @@ module Identity
 
     def convert_errors
       yield
-    rescue Excon::Errors::UnprocessableEntity => e
-      err = MultiJson.decode(e.response.body)
-      case err['id']
+    rescue Excon::Errors::HTTPStatusError => e
+      error_id, error_message = begin
+        data = MultiJson.decode(e.response.body)
+        [data["id"], data["message"]]
+      rescue MultiJson::ParseError
+        [nil, nil]
+      end
+
+      case error_id
       when 'password_expired'
         raise Identity::Errors::PasswordExpired
       when 'suspended'
-        raise Identity::Errors::SuspendedAccount.new(err["message"])
+        raise Identity::Errors::SuspendedAccount.new(error_message)
       else
         raise e
       end

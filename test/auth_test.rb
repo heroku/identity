@@ -331,7 +331,13 @@ describe Identity::Auth do
         # webmock doesn't handle Excon's :expects, so raise error directly
         # until it does
         post("/oauth/authorizations") {
-          raise(Excon::Errors::Unauthorized, "Unauthorized")
+          err = MultiJson.encode({
+            id: "unauthorized",
+            message: "you are not authorized"
+          })
+          response = OpenStruct.new(body: err)
+          raise Excon::Errors::Unauthorized.new(
+            "Unauthorized", nil, response)
         }
       end
       post "/login", email: "kerry@heroku.com", password: "abcdefgh"
