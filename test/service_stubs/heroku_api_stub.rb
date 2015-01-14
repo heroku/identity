@@ -60,6 +60,7 @@ If you don't receive an email, and it's not in your spam folder, this could mean
     unless env['HTTP_HEROKU_TWO_FACTOR_CODE']
       status(403)
       response.headers['Heroku-Two-Factor-Required'] = 'true'
+      response.headers['Heroku-Two-Factor-Recovery-Sms'] = '+1 *** 1234'
       return MultiJson.encode(
         message: 'A second factor is required.',
         id: 'two_factor'
@@ -165,6 +166,10 @@ If you don't receive an email, and it's not in your spam folder, this could mean
         redirect_uri: "https://dashboard.heroku.com"
       }
     })
+  end
+
+  post "/account/sms/recovery" do
+    status(201)
   end
 end
 
