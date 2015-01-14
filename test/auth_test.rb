@@ -413,6 +413,14 @@ describe Identity::Auth do
         assert_match %r{/login/two-factor$}, last_response.headers["Location"]
       end
 
+      it "redirects to /login/two-factor and hides sms recovery" do
+        post "/login", email: "kerry@heroku.com", password: "abcdefgh"
+        assert_equal 302, last_response.status
+        follow_redirect!
+        assert_equal 200, last_response.status
+        refute_match /SMS/, last_response.body
+      end
+
       it "and then posts the authorization again, using the two-factor code" do
         post "/login", email: "kerry@heroku.com", password: "abcdefgh"
         follow_redirect!
@@ -421,6 +429,30 @@ describe Identity::Auth do
         assert_equal Identity::Config.dashboard_url,
           last_response.headers["Location"]
       end
+    end
+  end
+
+  describe "for accounts with two-factor and sms recovery enabled" do
+    before do
+      stub_heroku_api do
+        post("/oauth/authorizations") {
+          # raise a 401 with a header telling the client to ask for the code
+          response = OpenStruct.new(
+            headers: {
+              "Heroku-Two-Factor-Required" => "true",
+              "Heroku-Two-Factor-Recovery-Sms" => "+1 *** 1234"
+            })
+          raise Excon::Errors::Forbidden.new("Forbidden", nil, response)
+        }
+      end
+    end
+
+    it "redirects to /login/two-factor and has sms recovery" do
+      post "/login", email: "kerry@heroku.com", password: "abcdefgh"
+      assert_equal 302, last_response.status
+      follow_redirect!
+      assert_equal 200, last_response.status
+      assert_match /SMS/, last_response.body
     end
   end
 
