@@ -135,6 +135,14 @@ h1.logo {
       padding-bottom: 0;
       font-size: 14px;
     }
+
+    form, .btn-link {
+      padding: 0;
+    }
+
+    .btn-link {
+      font-weight: 200;
+    }
   }
 
   .help-block {

@@ -16,10 +16,10 @@
     button.btn.btn-primary.btn-lg.btn-block type="submit" name="commit" tabindex="2" Use SMS Code
 
   .panel-footer
-    p.help-block Didn't receive the SMS?
-    p.help-block
-      form role="form" method="post" action="/account/two-factor/recovery/sms"
+    form role="form" method="post" action="/account/two-factor/recovery/sms"
+      p.help-block Didn't receive the SMS?
+      p.help-block
         input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
         button.btn.btn-link type="submit" Resend SMS
-      | &nbsp;or&nbsp;
-      a href="/account/two-factor/recovery" enter a recovery code
+        | &nbsp;or&nbsp;
+        a href="/account/two-factor/recovery" enter a recovery code
