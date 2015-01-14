@@ -56,8 +56,9 @@ If you don't receive an email, and it's not in your spam folder, this could mean
 
   post "/oauth/authorizations" do
     authorized!
+    user = auth_credentials.first
 
-    unless env['HTTP_HEROKU_TWO_FACTOR_CODE']
+    if !env['HTTP_HEROKU_TWO_FACTOR_CODE'] && user.start_with?('two')
       status(403)
       response.headers['Heroku-Two-Factor-Required'] = 'true'
       response.headers['Heroku-Two-Factor-Recovery-Sms'] = '+1 *** 1234'
