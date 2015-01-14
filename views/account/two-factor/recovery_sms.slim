@@ -6,9 +6,9 @@
     == render :slim, :"_flash", layout: false
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
     p.overview
-      ' We have sent an SMS to your phone number (ending
-      b 4839
-      ' ) with a 6-digit code to enter below.
+      | We have sent an SMS to your phone number (
+      b = @cookie.sms_number
+      |) with a 6-digit code to enter below.
     .form-group
       label for="code" 6-digit recovery code
       .input-icon.icon-sms
@@ -18,6 +18,8 @@
   .panel-footer
     p.help-block Didn't receive the SMS?
     p.help-block
-      a href="/account/two-factor/recovery/sms" Resend SMS
+      form role="form" method="post" action="/account/two-factor/recovery/sms"
+        input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
+        button.btn.btn-link type="submit" Resend SMS
       | &nbsp;or&nbsp;
       a href="/account/two-factor/recovery" enter a recovery code

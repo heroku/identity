@@ -207,7 +207,7 @@ module Identity
 
         api = HerokuAPI.new(options)
         res = api.post(path: "/account/sms/recovery",
-          expects: 200)
+          expects: 201)
 
         redirect to("/account/two-factor/recovery/sms")
       end
