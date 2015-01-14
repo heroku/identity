@@ -9,14 +9,14 @@
       label for="code" Two-factor authentication code:
       .input-icon.icon-2fa
       input#code.form-control type="text" name="code" size="6" autocomplete="off" autofocus="true" placeholder="Two-factor code" tabindex="1"
-    button.btn.btn-primary.btn-lg.btn-block type="submit" name="commit" tabindex="2" Log In
+    button.btn.btn-primary.btn-lg.btn-block type="submit" name="commit" tabindex="2" Verify
 
   .panel-footer
-    p.help-block Don't have access to your authenticator app?
-    p.help-block
-      a href="/account/two-factor/recovery" Enter a recovery code
-      - if @cookie.sms_number
-        | &nbsp;or&nbsp;
-        form role="form" method="post" action="/account/two-factor/recovery/sms"
+    form role="form" method="post" action="/account/two-factor/recovery/sms"
+      p.help-block Don't have access to your authenticator app?
+      p.help-block
+        a href="/account/two-factor/recovery" Enter a recovery code
+        - if @cookie.sms_number
+          | &nbsp;or&nbsp;
           input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
           button.btn.btn-link type="submit" get a code via SMS
