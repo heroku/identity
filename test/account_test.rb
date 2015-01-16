@@ -163,6 +163,20 @@ describe Identity::Account do
     end
   end
 
+  describe "GET /account/two-factor/recovery" do
+    it "renders a recovery form" do
+      get "/account/two-factor/recovery"
+      assert_equal 200, last_response.status
+      refute_match /code via SMS/, last_response.body
+    end
+
+    it "renders a recovery form with SMS if present" do
+      get "/account/two-factor/recovery", {}, 'rack.session' => { :sms_number => 'my_number' }
+      assert_equal 200, last_response.status
+      assert_match /code via SMS/, last_response.body
+    end
+  end
+
   describe "GET /account/two-factor/recovery/sms" do
     it "renders a sms recovery form" do
       get "/account/two-factor/recovery/sms", {}, 'rack.session' => { :sms_number => 'my_number' }
