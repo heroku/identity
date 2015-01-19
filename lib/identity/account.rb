@@ -202,14 +202,14 @@ module Identity
           request_ids: request_ids,
           user: @cookie.email,
           pass: @cookie.password,
-          version: "edge",
+          version: "3.sms-number",
         }
 
         begin
           api = HerokuAPI.new(options)
-          res = api.post(path: "/account/sms/recovery",
+          res = api.post(path: "/account/sms-number/actions/recover",
             expects: 201)
-        rescue Excon::Errors::NotFound => e
+        rescue Excon::Errors::UnprocessableEntity => e
           flash[:error] = decode_error(e.response.body)
           @cookie.sms_number = nil
           redirect to("/login/two-factor")
