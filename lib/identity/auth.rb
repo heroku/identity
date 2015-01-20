@@ -24,6 +24,7 @@ module Identity
 
       get "/two-factor" do
         if @cookie.email && @cookie.password
+          @sms_number = perform_sms_number_lookup
           slim :"two-factor", layout: :"layouts/purple"
         else
           redirect to("/login")
@@ -68,7 +69,6 @@ module Identity
           raise e unless e.response.headers.has_key?("Heroku-Two-Factor-Required")
           @cookie.email      = user
           @cookie.password   = pass
-          @cookie.sms_number = perform_sms_number_lookup(user, pass)
           redirect to("/login/two-factor")
         # oauth dance or post-dance authorization was unsuccessful
         rescue Excon::Errors::Unauthorized
@@ -258,23 +258,6 @@ module Identity
         flash[:error] = decode_error(e.response.body)
         redirect to("/login")
       end
-    end
-
-    def perform_sms_number_lookup(user, pass)
-      options = {
-        ip: request.ip,
-        request_ids: request_ids,
-        user: user,
-        pass: pass,
-        version: "3.sms-number",
-      }
-
-      api = HerokuAPI.new(options)
-      res = api.get(path: "/account/sms-number",
-          expects: 200)
-      MultiJson.decode(res.body)["sms_number"]
-    rescue
-      nil
     end
 
     def filter_params(*safe_params)

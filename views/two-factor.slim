@@ -16,7 +16,7 @@
       p.help-block Don't have access to your authenticator app?
       p.help-block
         a href="/account/two-factor/recovery" Enter a recovery code
-        - if @cookie.sms_number
+        - if @sms_number
           | &nbsp;or&nbsp;
           input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
           button.btn.btn-link type="submit" get a code via SMS

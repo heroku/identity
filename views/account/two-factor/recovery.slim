@@ -12,7 +12,7 @@
       input#code.form-control type="text" name="code" size="6" autocomplete="off" autofocus="true" placeholder="16-digit recovery code" tabindex="1"
     button.btn.btn-primary.btn-lg.btn-block type="submit" name="commit" tabindex="2" Use Recovery Code
 
-  - if @cookie.sms_number
+  - if @sms_number
     .panel-footer
       p.help-block
         ' You can also

@@ -7,7 +7,7 @@
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
     p.overview
       | We have sent an SMS to your phone number (
-      b = @cookie.sms_number
+      b = @sms_number
       |) with a 6-digit code to enter below.
     .form-group
       label for="code" 6-digit recovery code

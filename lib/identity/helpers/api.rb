@@ -17,5 +17,24 @@ module Identity::Helpers
         body
       end
     end
+
+    def perform_sms_number_lookup
+      return unless @cookie.email && @cookie.password
+
+      options = {
+        ip: request.ip,
+        request_ids: request_ids,
+        user: @cookie.email,
+        pass: @cookie.password,
+        version: "3.sms-number",
+      }
+
+      api = Identity::HerokuAPI.new(options)
+      res = api.get(path: "/account/sms-number",
+          expects: 200)
+      MultiJson.decode(res.body)["sms_number"]
+    rescue
+      nil
+    end
   end
 end

@@ -193,7 +193,12 @@ module Identity
       end
 
       get "/two-factor/recovery" do
-        slim :"account/two-factor/recovery", layout: :"layouts/purple"
+        if @cookie.email && @cookie.password
+          @sms_number = perform_sms_number_lookup
+          slim :"account/two-factor/recovery", layout: :"layouts/purple"
+        else
+          redirect to("/login")
+        end
       end
 
       post "/two-factor/recovery/sms" do
@@ -211,7 +216,6 @@ module Identity
             expects: 201)
         rescue Excon::Errors::UnprocessableEntity => e
           flash[:error] = decode_error(e.response.body)
-          @cookie.sms_number = nil
           redirect to("/login/two-factor")
         end
 
@@ -219,6 +223,7 @@ module Identity
       end
 
       get "/two-factor/recovery/sms" do
+        @sms_number = perform_sms_number_lookup
         slim :"account/two-factor/recovery_sms", layout: :"layouts/purple"
       end
     end

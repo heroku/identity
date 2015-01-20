@@ -66,15 +66,6 @@ module Identity
       @session["password"] = password
     end
 
-    # used to store sms number during two-factor auth
-    def sms_number
-      @session["sms_number"]
-    end
-
-    def sms_number=(sms_number)
-      @session["sms_number"] = sms_number
-    end
-
     # URL to redirect to after login
     def redirect_url
       @session["redirect_url"]
