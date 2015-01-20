@@ -77,6 +77,10 @@ h1.logo {
 
   form {
     padding: $margin;
+
+    @include mobile() {
+      padding: $margin 20px;
+    }
   }
 
   h3 {
@@ -186,6 +190,10 @@ form {
   input[type="number"] {
     height: 44px;
     padding-left: 50px;
+
+    @include mobile() {
+      font-size: 16px;
+    }
   }
 
   .input-icon {
