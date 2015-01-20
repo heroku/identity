@@ -22,6 +22,11 @@ class HerokuAPIStub < Sinatra::Base
     def authorized!
       halt(401, "Unauthorized") unless auth_credentials
     end
+
+    def two_factor?
+      user = auth_credentials.first
+      !env['HTTP_HEROKU_TWO_FACTOR_CODE'] && user.start_with?('two')
+    end
   end
 
   before do
@@ -56,6 +61,16 @@ If you don't receive an email, and it's not in your spam folder, this could mean
 
   post "/oauth/authorizations" do
     authorized!
+
+    if two_factor?
+      status(403)
+      response.headers['Heroku-Two-Factor-Required'] = 'true'
+      return MultiJson.encode(
+        message: 'A second factor is required.',
+        id: 'two_factor'
+      )
+    end
+
     status(201)
 
     authorization = {
@@ -155,6 +170,18 @@ If you don't receive an email, and it's not in your spam folder, this could mean
         redirect_uri: "https://dashboard.heroku.com"
       }
     })
+  end
+
+  get "/account/sms-number" do
+    authorized!
+
+    MultiJson.encode({
+      sms_number: two_factor? ? '+1 *** 1234' : nil,
+    })
+  end
+
+  post "/account/sms-number/actions/recover" do
+    status(201)
   end
 end
 

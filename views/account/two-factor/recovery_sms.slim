@@ -1,0 +1,25 @@
+- @title = "Two-factor Authentication"
+
+#login.panel
+  h3 Two-factor authentication
+  form.panel-body.panel-left role="form" method="post" action="/login"
+    == render :slim, :"_flash", layout: false
+    input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
+    p.overview
+      | We have sent an SMS to your phone number (
+      b = @sms_number
+      |) with a 6-digit code to enter below.
+    .form-group
+      label for="code" 6-digit recovery code
+      .input-icon.icon-sms
+      input#code.form-control type="text" name="code" size="6" autocomplete="off" autofocus="true" placeholder="6-digit sms code" tabindex="1"
+    button.btn.btn-primary.btn-lg.btn-block type="submit" name="commit" tabindex="2" Use SMS Code
+
+  .panel-footer
+    form role="form" method="post" action="/account/two-factor/recovery/sms"
+      p.help-block Didn't receive the SMS?
+      p.help-block
+        input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
+        button.btn.btn-link type="submit" Resend SMS
+        | &nbsp;or&nbsp;
+        a href="/account/two-factor/recovery" enter a recovery code

@@ -24,6 +24,7 @@ module Identity
 
       get "/two-factor" do
         if @cookie.email && @cookie.password
+          @sms_number = fetch_sms_number
           slim :"two-factor", layout: :"layouts/purple"
         else
           redirect to("/login")

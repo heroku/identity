@@ -7,16 +7,12 @@
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
     .form-group
       label for="email" Email address
-      .input-icon
-        span
-          span.glyphicon.glyphicon-user
+      .input-icon.icon-username
       input#email.form-control type="email" name="email" placeholder="Email address" tabindex="1" autofocus="true"
     .form-group
       label for="password" Password
-      .input-icon
-        span
-          span.glyphicon.glyphicon-lock
-        input#password.form-control.password type="password" name="password" autocomplete="off" placeholder="Password" tabindex="2"
+      .input-icon.icon-password
+      input#password.form-control.password type="password" name="password" autocomplete="off" placeholder="Password" tabindex="2"
     button.btn.btn-primary.btn-lg.btn-block type="submit" name="commit" value="Log In" tabindex="3" Log In
 
   a.panel-footer href="/signup"

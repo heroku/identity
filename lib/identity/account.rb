@@ -191,6 +191,37 @@ module Identity
           redirect to("/account/password/reset/#{token}")
         end
       end
+
+      get "/two-factor/recovery" do
+        @sms_number = fetch_sms_number
+        slim :"account/two-factor/recovery", layout: :"layouts/purple"
+      end
+
+      post "/two-factor/recovery/sms" do
+        options = {
+          ip: request.ip,
+          request_ids: request_ids,
+          user: @cookie.email,
+          pass: @cookie.password,
+          version: "3.sms-number",
+        }
+
+        begin
+          api = HerokuAPI.new(options)
+          res = api.post(path: "/account/sms-number/actions/recover",
+            expects: 201)
+        rescue Excon::Errors::UnprocessableEntity => e
+          flash[:error] = decode_error(e.response.body)
+          redirect to("/login/two-factor")
+        end
+
+        redirect to("/account/two-factor/recovery/sms")
+      end
+
+      get "/two-factor/recovery/sms" do
+        @sms_number = fetch_sms_number
+        slim :"account/two-factor/recovery_sms", layout: :"layouts/purple"
+      end
     end
 
     get "/signup" do

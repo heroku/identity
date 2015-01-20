@@ -1,0 +1,19 @@
+- @title = "Two-factor Authentication"
+
+#login.panel
+  h3 Two-factor authentication
+  form.panel-body.panel-left role="form" method="post" action="/login"
+    == render :slim, :"_flash", layout: false
+    input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
+    p.overview Enter one of the recovery codes that you were given when you enabled Two-factor authentication.
+    .form-group
+      label for="code" 16-digit recovery code
+      .input-icon.icon-2fa
+      input#code.form-control type="text" name="code" size="6" autocomplete="off" autofocus="true" placeholder="16-digit recovery code" tabindex="1"
+    button.btn.btn-primary.btn-lg.btn-block type="submit" name="commit" tabindex="2" Use Recovery Code
+
+  - if @sms_number
+    .panel-footer
+      p.help-block
+        ' You can also
+        a href="/account/two-factor/recovery/sms" get a code via SMS

@@ -162,4 +162,41 @@ describe Identity::Account do
       assert_equal "#{Identity::Config.signup_url}/foo?from=id", last_response.headers["Location"]
     end
   end
+
+  describe "GET /account/two-factor/recovery" do
+    it "renders a recovery form" do
+      get "/account/two-factor/recovery"
+      assert_equal 200, last_response.status
+      refute_match /code via SMS/, last_response.body
+    end
+
+    it "renders a recovery form with SMS if present" do
+      get "/account/two-factor/recovery", {}, 'rack.session' => { :email => 'two@heroku.com', :password => '' }
+      assert_equal 200, last_response.status
+      assert_match /code via SMS/, last_response.body
+    end
+  end
+
+  describe "GET /account/two-factor/recovery/sms" do
+    it "renders a sms recovery form" do
+      get "/account/two-factor/recovery/sms", {}, 'rack.session' => { :email => 'two@heroku.com', :password => '' }
+      assert_equal 200, last_response.status
+      assert_match /\+1 \*\*\* 1234/, last_response.body
+      assert_match /Resend SMS/, last_response.body
+    end
+  end
+
+  describe "POST /account/two-factor/recovery/sms" do
+    it "redirects back to two-factor if number missing" do
+      stub_heroku_api do
+        post("/account/sms-number/actions/recover") {
+          [422, MultiJson.encode({ message: "Number missing." })]
+        }
+      end
+
+      post "/account/two-factor/recovery/sms"
+      assert_equal 302, last_response.status
+      assert_match %r{/login/two-factor$}, last_response.headers["Location"]
+    end
+  end
 end

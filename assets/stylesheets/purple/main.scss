@@ -77,6 +77,10 @@ h1.logo {
 
   form {
     padding: $margin;
+
+    @include mobile() {
+      padding: $margin 20px;
+    }
   }
 
   h3 {
@@ -88,10 +92,38 @@ h1.logo {
     font-weight: bold;
   }
 
+  .divide {
+    position: relative;
+    margin-top: -$margin/2;
+    margin-bottom: -$margin/2;
+
+    span {
+      position: relative;
+      background: #fff;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: $margin;
+      right: $margin;
+      height: 1px;
+      background: rgba($border-color, .6);
+    }
+  }
+
   .panel-body {
-    padding: $margin/2 $margin;
+    padding: $margin/2 $margin $margin;
+
     &.panel-left {
       text-align: left;
+    }
+
+    &:last-child {
+      padding: $margin/1.5 $margin;
     }
   }
 
@@ -101,16 +133,36 @@ h1.logo {
     font-size: 17px;
     color: $gray;
     font-weight: 100;
+
+    .help-block {
+      margin-top: 0;
+      padding-bottom: 0;
+      font-size: 14px;
+    }
+
+    form, .btn-link {
+      padding: 0;
+    }
+
+    .btn-link {
+      font-weight: 200;
+      vertical-align: baseline;
+    }
+  }
+
+  .help-block {
+    margin-top: -10px;
+    padding-bottom: $margin/2;
   }
 
   a.panel-footer {
     text-decoration: none;
+
     > span {
       color: $purple;
       text-decoration: underline;
     }
   }
-
 }
 
 form {
@@ -129,6 +181,7 @@ form {
   }
 
   .form-group {
+    position: relative;
     margin-bottom: $margin/2;
   }
 
@@ -137,24 +190,46 @@ form {
   input[type="password"],
   input[type="number"] {
     height: 44px;
-    padding-left: 48px;
+    padding-left: 50px;
+
+    @include mobile() {
+      font-size: 16px;
+    }
   }
 
   .input-icon {
-    position: relative;
+    position: absolute;
+    top: 50%;
+    margin-top: -9px;
+    left: 12px;
+    width: 18px;
+    height: 18px;
 
-    > span {
+    &::after {
+      content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      padding: 10px;
+      right: -11px;
+      top: -10px;
+      bottom: -10px;
+      width: 1px;
+      opacity: .5;
+      @include linear-gradient(to top, rgba(#d4d4d4, 0) 0%, #d4d4d4 30%, #d4d4d4 70%, rgba(#d4d4d4, 0) 100%);
+    }
 
-      span {
-        border-right: 1px solid $border-color;
-        padding: 4px 10px 4px 4px;
-        color: $purple-light;
-      }
+    &.icon-username {
+      @include retina-background('../icon-username', png, 18px);
+    }
 
+    &.icon-password {
+      @include retina-background('../icon-password', png, 18px);
+    }
+
+    &.icon-2fa {
+      @include retina-background('../icon-2fa', png, 18px);
+    }
+
+    &.icon-sms {
+      @include retina-background('../icon-sms', png, 18px);
     }
   }
 
@@ -185,16 +260,12 @@ form {
   //Authorization form
   &.authorize {
     text-align: left;
-
     ul {
-      border-bottom: 1px solid $border-color;
+      border-bottom: 1px solid rgba($border-color, .6);
       margin-bottom: $margin/2;
       strong {
         color: #444;
       }
     }
-
   }
-
 }
-

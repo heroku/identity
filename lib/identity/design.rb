@@ -26,7 +26,18 @@ module Identity
       end
 
       get "/two-factor" do
+        @sms_number = '+1 *** *** 1234'
         slim :"two-factor", layout: @layout
+      end
+
+      get "/two-factor/recovery" do
+        @sms_number = '+1 *** *** 1234'
+        slim :"account/two-factor/recovery", layout: @layout
+      end
+
+      get "/two-factor/recovery/sms" do
+        @sms_number = '+1 *** *** 1234'
+        slim :"account/two-factor/recovery_sms", layout: @layout
       end
 
       get "/errors/:error" do # 404, 500, 503
