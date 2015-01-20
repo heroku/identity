@@ -193,6 +193,7 @@ module Identity
       end
 
       get "/two-factor/recovery" do
+        @sms_number = fetch_sms_number
         slim :"account/two-factor/recovery", layout: :"layouts/purple"
       end
 
@@ -218,6 +219,7 @@ module Identity
       end
 
       get "/two-factor/recovery/sms" do
+        @sms_number = fetch_sms_number
         slim :"account/two-factor/recovery_sms", layout: :"layouts/purple"
       end
     end

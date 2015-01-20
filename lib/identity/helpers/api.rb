@@ -18,7 +18,7 @@ module Identity::Helpers
       end
     end
 
-    def sms_number
+    def fetch_sms_number
       return unless @cookie.email && @cookie.password
 
       options = {
