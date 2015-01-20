@@ -67,8 +67,8 @@ module Identity
         # two-factor auth is required
         rescue Excon::Errors::Forbidden => e
           raise e unless e.response.headers.has_key?("Heroku-Two-Factor-Required")
-          @cookie.email      = user
-          @cookie.password   = pass
+          @cookie.email    = user
+          @cookie.password = pass
           redirect to("/login/two-factor")
         # oauth dance or post-dance authorization was unsuccessful
         rescue Excon::Errors::Unauthorized
