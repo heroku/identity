@@ -24,7 +24,6 @@ module Identity
 
       get "/two-factor" do
         if @cookie.email && @cookie.password
-          @sms_number = perform_sms_number_lookup
           slim :"two-factor", layout: :"layouts/purple"
         else
           redirect to("/login")

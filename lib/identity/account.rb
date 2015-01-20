@@ -194,7 +194,6 @@ module Identity
 
       get "/two-factor/recovery" do
         if @cookie.email && @cookie.password
-          @sms_number = perform_sms_number_lookup
           slim :"account/two-factor/recovery", layout: :"layouts/purple"
         else
           redirect to("/login")
@@ -223,7 +222,6 @@ module Identity
       end
 
       get "/two-factor/recovery/sms" do
-        @sms_number = perform_sms_number_lookup
         slim :"account/two-factor/recovery_sms", layout: :"layouts/purple"
       end
     end
