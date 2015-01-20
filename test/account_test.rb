@@ -171,7 +171,7 @@ describe Identity::Account do
     end
 
     it "renders a recovery form with SMS if present" do
-      get "/account/two-factor/recovery", {}, 'rack.session' => { :sms_number => 'my_number' }
+      get "/account/two-factor/recovery", {}, 'rack.session' => { :email => 'two@heroku.com', :password => '' }
       assert_equal 200, last_response.status
       assert_match /code via SMS/, last_response.body
     end
@@ -179,9 +179,9 @@ describe Identity::Account do
 
   describe "GET /account/two-factor/recovery/sms" do
     it "renders a sms recovery form" do
-      get "/account/two-factor/recovery/sms", {}, 'rack.session' => { :sms_number => 'my_number' }
+      get "/account/two-factor/recovery/sms", {}, 'rack.session' => { :email => 'two@heroku.com', :password => '' }
       assert_equal 200, last_response.status
-      assert_match /my_number/, last_response.body
+      assert_match /\+1 \*\*\* 1234/, last_response.body
       assert_match /Resend SMS/, last_response.body
     end
   end

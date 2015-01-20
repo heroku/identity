@@ -193,11 +193,7 @@ module Identity
       end
 
       get "/two-factor/recovery" do
-        if @cookie.email && @cookie.password
-          slim :"account/two-factor/recovery", layout: :"layouts/purple"
-        else
-          redirect to("/login")
-        end
+        slim :"account/two-factor/recovery", layout: :"layouts/purple"
       end
 
       post "/two-factor/recovery/sms" do
