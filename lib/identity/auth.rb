@@ -228,7 +228,7 @@ module Identity
         end
 
         # redirects back to the oauth client on success
-        authorize(authorize_params, params[:authorize] == "Allow Access")
+        authorize(authorize_params, params[:authorize] == "Allow")
       # given client_id wasn't found (API throws a 400 status)
       rescue Excon::Errors::BadRequest
         flash[:error] = "Unknown OAuth client."

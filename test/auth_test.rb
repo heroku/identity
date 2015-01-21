@@ -155,7 +155,7 @@ describe Identity::Auth do
         post "/login", email: "kerry@heroku.com", password: "abcdefgh"
         post "/oauth/authorize", client_id: "untrusted"
         assert_equal 200, last_response.status
-        assert_match /Allow Access/, last_response.body
+        assert_match /\bAllow\b/, last_response.body
       end
 
       it "creates an authorization after a user confirms" do
@@ -165,7 +165,7 @@ describe Identity::Auth do
         post "/oauth/authorize", client_id: "untrusted"
 
         # then again to confirm
-        post "/oauth/authorize", authorize: "Allow Access"
+        post "/oauth/authorize", authorize: "Allow"
         assert_equal 302, last_response.status
         assert_equal "https://dashboard.heroku.com/oauth/callback/heroku" +
           "?code=454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
@@ -190,9 +190,9 @@ describe Identity::Auth do
         post "/oauth/authorize", client_id: "untrusted"
 
         # then try again, but with the wrong request method (should be POST)
-        get "/oauth/authorize", authorize: "Allow Access"
+        get "/oauth/authorize", authorize: "Allow"
         assert_equal 200, last_response.status
-        assert_match /Allow Access/, last_response.body
+        assert_match /\bAllow\b/, last_response.body
       end
     end
   end
