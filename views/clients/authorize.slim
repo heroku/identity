@@ -39,7 +39,7 @@
           | You can revoke this authorization at any time from your <a href="http://dashboard.heroku.com/account">Dashboard account page</a> or using the <a href="https://github.com/heroku/heroku-oauth">heroku-oauth</a> CLI plugin.
 
     fieldset.split
-      button.btn.btn-default.btn-lg href=@deny_url tabindex="2" Deny Access
-      / Note that a value of "Allow Access" should be kept here so that the
+      button.btn.btn-default.btn-lg href=@deny_url tabindex="2" Deny
+      / Note that a value of "Allow" should be kept here so that the
       / server-side component can distinguish a confirmed form post.
-      button.btn.btn-primary.btn-lg type="submit" name="authorize" tabindex="1" value="Allow Access" Allow Access
+      button.btn.btn-primary.btn-lg type="submit" name="authorize" tabindex="1" value="Allow" Allow
