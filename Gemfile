@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "2.1.5"
+ruby "2.2.0"
 
 gem "addressable"
 gem "bourbon"
@@ -26,6 +26,7 @@ gem "yui-compressor"
 
 group :development, :test do
   #gem "debugger"
+  gem "minitest"
   gem "rack-test"
   gem "rr"
   gem "timecop"
