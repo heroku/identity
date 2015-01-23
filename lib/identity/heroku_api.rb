@@ -67,7 +67,7 @@ module Identity
         data = MultiJson.decode(e.response.body)
 
         # we may be dealing with a non-V3 error here, so deal with that case
-        if data.key?("id") && data.key?("message")
+        if data.is_a?(Hash) && data.key?("id") && data.key?("message")
           [data["id"].try(:to_sym), data["message"]]
         else
           [nil, nil]
