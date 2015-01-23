@@ -2,12 +2,8 @@ require "base64"
 
 module Identity
   class HerokuAPI < Excon::Connection
-    def initialize(options={})
-      headers     = options[:headers] || {}
-      ip          = options[:ip] || raise("missing=ip")
-      request_ids = options[:request_ids] || []
-      version     = options[:version] || raise("missing=version")
-
+    def initialize(ip:, version:, authorization: nil, headers: {}, pass: nil,
+      request_ids: [], user: nil)
       headers = {
         "Accept"          => "application/vnd.heroku+json; version=#{version}",
         # explicitly specify this or bodies will be interpreted as JSON
@@ -21,12 +17,11 @@ module Identity
         headers.merge!("Content-Type" => "application/json")
       end
 
-      if options[:user] || options[:pass]
-        authorization = ["#{options[:user] || ''}:#{options[:pass] || ''}"].
-          pack('m').delete("\r\n")
+      if user || pass
+        authorization = ["#{user || ''}:#{pass || ''}"].pack('m').delete("\r\n")
         headers["Authorization"] = "Basic #{authorization}"
-      elsif options[:authorization]
-        headers["Authorization"] = options[:authorization]
+      elsif authorization
+        headers["Authorization"] = authorization
       end
 
       uri = URI.parse(Config.heroku_api_url)
