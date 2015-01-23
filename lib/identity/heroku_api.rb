@@ -65,7 +65,13 @@ module Identity
     rescue Excon::Errors::HTTPStatusError => e
       error_id, error_message = begin
         data = MultiJson.decode(e.response.body)
-        [data["id"].try(:to_sym), data["message"]]
+
+        # we may be dealing with a non-V3 error here, so deal with that case
+        if data.key?("id") && data.key?("message")
+          [data["id"].try(:to_sym), data["message"]]
+        else
+          [nil, nil]
+        end
       rescue MultiJson::ParseError
         [nil, nil]
       end
