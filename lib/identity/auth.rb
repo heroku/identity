@@ -149,6 +149,13 @@ module Identity
         begin
           res = log :create_token, by_proxy: true,
             session_id: @cookie.session_id do
+            # per RFC 6749 section 2.3.1, token endpoint must accept basic auth
+            req = Rack::Auth::Basic::Request.new(request.env)
+            client_secret = if req.provided? && req.basic?
+                              req.credentials.last
+                            else
+                              params[:client_secret]
+                            end
             # no credentials are required here because the code segment of the
             # exchange is state that's linked to a user in the API
             api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
@@ -156,7 +163,7 @@ module Identity
             api.post(path: "/oauth/tokens", expects: 201,
               body: MultiJson.encode({
                 client: {
-                  secret: params[:client_secret]
+                  secret: client_secret
                 },
                 grant: {
                   code: params[:code],
