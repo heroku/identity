@@ -38,5 +38,43 @@ module Identity
         headers: headers,
         instrumentor: ExconInstrumentor.new(request_id: request_ids))
     end
+
+    %i(delete get patch post put).each do |verb|
+      define_method(verb) do |*args|
+        convert_errors do
+          super(*args)
+        end
+      end
+    end
+
+    private
+
+    # Maps V3 error identifiers to custom error classes.
+    #
+    # This is a relatively new concept where before we just had multiple
+    # conditionals inside of a single rescue of an Excon status-class error. We
+    # should try to aim to increasingly move toward this model for better
+    # clarity.
+    ERROR_MAP = {
+      password_expired:  Identity::Errors::PasswordExpired,
+      suspended:         Identity::Errors::SuspendedAccount,
+    }
+
+    def convert_errors
+      yield
+    rescue Excon::Errors::HTTPStatusError => e
+      error_id, error_message = begin
+        data = MultiJson.decode(e.response.body)
+        [data["id"].try(:to_sym), data["message"]]
+      rescue MultiJson::ParseError
+        [nil, nil]
+      end
+
+      if klass = ERROR_MAP[error_id]
+        raise klass.new(error_message)
+      else
+        raise
+      end
+    end
   end
 end

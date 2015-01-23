@@ -80,7 +80,7 @@ describe Identity::Auth do
       assert_match /you are suspended/, last_response.body
     end
 
-    it "redirects to login when a user's password has expired" do
+    it "redirects to password reset when a user's password has expired" do
       post "/login", email: "kerry@heroku.com", password: "abcdefgh"
 
       stub_heroku_api do
@@ -96,9 +96,7 @@ describe Identity::Auth do
       end
       post "/oauth/authorize", client_id: "dashboard"
       assert_equal 302, last_response.status
-      follow_redirect!
-      assert_equal 200, last_response.status
-      assert_match /password expired/, last_response.body
+      assert_match %r{/account/password/reset\z}, last_response.headers["Location"]
     end
 
     describe "for a delinquent account" do
@@ -333,7 +331,13 @@ describe Identity::Auth do
         # webmock doesn't handle Excon's :expects, so raise error directly
         # until it does
         post("/oauth/authorizations") {
-          raise(Excon::Errors::Unauthorized, "Unauthorized")
+          err = MultiJson.encode({
+            id: "unauthorized",
+            message: "you are not authorized"
+          })
+          response = OpenStruct.new(body: err)
+          raise Excon::Errors::Unauthorized.new(
+            "Unauthorized", nil, response)
         }
       end
       post "/login", email: "kerry@heroku.com", password: "abcdefgh"
@@ -367,7 +371,7 @@ describe Identity::Auth do
       assert_match /you are suspended/, last_response.body
     end
 
-    it "redirects to login when a user's password has expired" do
+    it "redirects to password reset when a user's password has expired" do
       stub_heroku_api do
         post("/oauth/authorizations") {
           err = MultiJson.encode({
@@ -381,9 +385,7 @@ describe Identity::Auth do
       end
       post "/login", email: "kerry@heroku.com", password: "abcdefgh"
       assert_equal 302, last_response.status
-      follow_redirect!
-      assert_equal 200, last_response.status
-      assert_match /password expired/, last_response.body
+      assert_match %r{/account/password/reset\z}, last_response.headers["Location"]
     end
 
     describe "for accounts with two-factor enabled" do
