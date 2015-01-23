@@ -26,6 +26,7 @@ gem "yui-compressor"
 
 group :development, :test do
   #gem "debugger"
+  gem "minitest"
   gem "rack-test"
   gem "rr"
   gem "timecop"
