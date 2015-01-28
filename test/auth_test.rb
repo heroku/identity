@@ -209,14 +209,19 @@ describe Identity::Auth do
       assert_equal 7200, tokens["expires_in"]
     end
 
+
     describe "authorization_code" do
+
       before do
+
         stub_heroku_api do
           post("/oauth/tokens") {
             raise("missing_param=grant:code") unless @body["grant"]["code"]
             raise("missing_param=grant:type") unless @body["grant"]["type"]
             raise("missing_param=client:secret") \
               unless @body["client"]["secret"]
+            raise("invalid_param=client:secret") \
+              unless @body["client"]["secret"] == "8ccb712b-e39a-474f-8325-2dfbf12ad1c4"
             raise("extra_param=refresh_token:token") \
               if @body["refresh_token"]["token"]
             status(201)
@@ -251,14 +256,14 @@ describe Identity::Auth do
         post "/oauth/token",
           grant_type: "authorization_code",
           code: "secret-auth-grant-code",
-          client_secret: "ed39b405-b3e2-4d22-8c94-0d311ea11798"
+          client_secret: "8ccb712b-e39a-474f-8325-2dfbf12ad1c4"
         assert_equal 200, last_response.status
       end
 
       it "accepts secret in auth header and returns 201" do
         post "/login", email: "kerry@heroku.com", password: "abcdefgh"
         post "/oauth/authorize", client_id: "dashboard"
-        basic_authorize "kerry@heroku.com", "ed39b405-b3e2-4d22-8c94-0d311ea11798"
+        basic_authorize "kerry@heroku.com", "8ccb712b-e39a-474f-8325-2dfbf12ad1c4"
         post "/oauth/token",
           grant_type: "authorization_code",
           code: "secret-auth-grant-code"
