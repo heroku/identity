@@ -150,6 +150,7 @@ module Identity
         begin
           res = log :create_token, by_proxy: true,
             session_id: @cookie.session_id do
+            req = Rack::Auth::Basic::Request.new(request.env)
             # no credentials are required here because the code segment of the
             # exchange is state that's linked to a user in the API
             api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
@@ -157,7 +158,7 @@ module Identity
             api.post(path: "/oauth/tokens", expects: 201,
               body: MultiJson.encode({
                 client: {
-                  secret: params[:client_secret]
+                  secret: client_secret
                 },
                 grant: {
                   code: params[:code],
@@ -270,6 +271,19 @@ module Identity
 
     def flash
       request.env["x-rack.flash"]
+    end
+
+    def client_secret
+      # per RFC 6749 section 2.3.1, token endpoint must accept basic auth
+      req = Rack::Auth::Basic::Request.new(request.env)
+      if req.provided? && req.basic?
+        # credentials contain the client ID (user) and the client secret (pass)
+        _, client_secret = req.credentials
+        client_secret
+      else
+        # if it's not is basic auth, hopefully it's in the request body
+        params[:client_secret]
+      end
     end
 
     def logout

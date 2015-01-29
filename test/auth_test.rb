@@ -207,62 +207,76 @@ describe Identity::Auth do
       assert_equal 7200, tokens["expires_in"]
     end
 
-    it "accepts an authorization code" do
-      i = 0
-      stub_heroku_api do
-        post("/oauth/tokens") {
-          # only check parameters on the 2nd request, as ID does one OAuth
-          # dance to procure its own token
-          if (i += 1) > 1
+
+    describe "authorization_code" do
+
+      before do
+
+        stub_heroku_api do
+          post("/oauth/tokens") {
             raise("missing_param=grant:code") unless @body["grant"]["code"]
             raise("missing_param=grant:type") unless @body["grant"]["type"]
+            raise("missing_param=client:secret") \
+              unless @body["client"]["secret"]
+            raise("invalid_param=client:secret") \
+              unless @body["client"]["secret"] == "8ccb712b-e39a-474f-8325-2dfbf12ad1c4"
             raise("extra_param=refresh_token:token") \
               if @body["refresh_token"]["token"]
-          end
-          status(201)
-          MultiJson.encode({
-            authorization: {
-              id: "68e3146b-be7e-4520-b60b-c4f06623084f",
-            },
-            access_token: {
-              id:         "47a0db3a-37cf-450a-b204-855ee943ce32",
-              token:      "e51e8a64-29f1-4bbf-997e-391d84aa12a9",
-              expires_in: 7200,
-            },
-            refresh_token: {
-              id:         "dc89141f-263c-4009-95ef-db0fe653b8ef",
-              token:      "faa180e4-5844-42f2-ad66-0c574a1dbed2",
-              expires_in: 2592000,
-            },
-            session: {
-              id:         "8bb579ed-e3a4-41ed-9c1c-719e96618f71",
-            },
-            user: {
-              session_nonce: "0a80ac35-b9d8-4fab-9261-883bea77ad3a",
-            }
-          })
-        }
+            status(201)
+            MultiJson.encode({
+              authorization: {
+                id: "68e3146b-be7e-4520-b60b-c4f06623084f",
+              },
+              access_token: {
+                id:         "47a0db3a-37cf-450a-b204-855ee943ce32",
+                token:      "e51e8a64-29f1-4bbf-997e-391d84aa12a9",
+                expires_in: 7200,
+              },
+              refresh_token: {
+                id:         "dc89141f-263c-4009-95ef-db0fe653b8ef",
+                token:      "faa180e4-5844-42f2-ad66-0c574a1dbed2",
+                expires_in: 2592000,
+              },
+              session: {
+                id:         "8bb579ed-e3a4-41ed-9c1c-719e96618f71",
+              },
+              user: {
+                session_nonce: "0a80ac35-b9d8-4fab-9261-883bea77ad3a",
+              }
+            })
+          }
+        end
       end
-      post "/login", email: "kerry@heroku.com", password: "abcdefgh"
-      post "/oauth/authorize", client_id: "dashboard"
-      post "/oauth/token",
-        grant_type: "authorization_code",
-        code: "secret-auth-grant-code"
-      assert_equal 200, last_response.status
+
+      it "accepts secret in body and returns 201" do
+        post "/login", email: "kerry@heroku.com", password: "abcdefgh"
+        post "/oauth/authorize", client_id: "dashboard"
+        post "/oauth/token",
+          grant_type: "authorization_code",
+          code: "secret-auth-grant-code",
+          client_secret: "8ccb712b-e39a-474f-8325-2dfbf12ad1c4"
+        assert_equal 200, last_response.status
+      end
+
+      it "accepts secret in auth header and returns 201" do
+        post "/login", email: "kerry@heroku.com", password: "abcdefgh"
+        post "/oauth/authorize", client_id: "dashboard"
+        basic_authorize "kerry@heroku.com", "8ccb712b-e39a-474f-8325-2dfbf12ad1c4"
+        post "/oauth/token",
+          grant_type: "authorization_code",
+          code: "secret-auth-grant-code"
+        assert_equal 200, last_response.status
+      end
     end
 
+
     it "accepts a refresh token" do
-      i = 0
       stub_heroku_api do
         post("/oauth/tokens") {
-          # only check parameters on the 2nd request, as ID does one OAuth
-          # dance to procure its own token
-          if (i += 1) > 1
-            raise("missing_param=grant:type") unless @body["grant"]["type"]
-            raise("missing_param=refresh_token:token") \
-              unless @body["refresh_token"]["token"]
-            raise("extra_param=grant:code") if @body["grant"]["code"]
-          end
+          raise("missing_param=grant:type") unless @body["grant"]["type"]
+          raise("missing_param=refresh_token:token") \
+            unless @body["refresh_token"]["token"]
+          raise("extra_param=grant:code") if @body["grant"]["code"]
           status(201)
           MultiJson.encode({
             authorization: {
