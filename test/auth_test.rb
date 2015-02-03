@@ -366,6 +366,26 @@ describe Identity::Auth do
         "heroku_session_nonce=8bb579ed-e3a4-41ed-9c1c-719e96618f71;"
     end
 
+    it "redirects to login on rate limited" do
+      stub_heroku_api do
+        #post("/oauth/authorizations") { 401 }
+        # webmock doesn't handle Excon's :expects, so raise error directly
+        # until it does
+        post("/oauth/authorizations") {
+          err = MultiJson.encode({
+            id: "unauthorized",
+            message: "you are not authorized"
+          })
+          response = OpenStruct.new(body: err)
+          raise Excon::Errors::TooManyRequests.new(
+            "TooManyRequests", nil, response)
+        }
+      end
+      post "/login", email: "kerry@heroku.com", password: "abcdefgh"
+      assert_equal 302, last_response.status
+      assert_match %r{/login$}, last_response.headers["Location"]
+    end
+
     it "redirects to login when a user is suspended" do
       stub_heroku_api do
         post("/oauth/authorizations") {

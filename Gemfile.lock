@@ -17,7 +17,7 @@ GEM
     crack (0.4.2)
       safe_yaml (~> 1.0.0)
     eventmachine (1.0.4)
-    excon (0.39.4)
+    excon (0.44.1)
     execjs (2.2.2)
     fernet (1.5)
     hike (1.2.1)
