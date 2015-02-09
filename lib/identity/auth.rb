@@ -74,6 +74,9 @@ module Identity
         rescue Excon::Errors::Unauthorized
           flash[:error] = "There was a problem with your login."
           redirect to("/login")
+        rescue Excon::Errors::TooManyRequests
+          flash[:error] = "Account reached login rate limit, please wait a few minutes before trying again"
+          redirect to("/login")
         rescue Identity::Errors::PasswordExpired => e
           flash[:error] = e.message
           redirect to("/account/password/reset")
