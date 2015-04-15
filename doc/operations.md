@@ -4,6 +4,8 @@
 
 ### Preparation/Setup (only needed once, substitute your email address):
 
+Note: can be skipped by heroku-api org members
+
 ```
 export HEROKU_EMAIL_ADDRESS=...
 
