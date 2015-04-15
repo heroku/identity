@@ -17,7 +17,7 @@ heroku git:remote -a id-production -r production
 Note: requires api-admin (install/build from http://github.com/heroku/api-admin)
 
 ```
-rake test
+bundle exec rake
 git push staging master
 api-test-login --staging
 git push production master

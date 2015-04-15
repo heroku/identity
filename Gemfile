@@ -28,6 +28,7 @@ group :development, :test do
   #gem "debugger"
   gem "minitest"
   gem "rack-test"
+  gem "rake"
   gem "rr"
   gem "timecop"
   gem "webmock"
