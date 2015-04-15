@@ -1,7 +1,7 @@
 - @title = "Login"
 
 #login.panel
-  h3 Log in to Heroku
+  h3 Log in to your account
   form role="form" method="post" action="/login"
     == render :slim, :"_flash", layout: false
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)

@@ -48,7 +48,7 @@ h1.logo {
   padding: $margin/1.5 0;
   text-align: center;
   @include background(linear-gradient(90deg, fade-out(white, 1) 0%, fade-out(white, .8) 50%, fade-out(white, 1) 100%));
-  background-size: 100% 2px;
+  background-size: 100% 1px;
   background-repeat: no-repeat;
   a {
     display: block;
