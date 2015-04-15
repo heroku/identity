@@ -6,8 +6,10 @@
 
 ```
 export HEROKU_EMAIL_ADDRESS=...
+
 heroku sudo sharing:add $HEROKU_EMAIL_ADDRESS -a id-staging
 heroku git:remote -a id-staging -r staging
+
 heroku sudo sharing:add $HEROKU_EMAIL_ADDRESS -a id-production
 heroku git:remote -a id-production -r production
 ```
@@ -18,8 +20,12 @@ Note: requires api-admin (install/build from http://github.com/heroku/api-admin)
 
 ```
 bundle exec rake
+
+heroku preauth -a id-staging
 git push staging master
 api-test-login --staging
+
+heroku preauth -a id-production
 git push production master
 api-test-login --production
 ```
