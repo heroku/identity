@@ -156,8 +156,8 @@ module Identity::Helpers
     def perform_oauth_refresh_dance
       log :oauth_refresh_dance do
         res = log :refresh_token do
-          api = Identity::HerokuAPI.new(pass: @cookie.access_token,
-            ip: request.ip, request_ids: request_ids, version: 3)
+          api = Identity::HerokuAPI.new(ip: request.ip,
+            request_ids: request_ids, version: 3)
           api.post(path: "/oauth/tokens", expects: 201,
             body: MultiJson.encode({
               client:        { secret: Identity::Config.heroku_oauth_secret },
