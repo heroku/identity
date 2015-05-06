@@ -9,9 +9,12 @@ require "./lib/identity"
 # initialization/configuration
 #
 
-Honeybadger.configure do |config|
-  config.api_key = ENV['HONEYBADGER_API_KEY']
-end if ENV['HONEYBADGER_API_KEY']
+Rollbar.configure do |config|
+  config.disable_monkey_patch = true
+  config.access_token = Identity::Config.rollbar_access_token
+  config.enabled = !Identity::Config.rollbar_access_token.nil?
+end
+
 Excon.defaults[:ssl_verify_peer] = Identity::Config.ssl_verify_peer?
 Slim::Engine.set_default_options pretty: !Identity::Config.production?
 

@@ -21,9 +21,6 @@ GEM
     execjs (2.2.2)
     fernet (1.5)
     hike (1.2.1)
-    honeybadger (1.8.0)
-      json
-    json (1.8.2)
     minitest (5.4.3)
     multi_json (1.10.1)
     oj (2.0.0)
@@ -44,6 +41,8 @@ GEM
     rack_csrf (2.4.0)
       rack (>= 0.9)
     rake (10.4.2)
+    rollbar (1.5.1)
+      multi_json (~> 1.3)
     rr (1.0.4)
     safe_yaml (1.0.4)
     sass (3.4.7)
@@ -91,7 +90,6 @@ DEPENDENCIES
   coffee-script
   excon
   fernet
-  honeybadger
   minitest
   multi_json
   oj
@@ -103,6 +101,7 @@ DEPENDENCIES
   rack-test
   rack_csrf
   rake
+  rollbar
   rr
   sinatra
   sinatra-contrib
