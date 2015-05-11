@@ -11,7 +11,7 @@ module Identity
     ]
 
     def self.registered(app)
-      app.error *UNAVAILABLE_ERRORS do
+      app.error(*UNAVAILABLE_ERRORS) do
         e = env["sinatra.error"]
         Identity.log(:exception, type: :unavailable,
           class: e.class.name, message: e.message,
@@ -34,7 +34,7 @@ module Identity
           message: e.message,
           backtrace: e.backtrace.inspect
         }.merge(context))
-        Honeybadger.notify(e, context: context) if Config.honeybadger_api_key
+        Rollbar.error(e, context)
         slim :"errors/500", layout: :"layouts/purple"
       end
     end

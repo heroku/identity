@@ -34,14 +34,9 @@ api-test-login --production
 
 ## Debugging Production
 
-### Honeybadger
+### Rollbar
 
-Uncaught errors are sent to Honeybadger, which can be accessed via:
-
-    heroku addons:open honeybadger -a id-staging
-    heroku addons:open honeybadger -a id-production
-
-In case of a bad API or Identity deploy and SSO is down, there is also a backdoor into the Honeybadger projects. Get credentials from LastPass.
+Uncaught errors are sent to [Rollbar](https://rollbar.com/Heroku-3/identity/).
 
 ### Logs
 

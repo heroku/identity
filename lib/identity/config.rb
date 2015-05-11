@@ -30,10 +30,6 @@ module Identity
       ENV["HEROKU_COOKIE_DOMAIN"] || ".heroku.com"
     end
 
-    def honeybadger_api_key
-      ENV["HONEYBADGER_API_KEY"]
-    end
-
     def mixpanel_token
       ENV["MIXPANEL_TOKEN"]
     end
@@ -44,6 +40,10 @@ module Identity
 
     def old_cookie_encryption_key
       ENV["OLD_COOKIE_ENCRYPTION_KEY"]
+    end
+
+    def rollbar_access_token
+      ENV["ROLLBAR_ACCESS_TOKEN"]
     end
 
     def development?
