@@ -14,6 +14,7 @@ Rollbar.configure do |config|
   config.access_token         = Identity::Config.rollbar_access_token
   config.enabled              = !Identity::Config.rollbar_access_token.nil?
   config.environment          = ENV["RACK_ENV"]
+  config.root                 = Identity::Config.root
 end
 
 Excon.defaults[:ssl_verify_peer] = Identity::Config.ssl_verify_peer?
