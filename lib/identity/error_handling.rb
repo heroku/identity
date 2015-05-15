@@ -8,6 +8,7 @@ module Identity
       Excon::Errors::ServiceUnavailable,
       Excon::Errors::SocketError,
       Excon::Errors::Timeout,
+      Excon::Errors::TooManyRequests
     ]
 
     def self.registered(app)
