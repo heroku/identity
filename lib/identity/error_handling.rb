@@ -7,16 +7,25 @@ module Identity
       Excon::Errors::NotAcceptable,
       Excon::Errors::ServiceUnavailable,
       Excon::Errors::SocketError,
-      Excon::Errors::Timeout,
-      Excon::Errors::TooManyRequests
+      Excon::Errors::Timeout
     ]
 
     def self.registered(app)
+      app.error(Excon::Errors::TooManyRequests) do
+        e = env["sinatra.error"]
+        Identity.log(:exception, type: :too_many_requests,
+          class: e.class.name, message: e.message,
+          request_id: request.env["REQUEST_IDS"])
+        status 429
+        slim :"errors/429", layout: :"layouts/purple"
+      end
+
       app.error(*UNAVAILABLE_ERRORS) do
         e = env["sinatra.error"]
         Identity.log(:exception, type: :unavailable,
           class: e.class.name, message: e.message,
           request_id: request.env["REQUEST_IDS"], backtrace: e.backtrace.inspect)
+        status 503
         slim :"errors/503", layout: :"layouts/purple"
       end
 
