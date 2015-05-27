@@ -1,7 +1,7 @@
 module Identity
   module ErrorHandling
     UNAVAILABLE_ERRORS = [
-      Excon::Errors::BadGateway,
+      Excon::Errors::ServerError,
       # a NotAcceptable probably means that the ELB has lost its backends and
       # doesn't know how to respond to our V3 "Accept"; display unavailable
       Excon::Errors::NotAcceptable,
