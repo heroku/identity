@@ -27,7 +27,7 @@ GEM
     open4 (1.3.0)
     puma (1.6.3)
       rack (~> 1.2)
-    rack (1.5.2)
+    rack (1.6.2)
     rack-flash3 (1.0.3)
       rack
     rack-instruments (0.3.2)
