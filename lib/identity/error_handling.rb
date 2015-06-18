@@ -29,6 +29,15 @@ module Identity
         slim :"errors/503", layout: :"layouts/purple"
       end
 
+      app.error Excon::Errors::Unauthorized do
+        e = env["sinatra.error"]
+        Identity.log(:exception, type: :unauthorized,
+          class: e.class.name, message: e.message,
+          request_id: request.env["REQUEST_IDS"], backtrace: e.backtrace.inspect)
+        status 401
+        slim :"errors/401", layout: :"layouts/purple"
+      end
+
       app.error do
         e = env["sinatra.error"]
         context = {

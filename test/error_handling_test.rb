@@ -9,6 +9,10 @@ describe Identity::ErrorHandling do
 
       set :views, "#{Identity::Config.root}/views"
 
+      get "/401" do
+        raise Excon::Errors::Unauthorized.new("go away")
+      end
+
       get "/429" do
         raise Excon::Errors::TooManyRequests.new("too many")
       end
@@ -16,6 +20,14 @@ describe Identity::ErrorHandling do
       get "/503" do
         raise Excon::Errors::Timeout.new("timeout")
       end
+    end
+  end
+
+  describe "401" do
+    it "renders the 401 error page" do
+      get "/401"
+      assert_equal 401, last_response.status
+      assert_match /Your credentials are invalid/, last_response.body
     end
   end
 
