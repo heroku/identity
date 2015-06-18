@@ -175,7 +175,7 @@ module Identity::Helpers
 
       @cookie.session_id              = auth["session"]["id"]
       @cookie.access_token            = auth["access_token"]["token"]
-      @cookie.refresh_token           = auth["refresh_token"]["token"]
+      @cookie.refresh_token           = auth["refresh_token"].try(:[], "token")
       @cookie.user_id                 = auth["user"]["id"]
       @cookie.access_token_expires_at = expires_at
 
