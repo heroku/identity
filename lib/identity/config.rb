@@ -46,12 +46,16 @@ module Identity
       ENV["ROLLBAR_ACCESS_TOKEN"]
     end
 
+    def rack_env
+      ENV.fetch("RACK_ENV", "development")
+    end
+
     def development?
-      ENV["RACK_ENV"] == "development"
+      rack_env == "development"
     end
 
     def production?
-      ENV["RACK_ENV"] == "production"
+      rack_env == "production"
     end
 
     def redirect_all_signups
