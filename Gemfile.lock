@@ -120,3 +120,6 @@ DEPENDENCIES
   timecop
   webmock
   yui-compressor
+
+BUNDLED WITH
+   1.10.4
