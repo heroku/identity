@@ -10,44 +10,41 @@ module Identity
       Excon::Errors::Timeout
     ]
 
+    ERROR_TYPES = {
+      401 => :unauthorized,
+      404 => :not_found,
+      429 => :too_many_requests,
+      500 => :server_error,
+      503 => :unavailable
+    }
+
     def self.registered(app)
-      app.error(Excon::Errors::TooManyRequests) do
-        e = env["sinatra.error"]
-        Identity.log(:exception, type: :too_many_requests,
-          class: e.class.name, message: e.message,
-          request_id: request.env["REQUEST_IDS"])
-        status 429
-        slim :"errors/429", layout: :"layouts/purple"
+      app.helpers Helpers
+
+      app.error Excon::Errors::TooManyRequests do
+        handle_error 429
       end
 
-      app.error(*UNAVAILABLE_ERRORS) do
-        e = env["sinatra.error"]
-        Identity.log(:exception, type: :unavailable,
-          class: e.class.name, message: e.message,
-          request_id: request.env["REQUEST_IDS"], backtrace: e.backtrace.inspect)
-        status 503
-        slim :"errors/503", layout: :"layouts/purple"
+      app.error *UNAVAILABLE_ERRORS do
+        handle_error 503
       end
 
       app.error Excon::Errors::Unauthorized do
-        e = env["sinatra.error"]
-        Identity.log(:exception, type: :unauthorized,
-          class: e.class.name, message: e.message,
-          request_id: request.env["REQUEST_IDS"], backtrace: e.backtrace.inspect)
-        status 401
-        slim :"errors/401", layout: :"layouts/purple"
+        handle_error 401
       end
 
       app.error Excon::Errors::NotFound do
-        e = env["sinatra.error"]
-        Identity.log(:exception, type: :not_found,
-          class: e.class.name, message: e.message,
-          request_id: request.env["REQUEST_IDS"], backtrace: e.backtrace.inspect)
-        status 404
-        slim :"errors/404", layout: :"layouts/purple"
+        handle_error 404
       end
 
       app.error do
+        handle_error 500
+      end
+    end
+
+    module Helpers
+      def handle_error(code)
+        status code
         e = env["sinatra.error"]
         context = {
           method:          request.request_method,
@@ -57,13 +54,15 @@ module Identity
           session_id:      @cookie ? @cookie.session_id : nil,
           user_id:         @cookie ? @cookie.user_id : nil,
         }
+
         Identity.log(:exception, {
+          type: ERROR_TYPES[code],
           class: e.class.name,
           message: e.message,
           backtrace: e.backtrace.inspect
         }.merge(context))
-        Rollbar.error(e, context)
-        slim :"errors/500", layout: :"layouts/purple"
+
+        slim :"errors/#{code}", layout: :"layouts/purple"
       end
     end
 
