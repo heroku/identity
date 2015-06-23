@@ -6,6 +6,10 @@ module Identity
     register HerokuCookie
     register Sinatra::Namespace
 
+    configure do
+      set :views, "#{Config.root}/views"
+    end
+
     before do
       # short-circuit 404 if federated id is not set up
       raise Sinatra::NotFound unless Config.heroku_fid_url
