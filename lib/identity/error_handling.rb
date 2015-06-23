@@ -38,6 +38,15 @@ module Identity
         slim :"errors/401", layout: :"layouts/purple"
       end
 
+      app.error Excon::Errors::NotFound do
+        e = env["sinatra.error"]
+        Identity.log(:exception, type: :not_found,
+          class: e.class.name, message: e.message,
+          request_id: request.env["REQUEST_IDS"], backtrace: e.backtrace.inspect)
+        status 404
+        slim :"errors/404", layout: :"layouts/purple"
+      end
+
       app.error do
         e = env["sinatra.error"]
         context = {
