@@ -13,6 +13,10 @@ describe Identity::ErrorHandling do
         raise Excon::Errors::Unauthorized.new("go away")
       end
 
+      get "/404" do
+        raise Excon::Errors::NotFound.new("not found")
+      end
+
       get "/429" do
         raise Excon::Errors::TooManyRequests.new("too many")
       end
@@ -28,6 +32,14 @@ describe Identity::ErrorHandling do
       get "/401"
       assert_equal 401, last_response.status
       assert_match /Your credentials are invalid/, last_response.body
+    end
+  end
+
+  describe "404" do
+    it "renders the 404 error page" do
+      get "/404"
+      assert_equal 404, last_response.status
+      assert_match /but we couldn't find that page/, last_response.body
     end
   end
 
