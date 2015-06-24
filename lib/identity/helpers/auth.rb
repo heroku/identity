@@ -182,7 +182,6 @@ module Identity::Helpers
       # some basic sanity checks
       raise "missing=access_token"  unless @cookie.access_token
       raise "missing=expires_in"    unless @cookie.access_token_expires_at
-      raise "missing=refresh_token" unless @cookie.refresh_token
     end
   end
 end
