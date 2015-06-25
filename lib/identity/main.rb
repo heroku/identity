@@ -30,7 +30,10 @@ module Identity
       # It seems dangerous, but the form can only be used once and needs
       # a unique user_id / token combination to work that is only shared with
       # the user's email address after signing up.
-      "POST:/account/accept/ok"
+      "POST:/account/accept/ok",
+
+      # skip CSRF for post to federated identity SAML finalize action
+      "POST:/federated/.*/saml/finalize"
     ]
     use Rack::Flash
 
@@ -38,8 +41,9 @@ module Identity
       mount Account
       mount Assets
       mount Auth
-      mount Robots
       mount Design if Config.development?
+      mount FederatedIdentity
+      mount Robots
       run   Default # index + error handlers
     }
   end

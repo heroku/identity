@@ -136,17 +136,7 @@ module Identity::Helpers
           auth = MultiJson.decode(res.body)
         end
 
-        @cookie.session_id              = auth["session"]["id"]
-        @cookie.access_token            = auth["access_token"]["token"]
-        @cookie.access_token_expires_at =
-          Time.now + auth["access_token"]["expires_in"]
-        @cookie.refresh_token           = auth["refresh_token"]["token"]
-        @cookie.user_id                 = auth["user"]["id"]
-
-        # some basic sanity checks
-        raise "missing=access_token"  unless @cookie.access_token
-        raise "missing=expires_in"    unless @cookie.access_token_expires_at
-        raise "missing=refresh_token" unless @cookie.refresh_token
+        write_auth_data_to_cookie auth
 
         log :oauth_dance_complete, session_id: @cookie.session_id, user: user
       end
@@ -178,6 +168,20 @@ module Identity::Helpers
 
         log :oauth_refresh_dance_complete, session_id: @cookie.session_id
       end
+    end
+
+    def write_auth_data_to_cookie(auth)
+      expires_at = Time.now + auth["access_token"]["expires_in"]
+
+      @cookie.session_id              = auth["session"]["id"]
+      @cookie.access_token            = auth["access_token"]["token"]
+      @cookie.refresh_token           = auth["refresh_token"].try(:[], "token")
+      @cookie.user_id                 = auth["user"]["id"]
+      @cookie.access_token_expires_at = expires_at
+
+      # some basic sanity checks
+      raise "missing=access_token"  unless @cookie.access_token
+      raise "missing=expires_in"    unless @cookie.access_token_expires_at
     end
   end
 end

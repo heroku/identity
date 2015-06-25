@@ -30,6 +30,10 @@ module Identity
       ENV["HEROKU_COOKIE_DOMAIN"] || ".heroku.com"
     end
 
+    def heroku_fid_url
+      ENV["HEROKU_FID_URL"]
+    end
+
     def mixpanel_token
       ENV["MIXPANEL_TOKEN"]
     end
