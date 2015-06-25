@@ -19,6 +19,7 @@ require_relative "identity/account"
 require_relative "identity/assets"
 require_relative "identity/auth"
 require_relative "identity/default"
+require_relative "identity/login_external"
 require_relative "identity/robots"
 
 require_relative "identity/main"

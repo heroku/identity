@@ -14,6 +14,10 @@ module Identity
       ENV["DASHBOARD_URL"] || raise("missing=DASHBOARD_URL")
     end
 
+    def finalize_shared_secret
+      ENV["FINALIZE_SHARED_SECRET"]
+    end
+
     def heroku_api_url
       ENV["HEROKU_API_URL"] || raise("missing=HEROKU_API_URL")
     end

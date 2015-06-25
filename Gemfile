@@ -7,6 +7,7 @@ gem "bourbon"
 gem "coffee-script"
 gem "excon"
 gem "fernet"
+gem "jwt"
 gem "multi_json"
 gem "oj" # fast json
 gem "pry"
