@@ -23,7 +23,7 @@ module Identity
     private
 
     def shared_key
-      Config.finalize_shared_secret
+      Config.login_external_secret
     end
   end
 end

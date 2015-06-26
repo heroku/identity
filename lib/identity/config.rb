@@ -14,10 +14,6 @@ module Identity
       ENV["DASHBOARD_URL"] || raise("missing=DASHBOARD_URL")
     end
 
-    def finalize_shared_secret
-      ENV["FINALIZE_SHARED_SECRET"]
-    end
-
     def heroku_api_url
       ENV["HEROKU_API_URL"] || raise("missing=HEROKU_API_URL")
     end
@@ -40,6 +36,10 @@ module Identity
 
     def google_tag_manager_account
       ENV["GOOGLE_TAG_MANAGER_ACCOUNT"]
+    end
+
+    def login_external_secret
+      ENV["LOGIN_EXTERNAL_SECRET"]
     end
 
     def old_cookie_encryption_key

@@ -20,7 +20,7 @@ describe Identity::Account do
 
   describe "shared key is not configured" do
     before do
-      stub(Identity::Config).finalize_shared_secret { nil }
+      stub(Identity::Config).login_external_secret { nil }
     end
 
     it "returns 404" do
@@ -33,7 +33,7 @@ describe Identity::Account do
     let(:shared_key){ "hello world secret token" }
 
     before do
-      stub(Identity::Config).finalize_shared_secret { shared_key }
+      stub(Identity::Config).login_external_secret { shared_key }
     end
 
     it "returns 401 if token is incorrect" do
