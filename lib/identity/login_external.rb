@@ -1,3 +1,7 @@
+# This defines an endpoint for external services such as Fido (Federated
+# Identity) and signup.heroku.com so that they can use their own method for
+# authentication and set cookies in identity.
+# The endpoint is protected by a shared secret.
 module Identity
   class LoginExternal < Default
     register Sinatra::Namespace
