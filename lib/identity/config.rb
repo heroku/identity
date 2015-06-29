@@ -38,6 +38,10 @@ module Identity
       ENV["GOOGLE_TAG_MANAGER_ACCOUNT"]
     end
 
+    def login_external_secret
+      ENV["LOGIN_EXTERNAL_SECRET"]
+    end
+
     def old_cookie_encryption_key
       ENV["OLD_COOKIE_ENCRYPTION_KEY"]
     end

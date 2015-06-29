@@ -38,8 +38,9 @@ module Identity
       mount Account
       mount Assets
       mount Auth
-      mount Robots
       mount Design if Config.development?
+      mount LoginExternal
+      mount Robots
       run   Default # index + error handlers
     }
   end
