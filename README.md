@@ -40,3 +40,8 @@ Your OAuth client will also need to be able to manage authorizations, which is s
 ``` bash
 rake test
 ```
+
+## Platform Apps
+
+* `id-production` (production)
+* `id-staging` (staging)
