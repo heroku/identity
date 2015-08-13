@@ -129,6 +129,7 @@ module Identity
           @scope = [
             "global",
             "identity",
+            "create-apps",
             "read",
             "read-protected",
             "write",
