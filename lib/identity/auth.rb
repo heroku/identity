@@ -127,6 +127,7 @@ module Identity
         get "/authorize/dev" do
           @client = {"name" => "Test Client"}
           @scope = [
+            "create-apps",
             "global",
             "identity",
             "read",
