@@ -1,9 +1,17 @@
 - @title = "Login"
 
 #login.panel
-  h3 Log in to your account
+  - if flash[:link_account]
+    h3 Link accounts
+  - else
+    h3 Log in to your account
   form role="form" method="post" action="/login"
     == render :slim, :"_flash", layout: false
+    - if flash[:link_account]
+      div.alert.alert-warning
+        ' Please log in or
+        a href="/signup/login" create an account 
+        ' to authorize this service.
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
     .form-group
       label for="email" Email address

@@ -244,8 +244,13 @@ module Identity
       # destroyed or expired, redirect to login
       rescue Excon::Errors::NotFound
         redirect to("/login")
+      # user is not logged in
+      rescue Identity::Errors::NoSession
+        flash[:link_account] = true
+        @cookie.authorize_params = authorize_params
+        redirect to("/login")
       # refresh token dance was unsuccessful
-      rescue Excon::Errors::Unauthorized, Identity::Errors::NoSession
+      rescue Excon::Errors::Unauthorized
         @cookie.authorize_params = authorize_params
         redirect to("/login")
       rescue Identity::Errors::PasswordExpired => e
