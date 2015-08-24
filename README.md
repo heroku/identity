@@ -14,6 +14,18 @@ researchers to report problems to security@heroku.com.
 
 ## Usage
 
+Docker
+---
+
+* Install boot2docker (includes virtualbox) from http://boot2docker.io/
+* Install docker-compose from https://docs.docker.com/compose/install/
+
+```bash
+git clone https://github.com/heroku/identity.git
+docker-compose up
+curl -i http://$(boot2docker ip):5000
+```
+
 ``` bash
 bundle install
 cp .env.sample .env # And then edit it
@@ -40,6 +52,11 @@ Your OAuth client will also need to be able to manage authorizations, which is s
 ``` bash
 rake test
 ```
+
+### Docker
+
+```
+docker-compose run identity bundle exec rake
 
 ## Platform Apps
 

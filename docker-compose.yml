@@ -1,0 +1,7 @@
+identity:
+  build: .
+  command: bundle exec foreman start
+  volumes:
+    - .:/identity
+  ports:
+    - "5000:5000"
