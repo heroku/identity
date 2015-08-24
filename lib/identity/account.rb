@@ -203,12 +203,12 @@ module Identity
           request_ids: request_ids,
           user: @cookie.email,
           pass: @cookie.password,
-          version: "3.sms-number",
+          version: "3",
         }
 
         begin
           api = HerokuAPI.new(options)
-          res = api.post(path: "/account/sms-number/actions/recover",
+          res = api.post(path: "/users/~/sms-number/actions/recover",
             expects: 201)
         rescue Excon::Errors::UnprocessableEntity => e
           flash[:error] = decode_error(e.response.body)

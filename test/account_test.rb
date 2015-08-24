@@ -189,7 +189,7 @@ describe Identity::Account do
   describe "POST /account/two-factor/recovery/sms" do
     it "redirects back to two-factor if number missing" do
       stub_heroku_api do
-        post("/account/sms-number/actions/recover") {
+        post("/users/~/sms-number/actions/recover") {
           [422, MultiJson.encode({ message: "Number missing." })]
         }
       end
