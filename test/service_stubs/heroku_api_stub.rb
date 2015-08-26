@@ -172,7 +172,7 @@ If you don't receive an email, and it's not in your spam folder, this could mean
     })
   end
 
-  get "/account/sms-number" do
+  get "/users/~/sms-number" do
     authorized!
 
     MultiJson.encode({
@@ -180,7 +180,7 @@ If you don't receive an email, and it's not in your spam folder, this could mean
     })
   end
 
-  post "/account/sms-number/actions/recover" do
+  post "/users/~/sms-number/actions/recover" do
     status(201)
   end
 end
