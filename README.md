@@ -14,8 +14,14 @@ researchers to report problems to security@heroku.com.
 
 ## Usage
 
-Docker
----
+``` bash
+bundle install
+cp .env.sample .env # And then edit it
+foreman start
+# check localhost:5000
+```
+
+### Docker
 
 * Install boot2docker (includes virtualbox) from http://boot2docker.io/
 * Install docker-compose from https://docs.docker.com/compose/install/
@@ -24,13 +30,6 @@ Docker
 git clone https://github.com/heroku/identity.git
 docker-compose up
 curl -i http://$(boot2docker ip):5000
-```
-
-``` bash
-bundle install
-cp .env.sample .env # And then edit it
-foreman start
-# check localhost:5000
 ```
 
 ## Platform Install
