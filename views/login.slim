@@ -10,8 +10,8 @@
     - if flash[:link_account]
       div.alert.alert-warning
         ' Please log in or
-        a href="/signup/login" create an account 
-        ' to authorize this service.
+        a href="/signup/login" sign up 
+        ' to link your Heroku account with #{@oauth_client["name"]}
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
     .form-group
       label for="email" Email address

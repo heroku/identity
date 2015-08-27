@@ -19,6 +19,9 @@ module Identity
 
     namespace "/login" do
       get do
+        if flash[:link_account] && @cookie.authorize_params
+          @oauth_client = get_client_info(@cookie.authorize_params["client_id"])
+        end
         slim :login, layout: :"layouts/purple"
       end
 
@@ -293,6 +296,14 @@ module Identity
         # if it's not is basic auth, hopefully it's in the request body
         params[:client_secret]
       end
+    end
+
+    def get_client_info(client_id)
+      api = HerokuAPI.new(ip: request.ip, version: 3)
+      res = api.get(
+        expects: 200,
+        path: "/oauth/clients/#{client_id}")
+      MultiJson.decode(res.body)
     end
 
     def logout
