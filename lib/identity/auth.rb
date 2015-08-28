@@ -19,8 +19,11 @@ module Identity
 
     namespace "/login" do
       get do
+        @campaign = "login" # used to identify the user if they signup from here
         if flash[:link_account] && @cookie.authorize_params
-          @oauth_client = get_client_info(@cookie.authorize_params["client_id"])
+          client_id = @cookie.authorize_params["client_id"]
+          @oauth_client = get_client_info(client_id)
+          @campaign     = get_client_campaign(client_id)
         end
         slim :login, layout: :"layouts/purple"
       end
@@ -304,6 +307,15 @@ module Identity
         expects: 200,
         path: "/oauth/clients/#{client_id}")
       MultiJson.decode(res.body)
+    end
+
+    # hardcoded for now :{ we can potentially move this to API at some point,
+    # but will need some sort of service to issue salesforce campaign ids
+    def get_client_campaign(oauth_client_id)
+      {
+        "e780a170-f68f-46d2-99fd-a9878d8e6c75" => "parse",
+        "14cf504a-0d20-4460-a2ac-9547365ddf8a" => "parse",
+      }[oauth_client_id] || "login"
     end
 
     def logout

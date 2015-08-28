@@ -11,6 +11,7 @@ ENV["SIGNUP_URL"]            = "https://signup.heroku.com"
 require "bundler/setup"
 Bundler.require(:default, :test)
 
+require "capybara"
 require "minitest/autorun"
 require "minitest/spec"
 require "rack/test"

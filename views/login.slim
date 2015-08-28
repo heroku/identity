@@ -10,7 +10,7 @@
     - if flash[:link_account]
       div.alert.alert-warning
         ' Please log in or
-        a href="/signup/login" sign up 
+        a href="/signup/#{@campaign}" sign up 
         ' to link your Heroku account with #{@oauth_client["name"]}
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
     .form-group
@@ -23,7 +23,7 @@
       input#password.form-control.password type="password" name="password" autocomplete="off" placeholder="Password" tabindex="2"
     button.btn.btn-primary.btn-lg.btn-block type="submit" name="commit" value="Log In" tabindex="3" Log In
 
-  a.panel-footer href="/signup/login"
+  a.panel-footer href="/signup/#{@campaign}"
     | New to Heroku? &nbsp;
     span Sign Up
 
