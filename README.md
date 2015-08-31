@@ -23,8 +23,7 @@ foreman start
 
 ### Docker
 
-* Install boot2docker (includes virtualbox) from http://boot2docker.io/
-* Install docker-compose from https://docs.docker.com/compose/install/
+* Install docker toolbox (includes virtualbox) from https://www.docker.com/toolbox
 
 ```bash
 git clone https://github.com/heroku/identity.git
