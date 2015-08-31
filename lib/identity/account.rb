@@ -176,17 +176,18 @@ module Identity
         begin
           api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
             version: 2)
-          res = api.post(path: "/auth/finish_reset_password/#{token}",
-            expects: 200, body: URI.encode_www_form({
-              :password              => params[:password],
-              :password_confirmation => params[:password_confirmation],
-            }))
+          body = URI.encode_www_form({
+            :password              => params[:password],
+            :password_confirmation => params[:password_confirmation],
+          })
+          api.post(path: "/auth/finish_reset_password/#{token}",
+                   expects: 200, body: body)
 
           flash[:success] = "Your password has been changed."
           redirect to("/login")
         rescue Excon::Errors::NotFound => e
           slim :"account/password/not_found", layout: :"layouts/purple"
-        rescue Excon::Errors::UnprocessableEntity => e
+        rescue Excon::Errors::Forbidden, Excon::Errors::UnprocessableEntity => e
           flash[:error] = decode_error(e.response.body)
           redirect to("/account/password/reset/#{token}")
         end
