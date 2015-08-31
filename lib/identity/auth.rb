@@ -253,6 +253,7 @@ module Identity
       # user is not logged in
       rescue Identity::Errors::NoSession
         flash[:link_account] = true
+        @cookie.post_signup_url = request.url
         @cookie.authorize_params = authorize_params
         redirect to("/login")
       # refresh token dance was unsuccessful

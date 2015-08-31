@@ -270,8 +270,8 @@ module Identity
     def redirect_to_signup_app(next_path)
       current_params = CGI.parse(URI.parse(request.fullpath).query.to_s)
       append_params  = { from: 'id' }
-      if @cookie.authorize_params
-        append_params["redirect-url"] = "#{request.base_url}/oauth/authorize"
+      if redirect_url = @cookie.post_signup_url
+        append_params["redirect-url"] = redirect_url
       end
       next_params = URI.encode_www_form(current_params.merge(append_params))
       redirect to("#{Config.signup_url}#{next_path}?#{next_params}")
