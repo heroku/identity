@@ -145,6 +145,20 @@ describe Identity::Account do
       assert_equal 302, last_response.status
       assert_match %r{/login$}, last_response.headers["Location"]
     end
+
+    [ 403, 422 ].each do |error_code|
+      it "redirects back to reset page when there's a #{error_code} error" do
+        stub_heroku_api do
+          post("/auth/finish_reset_password/c45685917ef644198a0fececa10d479a") {
+            [ error_code, MultiJson.encode({ message: "a #{error_code} error" }) ]
+          }
+        end
+        post "/account/password/reset/c45685917ef644198a0fececa10d479a",
+          password: "1234567890ab", password_confirmation: "1234567890ab"
+        assert_equal 302, last_response.status
+        assert_match %r{/account/password/reset/c45685917ef644198a0fececa10d479a$}, last_response.headers["Location"]
+      end
+    end
   end
 
   describe "GET /signup" do
