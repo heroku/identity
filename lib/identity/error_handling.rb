@@ -38,15 +38,14 @@ module Identity
       end
 
       app.error do
+        Rollbar.error(env["sinatra.error"], context)
         handle_error 500
       end
     end
 
     module Helpers
-      def handle_error(code)
-        status code
-        e = env["sinatra.error"]
-        context = {
+      def context
+        {
           method:          request.request_method,
           module:          self.class.name,
           request_id:      env["REQUEST_IDS"],
@@ -54,6 +53,11 @@ module Identity
           session_id:      @cookie ? @cookie.session_id : nil,
           user_id:         @cookie ? @cookie.user_id : nil,
         }
+      end
+
+      def handle_error(code)
+        status code
+        e = env["sinatra.error"]
 
         Identity.log(:exception, {
           type: ERROR_TYPES[code],
