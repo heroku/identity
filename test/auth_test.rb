@@ -347,7 +347,7 @@ describe Identity::Auth do
       it "renders a slightly different login screen" do
         get "/login", {}, rack_env
         assert_equal 200, last_response.status
-        assert page.has_selector?("h3", text: "Link accounts")
+        assert page.has_selector?("h3", text: "Log in to link accounts")
       end
 
       it "uses the default sign up campaign 'login'" do
