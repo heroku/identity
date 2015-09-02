@@ -118,6 +118,7 @@ If you don't receive an email, and it's not in your spam folder, this could mean
   end
 
   get "/oauth/clients/:id" do |id|
+    parse_oauth_client = "e780a170-f68f-46d2-99fd-a9878d8e6c75"
     status(200)
     MultiJson.encode({
       id:                 id,
@@ -125,7 +126,7 @@ If you don't receive an email, and it's not in your spam folder, this could mean
       description:        "This is a sample OAuth client rendered by the API stub.",
       ignores_delinquent: false,
       redirect_uri:       "https://example.com/oauth/callback/heroku",
-      trusted:            true,
+      trusted:            id != parse_oauth_client,
     })
   end
 

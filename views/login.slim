@@ -1,13 +1,13 @@
 - @title = "Login"
 
 #login.panel
-  - if flash[:link_account]
+  - if @link_account
     h3 Log in to link accounts
   - else
     h3 Log in to your account
   form role="form" method="post" action="/login"
     == render :slim, :"_flash", layout: false
-    - if flash[:link_account]
+    - if @link_account
       div.alert.alert-warning
         ' #{@oauth_client["name"]} is requesting scoped access to your account.
         ' Log in or 

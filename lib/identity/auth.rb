@@ -20,10 +20,14 @@ module Identity
     namespace "/login" do
       get do
         @campaign = "login" # used to identify the user if they signup from here
-        if flash[:link_account] && @cookie.authorize_params
+        @link_account = flash[:link_account] && @cookie.authorize_params
+        if @link_account
           client_id = @cookie.authorize_params["client_id"]
           @oauth_client = get_client_info(client_id)
           @campaign     = get_client_campaign(client_id)
+          if @oauth_client["trusted"]
+            @link_account = false
+          end
         end
         slim :login, layout: :"layouts/purple"
       end
