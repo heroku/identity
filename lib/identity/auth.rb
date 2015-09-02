@@ -209,6 +209,10 @@ module Identity
           # pass the whole API error through to the client
           content_type(:json)
           [401, e.response.body]
+        rescue Excon::Errors::UnprocessableEntity => e
+          # ditto
+          content_type(:json)
+          [422, e.response.body]
         end
       end
     end
