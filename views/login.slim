@@ -9,10 +9,10 @@
     == render :slim, :"_flash", layout: false
     - if flash[:link_account]
       div.alert.alert-warning
-        ' #{@oauth_client["name"]} is requesting access to your account.
-        ' Please log in or 
+        ' #{@oauth_client["name"]} is requesting scoped access to your account.
+        ' Log in or 
         a href="/signup/#{@campaign}" sign up 
-        ' to review their request.
+        ' to review the request.
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
     .form-group
       label for="email" Email address
