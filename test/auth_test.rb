@@ -357,24 +357,29 @@ describe Identity::Auth do
       # use Capybara's for matchers like has_content? and has_elector?
       let(:page) { Capybara::Node::Simple.new(last_response.body) }
 
-      it "renders a slightly different login screen" do
+      it "renders the regular login page for trusted clients" do
         get "/login", {}, rack_env
         assert_equal 200, last_response.status
-        assert page.has_selector?("h3", text: "Log in to link accounts")
+        assert page.has_selector?("h3", text: "Log in to your account")
       end
 
-      it "uses the default sign up campaign 'login'" do
-        get "/login", {}, rack_env
-        assert_equal 200, last_response.status
-        assert page.has_link?("sign up", href: "/signup/login")
-      end
+      describe "for untrusted clients" do
+        before do
+          # parse's client id is hardcoded for now:
+          @authorize_params[:client_id] = "e780a170-f68f-46d2-99fd-a9878d8e6c75"
+        end
 
-      it "uses a custom sign-up campaign for Parse" do
-        # parse's client id is hardcoded for now:
-        @authorize_params[:client_id] = "e780a170-f68f-46d2-99fd-a9878d8e6c75"
-        get "/login", {}, rack_env
-        assert_equal 200, last_response.status
-        assert page.has_link?("sign up", href: "/signup/parse")
+        it "renders a slightly different login screen for untrusted" do
+          get "/login", {}, rack_env
+          assert_equal 200, last_response.status
+          assert page.has_selector?("h3", text: "Log in to link accounts")
+        end
+
+        it "uses a custom sign-up campaign for Parse" do
+          get "/login", {}, rack_env
+          assert_equal 200, last_response.status
+          assert page.has_link?("sign up", href: "/signup/parse")
+        end
       end
     end
   end
