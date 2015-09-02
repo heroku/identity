@@ -321,6 +321,19 @@ describe Identity::Auth do
       post "/oauth/token"
       assert_equal 401, last_response.status
     end
+
+    it "forwards a 422" do
+      stub_heroku_api do
+        post("/oauth/tokens") {
+          raise Excon::Errors::UnprocessableEntity.new("missing param", nil,
+            Excon::Response.new(body: "missing param"))
+        }
+      end
+      post "/login", email: "kerry@heroku.com", password: "abcdefgh"
+      post "/oauth/authorize", client_id: "dashboard"
+      post "/oauth/token"
+      assert_equal 422, last_response.status
+    end
   end
 
   describe "GET /login" do
