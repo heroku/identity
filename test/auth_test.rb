@@ -328,6 +328,42 @@ describe Identity::Auth do
       get "/login"
       assert_equal 200, last_response.status
     end
+
+    describe "when coming from a pending authorization" do
+      before do
+        @authorize_params = { client_id: SecureRandom.uuid }
+      end
+
+      let(:rack_env) do
+        {
+          "x-rack.flash" => { link_account: true },
+          "rack.session" => { "authorize_params" => MultiJson.encode(@authorize_params) }
+        }
+      end
+
+      # use Capybara's for matchers like has_content? and has_elector?
+      let(:page) { Capybara::Node::Simple.new(last_response.body) }
+
+      it "renders a slightly different login screen" do
+        get "/login", {}, rack_env
+        assert_equal 200, last_response.status
+        assert page.has_selector?("h3", text: "Log in to link accounts")
+      end
+
+      it "uses the default sign up campaign 'login'" do
+        get "/login", {}, rack_env
+        assert_equal 200, last_response.status
+        assert page.has_link?("sign up", href: "/signup/login")
+      end
+
+      it "uses a custom sign-up campaign for Parse" do
+        # parse's client id is hardcoded for now:
+        @authorize_params[:client_id] = "e780a170-f68f-46d2-99fd-a9878d8e6c75"
+        get "/login", {}, rack_env
+        assert_equal 200, last_response.status
+        assert page.has_link?("sign up", href: "/signup/parse")
+      end
+    end
   end
 
   describe "POST /login" do

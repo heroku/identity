@@ -33,6 +33,14 @@ module Identity
       @session["authorize_params"] = params ? MultiJson.encode(params) : nil
     end
 
+    def post_signup_url
+      @session["post_signup_url"]
+    end
+
+    def post_signup_url=(url)
+      @session["post_signup_url"] = url
+    end
+
     def clear
       @session.clear
     end

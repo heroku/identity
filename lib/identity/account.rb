@@ -270,7 +270,11 @@ module Identity
     # Redirects to the signup app adding a special param
     def redirect_to_signup_app(next_path)
       current_params = CGI.parse(URI.parse(request.fullpath).query.to_s)
-      next_params = URI.encode_www_form(current_params.merge({from: 'id'}))
+      append_params  = { from: 'id' }
+      if redirect_url = @cookie.post_signup_url
+        append_params["redirect-url"] = redirect_url
+      end
+      next_params = URI.encode_www_form(current_params.merge(append_params))
       redirect to("#{Config.signup_url}#{next_path}?#{next_params}")
     end
   end

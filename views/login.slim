@@ -1,9 +1,18 @@
 - @title = "Login"
 
 #login.panel
-  h3 Log in to your account
+  - if flash[:link_account]
+    h3 Log in to link accounts
+  - else
+    h3 Log in to your account
   form role="form" method="post" action="/login"
     == render :slim, :"_flash", layout: false
+    - if flash[:link_account]
+      div.alert.alert-warning
+        ' #{@oauth_client["name"]} is requesting scoped access to your account.
+        ' Log in or 
+        a href="/signup/#{@campaign}" sign up 
+        ' to review the request.
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
     .form-group
       label for="email" Email address
@@ -15,7 +24,7 @@
       input#password.form-control.password type="password" name="password" autocomplete="off" placeholder="Password" tabindex="2"
     button.btn.btn-primary.btn-lg.btn-block type="submit" name="commit" value="Log In" tabindex="3" Log In
 
-  a.panel-footer href="/signup/login"
+  a.panel-footer href="/signup/#{@campaign}"
     | New to Heroku? &nbsp;
     span Sign Up
 

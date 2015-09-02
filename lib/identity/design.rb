@@ -17,6 +17,10 @@ module Identity
 
     namespace "/design" do
       get "/login" do
+        if params[:client]
+          flash.now[:link_account] = true
+          @oauth_client = { "name" => params[:client] }
+        end
         slim :"login", layout: @layout
       end
 

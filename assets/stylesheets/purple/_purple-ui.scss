@@ -3385,13 +3385,11 @@ a.thumbnail:hover, a.thumbnail:focus, a.thumbnail.active {
     color: #24c2fb; }
 
 .alert-warning {
-  background-color: #fef8f2;
-  border-color: #fbe4cf;
-  color: #F4B170; }
+  background-color: rgba(230,123,66,0.1);
+  border-color: rgba(230,123,66,0.2);
+  color: #e36b2b; }
   .alert-warning hr {
     border-top-color: #f9d7b7; }
-  .alert-warning .alert-link {
-    color: #f09641; }
 
 .alert-danger {
   background-color: #D64242;

@@ -173,7 +173,25 @@ describe Identity::Account do
     it "redirects to the same slug in the signup app" do
       get "/signup/foo"
       assert_equal 302, last_response.status
-      assert_equal "#{Identity::Config.signup_url}/foo?from=id", last_response.headers["Location"]
+      assert_equal "#{Identity::Config.signup_url}/foo?from=id",
+        last_response.headers["Location"]
+    end
+
+    it "sets the redirect-url so the user is taken back when authorizing a client" do
+      url = "https://id.heroku.com/oauth/authorize/1234"
+      rack_env = {
+        # set a cookie
+        "rack.session" => { "post_signup_url" => url }
+      }
+      get "/signup/foo", {}, rack_env
+      expected_params = {
+        "from" => "id",
+        "redirect-url" => url
+      }
+      encoded_params = URI.encode_www_form(expected_params)
+      assert_equal 302, last_response.status
+      assert_equal "#{Identity::Config.signup_url}/foo?#{encoded_params}",
+        last_response.headers["Location"]
     end
   end
 

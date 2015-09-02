@@ -19,6 +19,12 @@ module Identity
 
     namespace "/login" do
       get do
+        @campaign = "login" # used to identify the user if they signup from here
+        if flash[:link_account] && @cookie.authorize_params
+          client_id = @cookie.authorize_params["client_id"]
+          @oauth_client = get_client_info(client_id)
+          @campaign     = get_client_campaign(client_id)
+        end
         slim :login, layout: :"layouts/purple"
       end
 
@@ -244,8 +250,14 @@ module Identity
       # destroyed or expired, redirect to login
       rescue Excon::Errors::NotFound
         redirect to("/login")
+      # user is not logged in
+      rescue Identity::Errors::NoSession
+        flash[:link_account] = true
+        @cookie.post_signup_url = request.url
+        @cookie.authorize_params = authorize_params
+        redirect to("/login")
       # refresh token dance was unsuccessful
-      rescue Excon::Errors::Unauthorized, Identity::Errors::NoSession
+      rescue Excon::Errors::Unauthorized
         @cookie.authorize_params = authorize_params
         redirect to("/login")
       rescue Identity::Errors::PasswordExpired => e
@@ -288,6 +300,23 @@ module Identity
         # if it's not is basic auth, hopefully it's in the request body
         params[:client_secret]
       end
+    end
+
+    def get_client_info(client_id)
+      api = HerokuAPI.new(ip: request.ip, version: 3)
+      res = api.get(
+        expects: 200,
+        path: "/oauth/clients/#{client_id}")
+      MultiJson.decode(res.body)
+    end
+
+    # hardcoded for now :{ we can potentially move this to API at some point,
+    # but will need some sort of service to issue salesforce campaign ids
+    def get_client_campaign(oauth_client_id)
+      {
+        "e780a170-f68f-46d2-99fd-a9878d8e6c75" => "parse",
+        "14cf504a-0d20-4460-a2ac-9547365ddf8a" => "parse",
+      }[oauth_client_id] || "login"
     end
 
     def logout
