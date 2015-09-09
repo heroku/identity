@@ -313,11 +313,9 @@ describe Identity::Auth do
       stub_heroku_api do
         post("/oauth/tokens") {
           raise Excon::Errors::Unauthorized.new("Unauthorized", nil,
-            Excon::Response.new(body: "Unauthorized"))
+            Excon::Response.new(body: "Unauthorized", status: 401))
         }
       end
-      post "/login", email: "kerry@heroku.com", password: "abcdefgh"
-      post "/oauth/authorize", client_id: "dashboard"
       post "/oauth/token"
       assert_equal 401, last_response.status
     end
@@ -326,11 +324,9 @@ describe Identity::Auth do
       stub_heroku_api do
         post("/oauth/tokens") {
           raise Excon::Errors::UnprocessableEntity.new("missing param", nil,
-            Excon::Response.new(body: "missing param"))
+            Excon::Response.new(body: "missing param", status: 422))
         }
       end
-      post "/login", email: "kerry@heroku.com", password: "abcdefgh"
-      post "/oauth/authorize", client_id: "dashboard"
       post "/oauth/token"
       assert_equal 422, last_response.status
     end
