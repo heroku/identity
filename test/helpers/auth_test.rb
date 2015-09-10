@@ -40,29 +40,8 @@ describe Identity::Helpers::Auth do
     end
 
     describe "untrusted client" do
-
-      let(:authorization) do
-        {
-          client: {
-            id: 123
-          },
-          scope: ["global"]
-        }
-      end
-
       it "raises unauthorized if it can't find a matching authorization" do
-        stub_heroku_api do
-          get "/oauth/clients/:id" do
-            MultiJson.encode({
-              trusted: false,
-              redirect_uri: "https://example.com"
-            })
-          end
-
-          get "/oauth/authorizations" do
-            MultiJson.encode([])
-          end
-        end
+        stub_heroku_client_requests(get_authorizations: [])
 
         assert_raises Identity::Errors::UnauthorizedClient do
           authorize
@@ -70,35 +49,7 @@ describe Identity::Helpers::Auth do
       end
 
       it "succedes if it can find a matching authorization" do
-        stub_heroku_api do
-          get "/oauth/clients/:id" do
-            MultiJson.encode({
-              trusted: false,
-              redirect_uri: "https://example.com"
-            })
-          end
-
-          get "/oauth/authorizations" do
-            MultiJson.encode([{
-              client: {
-                id: "12345678-abcd-1234-abcd-1234567890ab"
-              },
-              scope: ["global"]
-            }])
-          end
-
-          post("/oauth/authorizations") do
-            status(201)
-            MultiJson.encode({
-              client: {
-                redirect_uri: "http://example.com/foo",
-              },
-              grant: {
-                code: "abc",
-              }
-            })
-          end
-        end
+        stub_heroku_client_requests
 
         authorize
 
@@ -106,13 +57,63 @@ describe Identity::Helpers::Auth do
         assert_equal "http://example.com/foo?code=abc", last_response.headers["Location"]
       end
 
+      it "handles 206 responses from GET /oauth/authorizations" do
+      end
     end
   end
+
+  private
 
   def authorize
     get "/auth",
       {grant_type: "authorization_code", code: "secret-auth-grant-code"},
       rack_env
+  end
+
+  let(:get_client_response) do
+    {
+      trusted: false,
+      redirect_uri: "https://example.com"
+    }
+  end
+
+  let(:get_authorizations_response) do
+    [{
+      client: {
+        id: "12345678-abcd-1234-abcd-1234567890ab"
+      },
+      scope: ["global"]
+    }]
+  end
+
+  let(:post_authorizations_response) do
+    {
+      client: {
+        redirect_uri: "http://example.com/foo",
+      },
+      grant: {
+        code: "abc",
+      }
+    }
+  end
+
+  def stub_heroku_client_requests(get_client:          get_client_response,
+                                  get_authorizations:  get_authorizations_response,
+                                  post_authorizations: post_authorizations_response)
+    stub_heroku_api do
+      get "/oauth/clients/:id" do
+        MultiJson.encode(get_client)
+      end
+
+      get "/oauth/authorizations" do
+        MultiJson.encode(get_authorizations)
+      end
+
+      post "/oauth/authorizations" do
+        status(201)
+        MultiJson.encode(post_authorizations)
+      end
+    end
   end
 
 end
