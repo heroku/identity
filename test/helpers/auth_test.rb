@@ -83,6 +83,7 @@ describe Identity::Helpers::Auth do
 
   let(:get_client_response) do
     {
+      id: client_id,
       trusted: false,
       redirect_uri: "https://example.com"
     }

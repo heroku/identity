@@ -15,43 +15,16 @@ module Identity::Helpers
         redirect to(headers["Location"])
       end
 
-      # if the client is not trusted, then see if the user has already
-      # authorized it
-      if !client["trusted"]
-        res = log :get_authorizations do
-          api.get(path: "/oauth/authorizations", expects: [200, 401],
-            headers: { "Range" => "id ..; max=1000" })
-        end
-
-        logout if res.status == 401
-        authorizations = MultiJson.decode(res.body)
-
-        authorization = authorizations.detect { |a|
-          a["client"] && a["client"]["id"] == params["client_id"] &&
-            a["scope"] == (params["scope"] || ["global"])
-        }
-
-        # fall back to legacy_id (for now)
-        if !authorization
-          authorization = authorizations.detect { |a|
-            a["client"] && a["client"]["legacy_id"] &&
-              a["client"]["legacy_id"] == params["client_id"] &&
-              a["scope"] == (params["scope"] || ["global"])
-          }
-          if authorization
-            log(:legacy_client_id, client_id: authorization["client"]["id"])
-          end
-        end
-
-        # if there is no authorization raise an error so that we can show a
-        # confirmation dialog to the user
-        #
-        # SECURITY NOTE: the confirm parameter is *only* respected if the
-        # request came in on a POST, otherwise a CSRF attack is possible
-        if !authorization && (!confirm || request.request_method != "POST")
-          raise Identity::Errors::UnauthorizedClient.new(client)
-        end
+      # If we can't confirm that the client is trustworthy # raise an error so
+      # that we can show a confirmation dialog to the user.
+      #
+      # SECURITY NOTE: the confirm parameter is *only* respected if the
+      # request came in on a POST, otherwise a CSRF attack is possible
+      if !trust_client?(client, params['scope']) &&
+         (!confirm || request.request_method != "POST")
+        raise Identity::Errors::UnauthorizedClient.new(client)
       end
+
 
       res = log :create_authorization, by_proxy: true,
         client_id: params["client_id"], session_id: @cookie.session_id do
@@ -189,5 +162,40 @@ module Identity::Helpers
       end
       [MultiJson.decode(response.body), response.headers]
     end
+
+    # if the client is not trusted, then see if the user has already
+    # authorized it
+    def trust_client?(client, scope)
+      return true if client["trusted"]
+
+      res = log :get_authorizations do
+        api.get(path: "/oauth/authorizations", expects: [200, 401],
+          headers: { "Range" => "id ..; max=1000" })
+      end
+
+      logout if res.status == 401
+      authorizations = MultiJson.decode(res.body)
+
+      authorization = authorizations.detect { |a|
+        a["client"] && a["client"]["id"] == client["id"] &&
+          a["scope"] == (scope || ["global"])
+      }
+
+      # fall back to legacy_id (for now)
+      if !authorization
+        authorization = authorizations.detect { |a|
+          a["client"] && a["client"]["legacy_id"] &&
+            a["client"]["legacy_id"] == client["id"] &&
+            a["scope"] == (scope || ["global"])
+        }
+        if authorization
+          log(:legacy_client_id, client_id: authorization["client"]["id"])
+        end
+      end
+
+      # client is only trusted if we can find an authorization
+      !!authorization
+    end
+
   end
 end
