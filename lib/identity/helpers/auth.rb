@@ -5,29 +5,14 @@ module Identity::Helpers
     # Performs the authorization step of the OAuth dance against the Heroku
     # API.
     def authorize(params, confirm=false)
-      api = Identity::HerokuAPI.new(
-        pass: @cookie.access_token,
-        ip: request.ip,
-        request_ids: request_ids,
-        version: 3,
-        headers: {
-          # must ask for legacy IDs to get `legacy_id` field below
-          "X-Heroku-Legacy-Ids" => "true"
-        })
-
       halt 400, "Need client_id" unless params["client_id"]
-
-      res = log :get_client, client_id: params["client_id"] do
-        api.get(path: "/oauth/clients/#{params["client_id"]}", expects: 200)
-      end
-      client = MultiJson.decode(res.body)
+      client, headers = get_client(params["client_id"])
 
       # if the account is set to delinquent, and the client does not ignore
       # delinquency, then redirect to the pay-balance page, which is given to
       # us in the `Location` header
-      if res.headers["Heroku-Delinquent"] == "true" &&
-        !client["ignores_delinquent"]
-        redirect to(res.headers["Location"])
+      if !client["ignores_delinquent"] && headers["Heroku-Delinquent"] == "true"
+        redirect to(headers["Location"])
       end
 
       # if the client is not trusted, then see if the user has already
@@ -182,6 +167,27 @@ module Identity::Helpers
       # some basic sanity checks
       raise "missing=access_token"  unless @cookie.access_token
       raise "missing=expires_in"    unless @cookie.access_token_expires_at
+    end
+
+    private
+
+    def api
+      @api ||= Identity::HerokuAPI.new(
+        pass: @cookie.access_token,
+        ip: request.ip,
+        request_ids: request_ids,
+        version: 3,
+        headers: {
+          # must ask for legacy IDs to get `legacy_id` field below
+          "X-Heroku-Legacy-Ids" => "true"
+        })
+    end
+
+    def get_client(client_id)
+      response = log :get_client, client_id: client_id do
+        api.get(path: "/oauth/clients/#{client_id}", expects: 200)
+      end
+      [MultiJson.decode(response.body), response.headers]
     end
   end
 end
