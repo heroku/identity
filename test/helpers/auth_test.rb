@@ -57,8 +57,19 @@ describe Identity::Helpers::Auth do
         assert_equal "http://example.com/foo?code=abc", last_response.headers["Location"]
       end
 
-      it "handles 206 responses from GET /oauth/authorizations" do
-      end
+      # it "handles 206 responses from GET /oauth/authorizations" do
+      #   auth_params[:client_id] = '123'
+      #   # auths are on two pages
+      #   response = get_authorizations_response * 1001
+      #   # matching auth is on the 2nd page
+      #   response.last[:client][:id] = '123'
+      #   stub_heroku_client_requests(get_authorizations: response)
+      #
+      #   authorize
+      #
+      #   assert_equal 302, last_response.status
+      #   assert_equal "http://example.com/foo?code=abc", last_response.headers["Location"]
+      # end
     end
   end
 
@@ -106,6 +117,10 @@ describe Identity::Helpers::Auth do
       end
 
       get "/oauth/authorizations" do
+        # paginate!
+        if get_authorizations.count > 1000
+          status(206)
+        end
         MultiJson.encode(get_authorizations)
       end
 
