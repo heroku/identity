@@ -59,8 +59,11 @@ module Identity
             redirect to(@cookie.redirect_url)
           # if we know that we're in the middle of an authorization attempt,
           # continue it; otherwise go to dashboard
-          elsif @cookie.authorize_params
-            authorize(@cookie.authorize_params)
+          elsif @cookie.authorize_params &&
+                authorization = authorize(@cookie.authorize_params, params[:authorize] == "Allow")
+            # successful authorization, clear any params in session
+            @cookie.authorize_params = nil
+            redirect_back_to_client_with_authorization(authorization, params["state"])
           else
             redirect to(Config.dashboard_url)
           end
@@ -249,7 +252,11 @@ module Identity
         end
 
         # redirects back to the oauth client on success
-        authorize(authorize_params, params[:authorize] == "Allow")
+        if authorization = authorize(authorize_params, params[:authorize] == "Allow")
+          # successful authorization, clear any params in session
+          @cookie.authorize_params = nil
+          redirect_back_to_client_with_authorization(authorization, params["state"])
+        end
       # given client_id wasn't found (API throws a 400 status)
       rescue Excon::Errors::BadRequest
         flash[:error] = "Unknown OAuth client."

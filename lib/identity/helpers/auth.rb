@@ -26,13 +26,12 @@ module Identity::Helpers
       end
 
       # everything is good, create the authorization
-      authorization = create_authorization(params)
+      create_authorization(params)
+    end
 
-      # successful authorization, clear any params in session
-      @cookie.authorize_params = nil
-
+    def redirect_back_to_client_with_authorization(authorization, state=nil)
       redirect_params = { code: authorization["grant"]["code"] }
-      redirect_params.merge!(state: params["state"]) if params["state"]
+      redirect_params.merge!(state: state) if state
       uri = build_uri(authorization["client"]["redirect_uri"], redirect_params)
       log :redirecting, uri: uri
       redirect to(uri)

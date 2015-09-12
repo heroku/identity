@@ -11,6 +11,7 @@ describe Identity::Helpers::Auth do
     }
   end
 
+  # TODO convert to not use app
   def app
     Sinatra.new do
       use Rack::Session::Cookie, domain: "example.org", secret: "my-secret"
@@ -53,8 +54,7 @@ describe Identity::Helpers::Auth do
 
         authorize
 
-        assert_equal 302, last_response.status
-        assert_equal "http://example.com/foo?code=abc", last_response.headers["Location"]
+        assert_equal 200, last_response.status
       end
 
       it "succedes if it can find a matching authorization by legacy id" do
@@ -68,8 +68,7 @@ describe Identity::Helpers::Auth do
 
         authorize
 
-        assert_equal 302, last_response.status
-        assert_equal "http://example.com/foo?code=abc", last_response.headers["Location"]
+        assert_equal 200, last_response.status
       end
 
       # it "handles 206 responses from GET /oauth/authorizations" do
