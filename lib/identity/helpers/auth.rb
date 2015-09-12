@@ -15,7 +15,7 @@ module Identity::Helpers
         redirect to(headers["Location"])
       end
 
-      # If we can't confirm that the client is trustworthy # raise an error so
+      # If we can't confirm that the client is trustworthy raise an error so
       # that we can show a confirmation dialog to the user.
       #
       # SECURITY NOTE: the confirm parameter is *only* respected if the
@@ -25,24 +25,11 @@ module Identity::Helpers
         raise Identity::Errors::UnauthorizedClient.new(client)
       end
 
-
-      res = log :create_authorization, by_proxy: true,
-        client_id: params["client_id"], session_id: @cookie.session_id do
-          api.post(path: "/oauth/authorizations", expects: [201, 401],
-            body: MultiJson.encode({
-              client:        { id: params["client_id"] },
-              scope:         params["scope"],
-              response_type: params["response_type"],
-              session:       { id: @cookie.session_id },
-            }))
-      end
-
-      logout if res.status == 401
+      # everything is good, create the authorization
+      authorization = create_authorization(params)
 
       # successful authorization, clear any params in session
       @cookie.authorize_params = nil
-
-      authorization = MultiJson.decode(res.body)
 
       redirect_params = { code: authorization["grant"]["code"] }
       redirect_params.merge!(state: params["state"]) if params["state"]
@@ -195,6 +182,21 @@ module Identity::Helpers
 
       # client is only trusted if we can find an authorization
       !!authorization
+    end
+
+    def create_authorization(params)
+      response = log :create_authorization, by_proxy: true,
+        client_id: params["client_id"], session_id: @cookie.session_id do
+          api.post(path: "/oauth/authorizations", expects: [201, 401],
+            body: MultiJson.encode({
+              client:        { id: params["client_id"] },
+              scope:         params["scope"],
+              response_type: params["response_type"],
+              session:       { id: @cookie.session_id },
+            }))
+      end
+      logout if response.status == 401
+      MultiJson.decode(response.body)
     end
 
   end
