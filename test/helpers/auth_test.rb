@@ -57,6 +57,21 @@ describe Identity::Helpers::Auth do
         assert_equal "http://example.com/foo?code=abc", last_response.headers["Location"]
       end
 
+      it "succedes if it can find a matching authorization by legacy id" do
+        stub_heroku_client_requests(get_authorizations:
+          [{
+            client: {
+              legacy_id: "12345678-abcd-1234-abcd-1234567890ab"
+            },
+            scope: ["global"]
+          }])
+
+        authorize
+
+        assert_equal 302, last_response.status
+        assert_equal "http://example.com/foo?code=abc", last_response.headers["Location"]
+      end
+
       # it "handles 206 responses from GET /oauth/authorizations" do
       #   auth_params[:client_id] = '123'
       #   # auths are on two pages
