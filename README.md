@@ -28,7 +28,7 @@ foreman start
 ```bash
 git clone https://github.com/heroku/identity.git
 docker-compose up
-curl -i http://$(boot2docker ip):5000
+curl -i http://$(docker-machine ip identity):5000
 ```
 
 ## Platform Install
