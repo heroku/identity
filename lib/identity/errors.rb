@@ -1,5 +1,5 @@
 module Identity::Errors
-  class NoSession < StandardError
+  class LoginRequired < StandardError
   end
 
   class PasswordExpired < StandardError

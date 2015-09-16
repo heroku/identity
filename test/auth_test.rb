@@ -80,6 +80,14 @@ describe Identity::Auth do
       assert_match /you are suspended/, last_response.body
     end
 
+    it "redirects to login when prompt=login is provided" do
+      post "/login", email: "kerry@heroku.com", password: "abcdefgh"
+
+      post "/oauth/authorize", client_id: "dashboard", state: "my-state", prompt: "login"
+      assert_equal 302, last_response.status
+      assert_equal "http://example.org/login", last_response.headers["Location"]
+    end
+
     it "redirects to password reset when a user's password has expired" do
       post "/login", email: "kerry@heroku.com", password: "abcdefgh"
 

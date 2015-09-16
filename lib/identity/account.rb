@@ -108,7 +108,7 @@ module Identity
       get "/email/confirm/:token" do |token|
         begin
           # confirming an e-mail change requires authentication
-          raise Identity::Errors::NoSession if !@cookie.access_token
+          raise Identity::Errors::LoginRequired if !@cookie.access_token
           api = HerokuAPI.new(user: nil, pass: @cookie.access_token,
             ip: request.ip, request_ids: request_ids, version: 2)
           # currently returns a 302, but will return a 200
@@ -130,7 +130,7 @@ module Identity
           rescue Excon::Errors::Unauthorized
             redirect to("/logout")
           end
-        rescue Identity::Errors::NoSession
+        rescue Identity::Errors::LoginRequired
           @cookie.redirect_url = request.env["PATH_INFO"]
           redirect to("/login")
         end

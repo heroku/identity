@@ -229,7 +229,7 @@ module Identity
       authorize_params = if params[:authorize]
         @cookie.authorize_params || {}
       else
-        filter_params(%w{client_id response_type scope state}).tap do |p|
+        filter_params(%w{client_id response_type scope state prompt}).tap do |p|
           p["scope"] = p["scope"].split(/[, ]+/).sort.uniq if p["scope"]
         end
       end
@@ -238,8 +238,12 @@ module Identity
       @cookie.authorize_params = nil
 
       begin
-        # have the user login if we have no session for them
-        raise Identity::Errors::NoSession if !@cookie.access_token
+        # Have the user login if:
+        # - We have no session for them
+        # - The client requested that they login
+        if !@cookie.access_token || params[:prompt] == 'login'
+          raise Identity::Errors::LoginRequired
+        end
 
         # Try to perform an access token refresh if we know it's expired. At
         # the time of this writing, refresh tokens last 30 days (much longer
@@ -258,8 +262,8 @@ module Identity
       # destroyed or expired, redirect to login
       rescue Excon::Errors::NotFound
         redirect to("/login")
-      # user is not logged in
-      rescue Identity::Errors::NoSession
+      # user needs to login.
+      rescue Identity::Errors::LoginRequired
         flash[:link_account] = true
         @cookie.post_signup_url = request.url
         @cookie.authorize_params = authorize_params
