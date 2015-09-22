@@ -209,14 +209,11 @@ module Identity
           #raise "missing=session_nonce" unless response[:session_nonce]
 
           MultiJson.encode(response)
-        rescue Excon::Errors::Unauthorized => e
+        # Handle 4xx errors from API
+        rescue Excon::Errors::ClientError => e
           # pass the whole API error through to the client
           content_type(:json)
-          [401, e.response.body]
-        rescue Excon::Errors::UnprocessableEntity => e
-          # ditto
-          content_type(:json)
-          [422, e.response.body]
+          [e.response.status, e.response.body]
         end
       end
     end
