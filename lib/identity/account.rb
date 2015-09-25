@@ -164,8 +164,11 @@ module Identity
             version: 2)
           res = api.get(path: "/auth/finish_reset_password/#{token}",
             expects: 200)
-
           @user = MultiJson.decode(res.body)
+
+          # persist the user in the flash in case we need to render an error from the post
+          flash[:user] = @user
+
           slim :"account/password/finish_reset", layout: :"layouts/purple"
         rescue Excon::Errors::NotFound => e
           slim :"account/password/not_found", layout: :"layouts/purple"
@@ -188,7 +191,13 @@ module Identity
         rescue Excon::Errors::NotFound => e
           slim :"account/password/not_found", layout: :"layouts/purple"
         rescue Excon::Errors::Forbidden, Excon::Errors::UnprocessableEntity => e
+          Identity.log(password_reset_error: true,
+                        error_body: e.response.body,
+                        error_code: e.response.status)
+
+          @user = flash[:user]
           flash[:error] = decode_error(e.response.body)
+
           redirect to("/account/password/reset/#{token}")
         end
       end
