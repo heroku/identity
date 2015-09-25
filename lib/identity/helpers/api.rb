@@ -12,7 +12,9 @@ module Identity::Helpers
         json = MultiJson.decode(body)
 
         unless json.is_a?(Array)
-          if json.has_key?("error") || json.has_key?("message") || json.has_key?("password")
+          if json.has_key?("error") ||
+              json.has_key?("message") ||
+              json.has_key?("password")
             json.map { |e| e.join(" ") }.join("; ")
           end
         end

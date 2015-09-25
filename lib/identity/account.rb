@@ -166,7 +166,8 @@ module Identity
             expects: 200)
           @user = MultiJson.decode(res.body)
 
-          # persist the user in the flash in case we need to render an error from the post
+          # Persist the user in the flash in case we need to render an error
+          # from the post.
           flash[:user] = @user
 
           slim :"account/password/finish_reset", layout: :"layouts/purple"
@@ -192,8 +193,8 @@ module Identity
           slim :"account/password/not_found", layout: :"layouts/purple"
         rescue Excon::Errors::Forbidden, Excon::Errors::UnprocessableEntity => e
           Identity.log(password_reset_error: true,
-                        error_body: e.response.body,
-                        error_code: e.response.status)
+                       error_body: e.response.body,
+                       error_code: e.response.status)
 
           @user = flash[:user]
           flash[:error] = decode_error(e.response.body)
