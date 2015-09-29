@@ -157,7 +157,8 @@ describe Identity::Account do
           password: "1234567890ab", password_confirmation: "1234567890ab"
         assert_equal 302, last_response.status
         assert_match %r{/account/password/reset/c45685917ef644198a0fececa10d479a$}, last_response.headers["Location"]
-        assert_contains "a #{error_code} error", last_response.body
+        follow_redirect!
+        assert_match /a #{error_code} error/, last_response.body
       end
     end
   end
