@@ -109,10 +109,16 @@ module Identity
         begin
           # confirming an e-mail change requires authentication
           raise Identity::Errors::LoginRequired if !@cookie.access_token
-          api = HerokuAPI.new(user: nil, pass: @cookie.access_token,
-            ip: request.ip, request_ids: request_ids, version: 3)
-          api.patch(path: "/users/~", expects: 200,
-            body: URI.encode_www_form(email_change_token: params[:token]))
+          api = HerokuAPI.new(
+            user:        nil,
+            pass:        @cookie.access_token,
+            ip:          request.ip,
+            request_ids: request_ids,
+            version:     3)
+          api.patch(
+            path:    "/users/~",
+            expects: 200,
+            body:    URI.encode_www_form(email_change_token: params[:token]))
           redirect to(Config.dashboard_url)
         # user tried to access the change e-mail request under the wrong
         # account
