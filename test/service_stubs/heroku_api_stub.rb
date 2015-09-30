@@ -173,6 +173,12 @@ If you don't receive an email, and it's not in your spam folder, this could mean
     })
   end
 
+  get "/users/~" do
+    authorized!
+
+    status(200)
+  end
+
   get "/users/~/sms-number" do
     authorized!
 

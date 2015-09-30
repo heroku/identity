@@ -27,16 +27,19 @@ module Identity
       #
       # Remove this as soon as we get Devcenter and Dashboard upgraded.
       get do
-        return 401 if !request.env["HTTP_AUTHORIZATION"]
-        api = HerokuAPI.new(user: nil, request_ids: request_ids, version: 2,
+        return 401 unless request.env["HTTP_AUTHORIZATION"]
+        api = HerokuAPI.new(
+          user:          nil,
+          request_ids:   request_ids,
+          version:       3,
           authorization: request.env["HTTP_AUTHORIZATION"],
-            ip: request.ip,
+          ip:            request.ip,
           # not necessarily V3, respond with whatever the client asks for
           headers: {
             "Accept" => request.env["HTTP_ACCEPT"] || "application/json"
           })
         begin
-          res = api.get(path: "/account", expects: 200)
+          res = api.get(path: "/users/~", expects: 200)
           content_type(:json)
           res.body
         rescue Excon::Errors::Unauthorized
