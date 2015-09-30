@@ -108,7 +108,7 @@ module Identity
       get "/email/confirm/:token" do |token|
         begin
           # confirming an e-mail change requires authentication
-          raise Identity::Errors::LoginRequired if !@cookie.access_token
+          raise Identity::Errors::LoginRequired unless @cookie.access_token
           api = HerokuAPI.new(
             user:        nil,
             pass:        @cookie.access_token,
