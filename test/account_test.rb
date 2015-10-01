@@ -24,7 +24,7 @@ describe Identity::Account do
 
     it "responds with a 401 with an invalid session" do
       stub_heroku_api do
-        get "/account" do
+        get "/users/~" do
           halt 401
         end
       end
@@ -35,7 +35,7 @@ describe Identity::Account do
 
     it "proxies to the API" do
       stub_heroku_api do
-        get "/account" do
+        get "/users/~" do
           "{}"
         end
       end
