@@ -118,7 +118,7 @@ module Identity
           api.patch(
             path:    "/users/~",
             expects: 200,
-            body:    URI.encode_www_form(email_change_token: params[:token]))
+            body:    MultiJson.encode(email_change_token: params[:token]))
           redirect to(Config.dashboard_url)
         # user tried to access the change e-mail request under the wrong
         # account
