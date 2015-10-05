@@ -79,10 +79,10 @@ describe Identity::Account do
       assert_match %r{/login$}, last_response.headers["Location"]
     end
 
-# proving VERY difficult to test in isolation, need a cookie
-=begin
     it "redirects to dashboard on a successful confirmation" do
-      stub_heroku_api
+      any_instance_of(Identity::Cookie) do |cookie|
+        stub(cookie).access_token { "abc123" }
+      end
       get "/account/email/confirm/c45685917ef644198a0fececa10d479a"
       assert_equal 302, last_response.status
       assert_match Identity::Config.dashboard_url,
@@ -90,17 +90,18 @@ describe Identity::Account do
     end
 
     it "shows a helpful page for a token that wasn't found" do
-      stub_heroku_api do
-        post("/confirm_change_email/:token") {
-          raise Excon::Errors::NotFound, "Not found"
-        }
+      any_instance_of(Identity::Cookie) do |cookie|
+        stub(cookie).access_token { "abc123" }
       end
-      post "/login", email: "kerry@heroku.com", password: "abcdefgh"
+      stub_heroku_api do
+        patch "/users/~" do
+          halt(404, "Not found")
+        end
+      end
       get "/account/email/confirm/c45685917ef644198a0fececa10d479a"
       assert_equal 200, last_response.status
-      assert_match /couldn't find that e-mail/, last_response.body
+      assert_match(/couldn't find that e-mail/, last_response.body)
     end
-=end
   end
 
   describe "GET /account/password/reset" do

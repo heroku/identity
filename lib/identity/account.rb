@@ -108,18 +108,24 @@ module Identity
       get "/email/confirm/:token" do |token|
         begin
           # confirming an e-mail change requires authentication
-          raise Identity::Errors::LoginRequired if !@cookie.access_token
-          api = HerokuAPI.new(user: nil, pass: @cookie.access_token,
-            ip: request.ip, request_ids: request_ids, version: 2)
-          # currently returns a 302, but will return a 200
-          api.post(path: "/confirm_change_email/#{token}", expects: [200, 302])
+          raise Identity::Errors::LoginRequired unless @cookie.access_token
+          api = HerokuAPI.new(
+            user:        nil,
+            pass:        @cookie.access_token,
+            ip:          request.ip,
+            request_ids: request_ids,
+            version:     3)
+          api.patch(
+            path:    "/users/~",
+            expects: 200,
+            body:    MultiJson.encode(email_change_token: params[:token]))
           redirect to(Config.dashboard_url)
         # user tried to access the change e-mail request under the wrong
         # account
         rescue Excon::Errors::Forbidden
           flash[:error] = "This link can't be used with your current login."
           redirect to("/login")
-        rescue Excon::Errors::NotFound, Excon::Errors::UnprocessableEntity => e
+        rescue Excon::Errors::NotFound, Excon::Errors::UnprocessableEntity
           slim :"account/email/not_found", layout: :"layouts/purple"
         # it seems that the user's access token is no longer valid, refresh
         rescue Excon::Errors::Unauthorized
