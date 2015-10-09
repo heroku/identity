@@ -15,7 +15,7 @@ module Identity
     end
 
     def sso_base_url
-      ENV["SSO_BASE_URL"] || raise("missing=SSO_BASE_URL")
+      ENV["SSO_BASE_URL"]
     end
 
     def heroku_api_url
