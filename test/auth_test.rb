@@ -386,6 +386,26 @@ describe Identity::Auth do
         end
       end
     end
+
+    describe  "when a user is federated" do
+      before do
+        @authorize_params = { client_id: SecureRandom.uuid }
+      end
+
+      let(:rack_env) do
+        {
+          "x-rack.flash" => { link_account: true },
+          "rack.session" => { "authorize_params" => MultiJson.encode(@authorize_params),
+                              "sso_entity" => "entity" }
+        }
+      end
+
+      it "redirects to the sso page" do
+        get "/login", {}, rack_env
+        follow_redirect!
+        assert_equal "https://example.com/sso/entity", last_request.url
+      end
+    end
   end
 
   describe "POST /login" do

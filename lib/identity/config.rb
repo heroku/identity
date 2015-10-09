@@ -14,6 +14,10 @@ module Identity
       ENV["DASHBOARD_URL"] || raise("missing=DASHBOARD_URL")
     end
 
+    def sso_base_url
+      ENV["SSO_BASE_URL"] || raise("missing=SSO_BASE_URL")
+    end
+
     def heroku_api_url
       ENV["HEROKU_API_URL"] || raise("missing=HEROKU_API_URL")
     end
