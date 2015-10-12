@@ -41,6 +41,14 @@ module Identity
       @session["post_signup_url"] = url
     end
 
+    def sso_entity
+      @session["sso_entity"]
+    end
+
+    def sso_entity=(entity)
+      @session["sso_entity"] = entity
+    end
+
     def clear
       @session.clear
     end
