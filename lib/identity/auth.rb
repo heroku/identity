@@ -19,7 +19,7 @@ module Identity
 
     namespace "/login" do
       get do
-        if !!@cookie.sso_entity
+        if !!@cookie.sso_entity && Config.sso_base_url
           redirect to("#{Config.sso_base_url}/#{@cookie.sso_entity}")
         end
         @campaign = "login" # used to identify the user if they signup from here
