@@ -164,7 +164,7 @@ If you don't receive an email, and it's not in your spam folder, this could mean
     })
   end
 
-  post "/invitation2/save" do
+  patch "/invitations/:token" do
     MultiJson.encode({
       email: "kerry@heroku.com",
       signup_source: {

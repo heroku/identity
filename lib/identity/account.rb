@@ -37,14 +37,12 @@ module Identity
       post "/accept/ok" do
         begin
           api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
-            version: 2)
-          res = api.post(path: "/invitation2/save", expects: 200,
-            body: URI.encode_www_form({
-              "id"                          => params[:id],
-              "token"                       => params[:token],
-              "user[password]"              => params[:password],
-              "user[password_confirmation]" => params[:password_confirmation],
-              "user[receive_newsletter]"    => params[:receive_newsletter],
+            version: 3)
+          res = api.patch(path: "/invitations/#{params[:token]}", expects: 200,
+            body: MultiJson.encode({
+              password:              params[:password],
+              password_confirmation: params[:password_confirmation],
+              receive_newsletter:    params[:receive_newsletter]
             }))
           json = MultiJson.decode(res.body)
 
