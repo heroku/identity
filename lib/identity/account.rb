@@ -127,11 +127,10 @@ module Identity
       post "/password/reset" do
         begin
           api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
-            version: 2)
-          res = api.post(path: "/auth/reset_password", expects: 200,
-            body: URI.encode_www_form({
-              email: params[:email]
-            }))
+            version: 3)
+          res = api.post(
+            path: "/users/#{params[:email]}/actions/password-reset",
+            expects: 200)
 
           json = MultiJson.decode(res.body)
           flash.now[:notice] = json["message"]
@@ -145,8 +144,8 @@ module Identity
       get "/password/reset/:token" do |token|
         begin
           api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
-            version: 2)
-          res = api.get(path: "/auth/finish_reset_password/#{token}",
+            version: 3)
+          res = api.get(path: "/users/#{token}/actions/password-reset",
             expects: 200)
           @user = MultiJson.decode(res.body)
 
@@ -163,12 +162,12 @@ module Identity
       post "/password/reset/:token" do |token|
         begin
           api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
-            version: 2)
-          body = URI.encode_www_form({
+            version: 3)
+          body = MultiJson.encode({
             :password              => params[:password],
             :password_confirmation => params[:password_confirmation],
           })
-          api.post(path: "/auth/finish_reset_password/#{token}",
+          api.post(path: "/users/#{token}/actions/finalize-password-reset",
                    expects: 200, body: body)
 
           flash[:success] = "Your password has been changed."
