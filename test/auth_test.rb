@@ -341,11 +341,13 @@ describe Identity::Auth do
 
     it "forwards a 403" do
       stub_heroku_api do
-        post("/oauth/tokens") {
-          raise Excon::Errors::Forbidden.new("suspended", nil,
-            Excon::Response.new(body:
-              MultiJson.encode({id:"suspended", message:"ruh roh"}), status: 403))
-        }
+        post("/oauth/tokens") do
+          body = MultiJson.encode(id: "suspended", message: "ruh roh")
+          raise Excon::Errors::Forbidden.new(
+            "suspended",
+            nil,
+            Excon::Response.new(body: body, status: 403))
+        end
       end
       post "/oauth/token"
       assert_equal 403, last_response.status
