@@ -1,4 +1,6 @@
-# identity
+# Identity
+
+[![Build Status](https://travis-ci.org/heroku/identity.svg)](https://travis-ci.org/heroku/identity)
 
 Based on the concept of web-based Heroku user management not belonging in the API over the long-term, Identity pulls session-based authentication out of API and provides a drop-in replacement for the Heroku OAuth API that OAuth clients can use instead.
 
