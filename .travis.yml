@@ -4,3 +4,4 @@ notifications:
 rvm:
   - 2.2.3
 script: rake test
+sudo: false
