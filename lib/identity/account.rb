@@ -21,28 +21,6 @@ module Identity
     end
 
     namespace "/account" do
-      # The omniauth strategy used to make a call to /account after a
-      # successful authentication, so proxy this through to core.
-      # Authentication occurs via a header with a bearer token.
-      #
-      # Remove this as soon as we get Devcenter and Dashboard upgraded.
-      get do
-        return 401 if !request.env["HTTP_AUTHORIZATION"]
-        api = HerokuAPI.new(user: nil, request_ids: request_ids, version: 2,
-          authorization: request.env["HTTP_AUTHORIZATION"],
-            ip: request.ip,
-          # not necessarily V3, respond with whatever the client asks for
-          headers: {
-            "Accept" => request.env["HTTP_ACCEPT"] || "application/json"
-          })
-        begin
-          res = api.get(path: "/account", expects: 200)
-          content_type(:json)
-          res.body
-        rescue Excon::Errors::Unauthorized
-          return 401
-        end
-      end
 
       get "/accept/:id/:token" do |id, token|
         redirect_to_signup_app(request.path)
