@@ -217,6 +217,9 @@ module Identity
           # pass the whole API error through to the client
           content_type(:json)
           [e.response.status, e.response.body]
+        rescue Identity::Errors::SuspendedAccount => e
+          content_type(:json)
+          [403, e.message]
         end
       end
     end
