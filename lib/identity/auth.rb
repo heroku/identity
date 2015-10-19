@@ -19,7 +19,6 @@ module Identity
 
     namespace "/login" do
       get do
-        redirect_for_sso
         @campaign = "login" # used to identify the user if they signup from here
         @link_account = flash[:link_account] && @cookie.authorize_params
         if @link_account
@@ -131,7 +130,6 @@ module Identity
       #
       #     http://tools.ietf.org/html/rfc6749#section-3.1
       get "/authorize" do
-        redirect_for_sso
         call_authorize
       end
 
@@ -331,13 +329,15 @@ module Identity
     end
 
     def logout
-      @cookie.clear
-
-      url = if params[:url] && safe_redirect?(params[:url])
+      url = if !!@cookie.sso_entity &&  Config.sso_base_url
+        "#{Config.sso_base_url}/#{@cookie.sso_entity}"
+      elsif params[:url] && safe_redirect?(params[:url])
         params[:url]
       else
         "/login"
       end
+
+      @cookie.clear
       redirect to(url)
     end
 
@@ -357,12 +357,6 @@ module Identity
       ].include?(uri.host)
     rescue URI::InvalidURIError
       false
-    end
-
-    def redirect_for_sso
-      if !!@cookie.sso_entity && Config.sso_base_url
-        redirect to("#{Config.sso_base_url}/#{@cookie.sso_entity}")
-      end
     end
   end
 end
