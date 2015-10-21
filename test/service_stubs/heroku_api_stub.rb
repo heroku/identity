@@ -119,7 +119,7 @@ If you don't receive an email, and it's not in your spam folder, this could mean
   end
 
   get "/oauth/clients/:id" do |id|
-    parse_oauth_client = "e780a170-f68f-46d2-99fd-a9878d8e6c75"
+    parse_oauth_client = "17ae0773-297f-4437-a640-e70f464ff9f4"
     status(200)
     MultiJson.encode({
       id:                 id,
