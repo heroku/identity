@@ -16,36 +16,6 @@ describe Identity::Account do
     rack_mock_session.clear_cookies
   end
 
-  describe "GET /account" do
-    it "responds with 401 without a session" do
-      get "/account"
-      assert_equal 401, last_response.status
-    end
-
-    it "responds with a 401 with an invalid session" do
-      stub_heroku_api do
-        get "/account" do
-          halt 401
-        end
-      end
-      authorize "", "secret"
-      get "/account"
-      assert_equal 401, last_response.status
-    end
-
-    it "proxies to the API" do
-      stub_heroku_api do
-        get "/account" do
-          "{}"
-        end
-      end
-      authorize "", "secret"
-      get "/account"
-      assert_equal 200, last_response.status
-      assert_equal "{}", last_response.body
-    end
-  end
-
   describe "GET /account/accept/:id/:token" do
     it "redirects to the same path in the signup app" do
       stub(Identity::Config).redirect_all_signups { true }
