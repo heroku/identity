@@ -329,7 +329,7 @@ module Identity
     # but will need some sort of service to issue salesforce campaign ids
     def get_client_campaign(oauth_client_id)
       {
-        "17ae0773-297f-4437-a640-e70f464ff9f4" => "parse",
+        Identity::Config.parse_oauth_client_id => "parse",
       }[oauth_client_id] || "login"
     end
 

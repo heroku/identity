@@ -87,5 +87,9 @@ module Identity
     def ssl_verify_peer?
       ENV["SSL_VERIFY_PEER"] != "false"
     end
+
+    def parse_oauth_client_id
+      "17ae0773-297f-4437-a640-e70f464ff9f4"
+    end
   end
 end
