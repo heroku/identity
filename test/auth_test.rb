@@ -385,7 +385,7 @@ describe Identity::Auth do
       describe "for untrusted clients" do
         before do
           # parse's client id is hardcoded for now:
-          @authorize_params[:client_id] = "e780a170-f68f-46d2-99fd-a9878d8e6c75"
+          @authorize_params[:client_id] = Identity::Config.parse_oauth_client_id
         end
 
         it "renders a slightly different login screen for untrusted" do
