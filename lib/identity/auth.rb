@@ -332,13 +332,13 @@ module Identity
     end
 
     def logout
-      url = if !!@cookie.sso_entity &&  Config.sso_base_url
-        full_sso_path
-      elsif params[:url] && safe_redirect?(params[:url])
-        params[:url]
-      else
-        "/login"
-      end
+      url = if !!@cookie.sso_entity && Config.sso_base_url
+              full_sso_path
+            elsif params[:url] && safe_redirect?(params[:url])
+              params[:url]
+            else
+              "/login"
+            end
 
       @cookie.clear
       redirect to(url)
