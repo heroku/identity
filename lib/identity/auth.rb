@@ -20,7 +20,7 @@ module Identity
     namespace "/login" do
       get do
         if !!@cookie.sso_entity && Config.sso_base_url
-          redirect to("#{Config.sso_base_url}/#{@cookie.sso_entity}")
+          redirect to(full_sso_path)
         end
         @campaign = "login" # used to identify the user if they signup from here
         @link_account = flash[:link_account] && @cookie.authorize_params
@@ -333,7 +333,7 @@ module Identity
 
     def logout
       url = if !!@cookie.sso_entity &&  Config.sso_base_url
-        "#{Config.sso_base_url}/#{@cookie.sso_entity}"
+        full_sso_path
       elsif params[:url] && safe_redirect?(params[:url])
         params[:url]
       else
@@ -342,6 +342,10 @@ module Identity
 
       @cookie.clear
       redirect to(url)
+    end
+
+    def full_sso_path
+      "#{Config.sso_base_url}/#{@cookie.sso_entity}"
     end
 
     def safe_redirect?(url)
