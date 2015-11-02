@@ -166,7 +166,7 @@ If you don't receive an email, and it's not in your spam folder, this could mean
 
   patch "/invitations/:token" do
     MultiJson.encode({
-      created_at: Time.now,
+      created_at: Time.now.utc,
       user: {
         email: "kerry@heroku.com",
         id:    "06dcaabe-f7cd-473a-aa10-df54045ff69c"
