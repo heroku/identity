@@ -40,8 +40,10 @@ module Identity
             ip:          request.ip,
             request_ids: request_ids,
             version:     3)
-          res = api.patch(path: "/invitations/#{params[:token]}", expects: 200,
-            body: MultiJson.encode(
+          res = api.patch(
+            path:    "/invitations/#{params[:token]}",
+            expects: 200,
+            body:    MultiJson.encode(
               password:              params[:password],
               password_confirmation: params[:password_confirmation],
               receive_newsletter:    params[:receive_newsletter]
