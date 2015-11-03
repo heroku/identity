@@ -126,8 +126,10 @@ module Identity
 
       post "/password/reset" do
         begin
-          api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
-            version: 3)
+          api = HerokuAPI.new(
+            ip:          request.ip,
+            request_ids: request_ids,
+            version:     3)
           api.post(
             path:    "/password-resets",
             body:    MultiJson.encode(email: params[:email]),
@@ -147,23 +149,28 @@ module Identity
 
       post "/password/reset/:token" do |token|
         begin
-          api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
-            version: 3)
-          body = MultiJson.encode({
-            :password              => params[:password],
-            :password_confirmation => params[:password_confirmation],
-          })
-          api.post(path: "/password-resets/#{token}/actions/finalize",
-                   expects: 200, body: body)
+          api = HerokuAPI.new(
+            ip:          request.ip,
+            request_ids: request_ids,
+            version:     3)
+          body = MultiJson.encode(
+            password:              params[:password],
+            password_confirmation: params[:password_confirmation],
+          )
+          api.post(
+            path:    "/password-resets/#{token}/actions/finalize",
+            expects: 200,
+            body:    body)
 
           flash[:success] = "Your password has been changed."
           redirect to("/login")
         rescue Excon::Errors::NotFound => e
           slim :"account/password/not_found", layout: :"layouts/purple"
         rescue Excon::Errors::Forbidden, Excon::Errors::UnprocessableEntity => e
-          Identity.log(password_reset_error: true,
-                       error_body: e.response.body,
-                       error_code: e.response.status)
+          Identity.log(
+            password_reset_error: true,
+            error_body:           e.response.body,
+            error_code:           e.response.status)
 
           @user = flash[:user]
           flash[:error] = decode_error(e.response.body)
