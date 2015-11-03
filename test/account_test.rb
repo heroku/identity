@@ -119,7 +119,7 @@ describe Identity::Account do
     [ 403, 422 ].each do |error_code|
       it "redirects back to reset page when there's a #{error_code} error" do
         stub_heroku_api do
-          post "/users/:token/actions/finalize-password-reset" do
+          post "/password-resets/:token/actions/finalize" do
             [ error_code, MultiJson.encode({ message: "a #{error_code} error" }) ]
           end
         end

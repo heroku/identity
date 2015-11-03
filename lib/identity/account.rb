@@ -153,7 +153,7 @@ module Identity
             :password              => params[:password],
             :password_confirmation => params[:password_confirmation],
           })
-          api.post(path: "/users/#{token}/actions/finalize-password-reset",
+          api.post(path: "/password-resets/#{token}/actions/finalize",
                    expects: 200, body: body)
 
           flash[:success] = "Your password has been changed."
