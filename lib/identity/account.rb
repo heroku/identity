@@ -135,7 +135,10 @@ module Identity
             body:    MultiJson.encode(email: params[:email]),
             expects: 201)
 
-          flash.now[:notice] = "Check your inbox for the next steps.\nIf you don't receive an email, and it's not in your spam folder, this could mean you signed up with a different address."
+          flash.now[:notice] =
+            "Check your inbox for the next steps.\n"\
+            "If you don't receive an email, and it's not in your spam folder "\
+            "this could mean you signed up with a different address."
           slim :"account/password/reset", layout: :"layouts/purple"
         rescue Excon::Errors::NotFound, Excon::Errors::UnprocessableEntity => e
           flash[:error] = decode_error(e.response.body)

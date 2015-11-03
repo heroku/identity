@@ -86,12 +86,13 @@ describe Identity::Account do
       stub_heroku_api
       post "/account/password/reset", email: "kerry@heroku.com"
       assert_equal 200, last_response.status
+      refute last_request.env['x-rack.flash']['notice'].nil?
     end
 
     it "redirects when the api responded with an error" do
       stub_heroku_api do
         post "/password-resets" do
-          [422, MultiJson.encode({ message: "Fail" })]
+          [422, MultiJson.encode(message: "Fail")]
         end
       end
       post "/account/password/reset", email: "kerry@heroku.com"
