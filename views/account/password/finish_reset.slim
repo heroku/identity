@@ -6,7 +6,7 @@
   form role="form" method="post"
     == render :slim, :"_flash", layout: false
 
-    p.overview Resetting password for <strong>#{@user["email"]}</strong>.
+    p.overview Resetting password.
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
     .form-group
       label for="password" New password

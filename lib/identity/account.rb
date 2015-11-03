@@ -128,12 +128,12 @@ module Identity
         begin
           api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
             version: 3)
-          res = api.post(
-            path: "/users/#{params[:email]}/actions/password-reset",
-            expects: 200)
+          api.post(
+            path:    "/password-resets",
+            body:    MultiJson.encode(email: params[:email]),
+            expects: 201)
 
-          json = MultiJson.decode(res.body)
-          flash.now[:notice] = json["message"]
+          flash.now[:notice] = "Check your inbox for the next steps.\nIf you don't receive an email, and it's not in your spam folder, this could mean you signed up with a different address."
           slim :"account/password/reset", layout: :"layouts/purple"
         rescue Excon::Errors::NotFound, Excon::Errors::UnprocessableEntity => e
           flash[:error] = decode_error(e.response.body)
@@ -142,21 +142,7 @@ module Identity
       end
 
       get "/password/reset/:token" do |token|
-        begin
-          api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
-            version: 3)
-          res = api.get(path: "/users/#{token}/actions/password-reset",
-            expects: 200)
-          @user = MultiJson.decode(res.body)
-
-          # Persist the user in the flash in case we need to render an error
-          # from the post.
-          flash[:user] = @user
-
-          slim :"account/password/finish_reset", layout: :"layouts/purple"
-        rescue Excon::Errors::NotFound => e
-          slim :"account/password/not_found", layout: :"layouts/purple"
-        end
+        slim :"account/password/finish_reset", layout: :"layouts/purple"
       end
 
       post "/password/reset/:token" do |token|

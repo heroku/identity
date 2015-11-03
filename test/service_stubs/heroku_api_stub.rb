@@ -33,13 +33,9 @@ class HerokuAPIStub < Sinatra::Base
     @body = MultiJson.decode(request.body.read) rescue {}
   end
 
-  post "/users/:email/actions/password-reset" do
-    MultiJson.encode({
-      message: <<-eos
-Check your inbox for the next steps.
-If you don't receive an email, and it's not in your spam folder, this could mean you signed up with a different address.
-      eos
-    })
+  post "/password-resets" do
+    MultiJson.encode({})
+    201
   end
 
   get "/users/:token/actions/password-reset" do

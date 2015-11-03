@@ -90,8 +90,8 @@ describe Identity::Account do
 
     it "redirects when the api responded with an error" do
       stub_heroku_api do
-        post "/users/kerry@heroku.com/actions/password-reset" do
-          [422, MultiJson.encode({ message: "Password too short." })]
+        post "/password-resets" do
+          [422, MultiJson.encode({ message: "Fail" })]
         end
       end
       post "/account/password/reset", email: "kerry@heroku.com"
@@ -102,7 +102,6 @@ describe Identity::Account do
 
   describe "GET /account/password/reset/:token" do
     it "renders a password reset form" do
-      stub_heroku_api
       get "/account/password/reset/c45685917ef644198a0fececa10d479a"
       assert_equal 200, last_response.status
     end
