@@ -26,11 +26,34 @@ describe Identity::Account do
   end
 
   describe "POST /account/accept/ok" do
-    it "redirects to the signup app" do
+    it "redirects to the signup app on success" do
       stub(Identity::Config).redirect_all_signups { true }
-      post "/account/accept/ok"
+      post "/account/accept/ok", token: "foo"
       assert_equal 302, last_response.status
       assert_equal "#{Identity::Config.signup_url}/account/accept/ok?from=id", last_response.headers["Location"]
+    end
+
+    it "redirects to login if the token is not found" do
+      stub_heroku_api do
+        patch "/invitations/:token" do
+          halt(404, "Not found")
+        end
+      end
+      post "/account/accept/ok", token: "foo"
+      assert_equal 302, last_response.status
+      assert_match %r{/login$}, last_response.headers["Location"]
+    end
+
+    it "redirects to accept if the invitation data is wrong" do
+      stub_heroku_api do
+        patch "/invitations/:token" do
+          [422, MultiJson.encode(message: "Password too short.")]
+        end
+      end
+      post "/account/accept/ok", token: "foo", password: "yay", id: 123
+      assert_equal 302, last_response.status
+      assert_match(
+        %r{/account/accept/123/foo$}, last_response.headers["Location"])
     end
   end
 

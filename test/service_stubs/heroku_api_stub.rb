@@ -168,11 +168,12 @@ class HerokuAPIStub < Sinatra::Base
     })
   end
 
-  post "/invitation2/save" do
+  patch "/invitations/:token" do
     MultiJson.encode({
-      email: "kerry@heroku.com",
-      signup_source: {
-        redirect_uri: "https://dashboard.heroku.com"
+      created_at: Time.now.utc,
+      user: {
+        email: "kerry@heroku.com",
+        id:    "06dcaabe-f7cd-473a-aa10-df54045ff69c"
       }
     })
   end
