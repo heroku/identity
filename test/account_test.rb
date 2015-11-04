@@ -86,13 +86,14 @@ describe Identity::Account do
       stub_heroku_api
       post "/account/password/reset", email: "kerry@heroku.com"
       assert_equal 200, last_response.status
+      refute last_request.env["x-rack.flash"]["notice"].nil?
     end
 
     it "redirects when the api responded with an error" do
       stub_heroku_api do
-        post("/auth/reset_password") {
-          [422, MultiJson.encode({ message: "Password too short." })]
-        }
+        post "/password-resets" do
+          [422, MultiJson.encode(message: "Fail")]
+        end
       end
       post "/account/password/reset", email: "kerry@heroku.com"
       assert_equal 302, last_response.status
@@ -102,7 +103,6 @@ describe Identity::Account do
 
   describe "GET /account/password/reset/:token" do
     it "renders a password reset form" do
-      stub_heroku_api
       get "/account/password/reset/c45685917ef644198a0fececa10d479a"
       assert_equal 200, last_response.status
     end
@@ -120,9 +120,9 @@ describe Identity::Account do
     [ 403, 422 ].each do |error_code|
       it "redirects back to reset page when there's a #{error_code} error" do
         stub_heroku_api do
-          post("/auth/finish_reset_password/c45685917ef644198a0fececa10d479a") {
+          post "/password-resets/:token/actions/finalize" do
             [ error_code, MultiJson.encode({ message: "a #{error_code} error" }) ]
-          }
+          end
         end
         post "/account/password/reset/c45685917ef644198a0fececa10d479a",
           password: "1234567890ab", password_confirmation: "1234567890ab"
