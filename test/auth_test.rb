@@ -401,27 +401,6 @@ describe Identity::Auth do
         end
       end
     end
-
-    describe "when a user is federated" do
-      before do
-        @authorize_params = { client_id: SecureRandom.uuid }
-      end
-
-      let(:rack_env) do
-        {
-          "rack.session" => {
-            "authorize_params" => MultiJson.encode(@authorize_params),
-            "sso_entity" => "entity"
-          }
-        }
-      end
-
-      it "redirects to the sso page" do
-        get "/login", {}, rack_env
-        follow_redirect!
-        assert_equal "https://sso.heroku.com/entity", last_request.url
-      end
-    end
   end
 
   describe "POST /login" do
@@ -604,27 +583,6 @@ describe Identity::Auth do
       delete "/logout", url: "https://example.com"
       assert_equal 302, last_response.status
       assert_match %r{/login$}, last_response.headers["Location"]
-    end
-
-    describe "when a user is federated" do
-      before do
-        @authorize_params = { client_id: SecureRandom.uuid }
-      end
-
-      let(:rack_env) do
-        {
-          "rack.session" => {
-            "authorize_params" => MultiJson.encode(@authorize_params),
-            "sso_entity" => "entity"
-          }
-        }
-      end
-
-      it "redirects to the sso page" do
-        delete "/logout", {}, rack_env
-        follow_redirect!
-        assert_equal "https://sso.heroku.com/entity", last_request.url
-      end
     end
   end
 
