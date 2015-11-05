@@ -32,10 +32,10 @@ h1.logo {
   margin: 0 0 $margin;
   a {
     display: inline-block;
-    height: 54px;
-    width: 180px;
+    height: 96px;
+    width: 69px;
     @include hide-text();
-    @include retina-background('../logo-gray', png, 180px);
+    @include retina-background('../logo-vertical', png, 69px);
   }
 }
 
@@ -60,12 +60,13 @@ h1.logo {
     font-size: 10px;
     span {
       display: inline-block;
-      height: 49px;
-      width: 70px;
+      height: 50px;
+      width: 140px;
       text-align: center;
       margin: 0 3px -22px;
       @include hide-text();
-      @include retina-background('../logo-sfdc', png, 70px);
+      @include retina-background('../logo-sfdc', png, 140px);
+      background-repeat: no-repeat;
     }
   }
 }
