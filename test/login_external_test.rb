@@ -45,15 +45,31 @@ describe Identity::Account do
       let(:cookie_data){{ "foo" => "bar" }}
       let(:token){ JWT.encode(cookie_data, shared_key, "HS256") }
 
-      it "writes cookies and redirects to dashboard" do
-        any_instance_of(Identity::LoginExternal) do |finalize|
-          mock(finalize).write_authentication_to_cookie(cookie_data)
+      describe "there is no active oauth authorization request" do
+        it "writes cookies and redirects to dashboard" do
+          any_instance_of(Identity::LoginExternal) do |finalize|
+            mock(finalize).write_authentication_to_cookie(cookie_data)
+          end
+
+          get "/login/external?token=#{token}"
+
+          assert_equal 302, last_response.status
+          assert_equal Identity::Config.dashboard_url, last_response.headers["Location"]
+        end
+      end
+
+      describe "the user has an active oauth authorization request" do
+        let(:rack_env) do
+          { "rack.session" => { "authorize_params" => MultiJson.encode('client_id' => 'abc-123') } }
         end
 
-        get "/login/external?token=#{token}"
-
-        assert_equal 302, last_response.status
-        assert_equal Identity::Config.dashboard_url, last_response.headers["Location"]
+        it "writes cookies and calls authorize to finish the authorization" do
+          any_instance_of(Identity::LoginExternal) do |finalize|
+            mock(finalize).write_authentication_to_cookie(cookie_data)
+            mock(finalize).authorize('client_id' => 'abc-123')
+          end
+          get "/login/external?token=#{token}", {}, rack_env
+        end
       end
     end
   end
