@@ -16,7 +16,14 @@ module Identity
         token = params[:token]
         auth, _ = JWT.decode(token, shared_key)
         write_authentication_to_cookie auth
-        redirect to(Config.dashboard_url)
+
+        # If we have an authorization session, finish it, otherwise send
+        # to dashboard.
+        if @cookie.authorize_params
+          authorize(@cookie.authorize_params)
+        else
+          redirect to(Config.dashboard_url)
+        end
       end
 
       error JWT::DecodeError do

@@ -19,9 +19,6 @@ module Identity
 
     namespace "/login" do
       get do
-        if !!@cookie.sso_entity && Config.sso_base_url
-          redirect to(full_sso_path)
-        end
         @campaign = "login" # used to identify the user if they signup from here
         @link_account = flash[:link_account] && @cookie.authorize_params
         if @link_account
@@ -241,6 +238,13 @@ module Identity
       @cookie.authorize_params = nil
 
       begin
+
+        # Don't provision tokens for SSO users - They should always auth with
+        # their SSO provider.
+        if @cookie.sso_entity && Config.sso_base_url
+          raise Identity::Errors::SSORequired
+        end
+
         # Have the user login if:
         # - We have no session for them
         # - The client requested that they login
@@ -271,6 +275,10 @@ module Identity
         @cookie.post_signup_url = request.url
         @cookie.authorize_params = authorize_params
         redirect to("/login")
+      # user using SSO, send them to authenticate there
+      rescue Identity::Errors::SSORequired
+        @cookie.authorize_params = authorize_params
+        redirect to(full_sso_path)
       # refresh token dance was unsuccessful
       rescue Excon::Errors::Unauthorized
         @cookie.authorize_params = authorize_params
@@ -334,9 +342,7 @@ module Identity
     end
 
     def logout
-      url = if !!@cookie.sso_entity && Config.sso_base_url
-              full_sso_path
-            elsif params[:url] && safe_redirect?(params[:url])
+      url = if params[:url] && safe_redirect?(params[:url])
               params[:url]
             else
               "/login"
