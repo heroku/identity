@@ -113,10 +113,11 @@ describe Identity::Auth do
       end
 
       it "redirects to the sso entity" do
-        post "/oauth/authorize", {client_id: "dashboard"}, rack_env
+        post "/oauth/authorize", { client_id: "dashboard" }, rack_env
 
         assert_equal 302, last_response.status
-        assert_equal "https://sso.heroku.com/initech", last_response.headers["Location"]
+        assert_equal "https://sso.heroku.com/initech",
+                     last_response.headers["Location"]
       end
     end
 
@@ -556,9 +557,10 @@ describe Identity::Auth do
     describe "for users that have previously used an SSO" do
       it "removes the sso_entity cookie when successfully logging in" do
         post "/login", { email:  "kerry@heroku.com", password: "abcdefgh" },
-          { "HTTP_X_FORWARDED_FOR" => "8.7.6.5", "rack.session" => { "foo" => "bar", "sso_entity" => "initech"  } }
+             "HTTP_X_FORWARDED_FOR" => "8.7.6.5",
+             "rack.session" => { "foo" => "bar", "sso_entity" => "initech"  }
 
-        assert_equal last_request.env['rack.session']['sso_entity'], nil
+        assert_equal last_request.env["rack.session"]["sso_entity"], nil
       end
     end
   end

@@ -161,7 +161,7 @@ module Identity::Helpers
 
         @cookie.access_token            = token["access_token"]["token"]
         @cookie.access_token_expires_at =
-          Time.now + token["access_token"]["expires_in"]
+          Time.now.getlocal + token["access_token"]["expires_in"]
 
         raise "missing=access_token"  unless @cookie.access_token
         raise "missing=expires_in"    unless @cookie.access_token_expires_at
@@ -171,7 +171,7 @@ module Identity::Helpers
     end
 
     # Attempt to resolve an oauth/authorize request
-    def call_authorize(authorize_params=get_authorize_params)
+    def call_authorize(authorize_params = get_authorize_params)
       # clear anything that might be left over in the session
       @cookie.authorize_params = nil
 
@@ -179,7 +179,7 @@ module Identity::Helpers
         # Try to perform an access token refresh if we know it's expired. At
         # the time of this writing, refresh tokens last 30 days (much longer
         # than the short-lived 2 hour access tokens).
-        if Time.now > @cookie.access_token_expires_at
+        if Time.now.getlocal > @cookie.access_token_expires_at
           perform_oauth_refresh_dance
         end
 
@@ -214,7 +214,7 @@ module Identity::Helpers
         @cookie.authorize_params = authorize_params
         @client = e.client
         @scope  = @cookie && @cookie.authorize_params["scope"] || nil
-        @deny_url = build_uri(@client["redirect_uri"], { error: "access_denied" })
+        @deny_url = build_uri(@client["redirect_uri"], error: "access_denied")
         slim :"clients/authorize", layout: :"layouts/purple"
       # for example, "invalid scope"
       rescue Excon::Errors::UnprocessableEntity => e
@@ -225,7 +225,7 @@ module Identity::Helpers
 
     def filter_params(*safe_params)
       safe_params.flatten!
-      params.dup.keep_if { |k, v| safe_params.include?(k) }
+      params.dup.keep_if { |k, _| safe_params.include?(k) }
     end
 
     def get_authorize_params
@@ -241,14 +241,16 @@ module Identity::Helpers
     end
 
     def write_authentication_to_cookie(auth)
-      expires_at = Time.now + auth["access_token"]["expires_in"]
+      expires_at = Time.now.getlocal + auth["access_token"]["expires_in"]
       @cookie.session_id              = auth["session"]["id"]
       @cookie.access_token            = auth["access_token"]["token"]
       @cookie.access_token_expires_at = expires_at
       @cookie.refresh_token           = auth["refresh_token"].try(:[], "token")
       @cookie.user_id                 = auth["user"]["id"]
 
-      @cookie.sso_entity = Identity::Config.sso_base_url ? auth["sso_entity"] : nil
+      @cookie.sso_entity = if Identity::Config.sso_base_url
+                             auth["sso_entity"]
+                           end
 
       # some basic sanity checks
       raise "missing=access_token"  unless @cookie.access_token

@@ -10,7 +10,6 @@ describe Identity::Account do
     end
   end
 
-
   def request_session
     last_request.env["rack.session"]
   end
@@ -43,8 +42,8 @@ describe Identity::Account do
     end
 
     describe "token is correct" do
-      let(:jwt_data){{ "foo" => "bar" }}
-      let(:token){ JWT.encode(jwt_data, shared_key, "HS256") }
+      let(:jwt_data) { { "foo" => "bar" } }
+      let(:token) { JWT.encode(jwt_data, shared_key, "HS256") }
 
       describe "there is no active oauth authorization request" do
         it "writes cookies and redirects to dashboard" do
@@ -55,7 +54,8 @@ describe Identity::Account do
           get "/login/external?token=#{token}"
 
           assert_equal 302, last_response.status
-          assert_equal Identity::Config.dashboard_url, last_response.headers["Location"]
+          assert_equal Identity::Config.dashboard_url,
+                       last_response.headers["Location"]
         end
       end
 
@@ -65,10 +65,10 @@ describe Identity::Account do
         end
 
         let(:jwt_data) do
-          { access_token: { token: 'abcd', expires_in: 9000 },
-            session: { id: '456' },
-            user: {id: '123'},
-            sso_entity: 'initech' }
+          { access_token: { token: "abcd", expires_in: 9000 },
+            session: { id: "456" },
+            user: { id: "123" },
+            sso_entity: "initech" }
         end
 
         let(:session_data) do
@@ -76,9 +76,13 @@ describe Identity::Account do
         end
 
         it "finishes the authorization" do
-          get "/login/external", { token: token }, { "rack.session" => session_data }
+          get "/login/external",
+              { token: token },
+              "rack.session" => session_data
+
           assert_equal 302, last_response.status
-          assert_equal "https://dashboard.heroku.com/oauth/callback/heroku?code=454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
+          assert_equal "https://dashboard.heroku.com/oauth/callback/" \
+                       "heroku?code=454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
                        last_response.headers["Location"]
         end
       end

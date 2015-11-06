@@ -228,7 +228,7 @@ module Identity
         # If the user is using SSO, have them auth with the SSO service
         @cookie.authorize_params = get_authorize_params
         redirect to("#{Config.sso_base_url}/#{@cookie.sso_entity}")
-      elsif !@cookie.access_token || params[:prompt] == 'login'
+      elsif !@cookie.access_token || params[:prompt] == "login"
         # Have users login if they don't have a session, or the client
         # has requested an explicit login
         @cookie.authorize_params = get_authorize_params
