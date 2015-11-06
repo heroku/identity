@@ -168,7 +168,76 @@ module Identity::Helpers
 
         log :oauth_refresh_dance_complete, session_id: @cookie.session_id
       end
+    end
 
+    # Attempt to resolve an oauth/authorize request
+    def call_authorize(authorize_params=get_authorize_params)
+      # clear anything that might be left over in the session
+      @cookie.authorize_params = nil
+
+      begin
+        # Try to perform an access token refresh if we know it's expired. At
+        # the time of this writing, refresh tokens last 30 days (much longer
+        # than the short-lived 2 hour access tokens).
+        if Time.now > @cookie.access_token_expires_at
+          perform_oauth_refresh_dance
+        end
+
+        # redirects back to the oauth client on success
+        authorize(authorize_params, params[:authorize] == "Allow")
+      # given client_id wasn't found (API throws a 400 status)
+      rescue Excon::Errors::BadRequest
+        flash[:error] = "Unknown OAuth client."
+        redirect to("/login")
+      # we couldn't track the user's session meaning that it's likely been
+      # destroyed or expired, redirect to login
+      rescue Excon::Errors::NotFound
+        redirect to("/login")
+      # user needs to login.
+      rescue Identity::Errors::LoginRequired
+        flash[:link_account] = true
+        @cookie.post_signup_url = request.url
+        @cookie.authorize_params = authorize_params
+        redirect to("/login")
+      # refresh token dance was unsuccessful
+      rescue Excon::Errors::Unauthorized
+        @cookie.authorize_params = authorize_params
+        redirect to("/login")
+      rescue Identity::Errors::PasswordExpired => e
+        flash[:error] = e.message
+        redirect to("/account/password/reset")
+      rescue Identity::Errors::SuspendedAccount => e
+        flash[:error] = e.message
+        redirect to("/login")
+      # client not yet authorized; show the user a confirmation dialog
+      rescue Identity::Errors::UnauthorizedClient => e
+        @cookie.authorize_params = authorize_params
+        @client = e.client
+        @scope  = @cookie && @cookie.authorize_params["scope"] || nil
+        @deny_url = build_uri(@client["redirect_uri"], { error: "access_denied" })
+        slim :"clients/authorize", layout: :"layouts/purple"
+      # for example, "invalid scope"
+      rescue Excon::Errors::UnprocessableEntity => e
+        flash[:error] = decode_error(e.response.body)
+        redirect to("/login")
+      end
+    end
+
+    def filter_params(*safe_params)
+      safe_params.flatten!
+      params.dup.keep_if { |k, v| safe_params.include?(k) }
+    end
+
+    def get_authorize_params
+      # if the user is submitting a confirmation form, pull from session,
+      # otherwise get params from the request
+      if params[:authorize]
+        @cookie.authorize_params || {}
+      else
+        filter_params(%w{client_id response_type scope state prompt}).tap do |p|
+          p["scope"] = p["scope"].split(/[, ]+/).sort.uniq if p["scope"]
+        end
+      end
     end
 
     def write_authentication_to_cookie(auth)

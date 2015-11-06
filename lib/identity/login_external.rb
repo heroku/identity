@@ -17,10 +17,11 @@ module Identity
         auth, _ = JWT.decode(token, shared_key)
         write_authentication_to_cookie auth
 
-        # If we have an authorization session, finish it, otherwise send
-        # to dashboard.
-        if @cookie.authorize_params
-          authorize(@cookie.authorize_params)
+        puts @cookie.authorize_params.inspect
+        # If the user has an active client oauth request, try to finish it.
+        # Otherwise, send the user to dashboard.
+        if auth_params = @cookie.authorize_params
+          call_authorize(auth_params)
         else
           redirect to(Config.dashboard_url)
         end

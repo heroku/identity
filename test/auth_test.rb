@@ -107,6 +107,19 @@ describe Identity::Auth do
       assert_match %r{/account/password/reset\z}, last_response.headers["Location"]
     end
 
+    describe "when I have previously logged in via SSO" do
+      let(:rack_env) do
+        { "rack.session" => { "sso_entity" => "initech" } }
+      end
+
+      it "redirects to the sso entity" do
+        post "/oauth/authorize", {client_id: "dashboard"}, rack_env
+
+        assert_equal 302, last_response.status
+        assert_equal "https://sso.heroku.com/initech", last_response.headers["Location"]
+      end
+    end
+
     describe "for a delinquent account" do
       it "redirects to `Location` for a client that does not `ignore_deliquent`" do
         stub_heroku_api do

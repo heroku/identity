@@ -130,7 +130,7 @@ module Identity
       #
       #     http://tools.ietf.org/html/rfc6749#section-3.1
       get "/authorize" do
-        call_authorize
+        redirect_or_authorize
       end
 
       if Identity::Config.development?
@@ -155,7 +155,7 @@ module Identity
       # successful login. If Identity's access token has expired, it is
       # refreshed.
       post "/authorize" do
-        call_authorize
+        redirect_or_authorize
       end
 
       # Exchanges a code and client_secret for a token set by proxying the
@@ -223,89 +223,20 @@ module Identity
 
     private
 
-    def call_authorize
-      # if the user is submitting a confirmation form, pull from session,
-      # otherwise get params from the request
-      authorize_params = if params[:authorize]
-        @cookie.authorize_params || {}
+    def redirect_or_authorize
+      if @cookie.sso_entity && Config.sso_base_url
+        # If the user is using SSO, have them auth with the SSO service
+        @cookie.authorize_params = get_authorize_params
+        redirect to("#{Config.sso_base_url}/#{@cookie.sso_entity}")
+      elsif !@cookie.access_token || params[:prompt] == 'login'
+        # Have users login if they don't have a session, or the client
+        # has requested an explicit login
+        @cookie.authorize_params = get_authorize_params
+        redirect to("/login")
       else
-        filter_params(%w{client_id response_type scope state prompt}).tap do |p|
-          p["scope"] = p["scope"].split(/[, ]+/).sort.uniq if p["scope"]
-        end
+        # Otherwise, perform the authorization
+        call_authorize
       end
-
-      # clear anything that might be left over in the session
-      @cookie.authorize_params = nil
-
-      begin
-
-        # Don't provision tokens for SSO users - They should always auth with
-        # their SSO provider.
-        if @cookie.sso_entity && Config.sso_base_url
-          raise Identity::Errors::SSORequired
-        end
-
-        # Have the user login if:
-        # - We have no session for them
-        # - The client requested that they login
-        if !@cookie.access_token || params[:prompt] == 'login'
-          raise Identity::Errors::LoginRequired
-        end
-
-        # Try to perform an access token refresh if we know it's expired. At
-        # the time of this writing, refresh tokens last 30 days (much longer
-        # than the short-lived 2 hour access tokens).
-        if Time.now > @cookie.access_token_expires_at
-          perform_oauth_refresh_dance
-        end
-
-        # redirects back to the oauth client on success
-        authorize(authorize_params, params[:authorize] == "Allow")
-      # given client_id wasn't found (API throws a 400 status)
-      rescue Excon::Errors::BadRequest
-        flash[:error] = "Unknown OAuth client."
-        redirect to("/login")
-      # we couldn't track the user's session meaning that it's likely been
-      # destroyed or expired, redirect to login
-      rescue Excon::Errors::NotFound
-        redirect to("/login")
-      # user needs to login.
-      rescue Identity::Errors::LoginRequired
-        flash[:link_account] = true
-        @cookie.post_signup_url = request.url
-        @cookie.authorize_params = authorize_params
-        redirect to("/login")
-      # user using SSO, send them to authenticate there
-      rescue Identity::Errors::SSORequired
-        @cookie.authorize_params = authorize_params
-        redirect to(full_sso_path)
-      # refresh token dance was unsuccessful
-      rescue Excon::Errors::Unauthorized
-        @cookie.authorize_params = authorize_params
-        redirect to("/login")
-      rescue Identity::Errors::PasswordExpired => e
-        flash[:error] = e.message
-        redirect to("/account/password/reset")
-      rescue Identity::Errors::SuspendedAccount => e
-        flash[:error] = e.message
-        redirect to("/login")
-      # client not yet authorized; show the user a confirmation dialog
-      rescue Identity::Errors::UnauthorizedClient => e
-        @cookie.authorize_params = authorize_params
-        @client = e.client
-        @scope  = @cookie && @cookie.authorize_params["scope"] || nil
-        @deny_url = build_uri(@client["redirect_uri"], { error: "access_denied" })
-        slim :"clients/authorize", layout: :"layouts/purple"
-      # for example, "invalid scope"
-      rescue Excon::Errors::UnprocessableEntity => e
-        flash[:error] = decode_error(e.response.body)
-        redirect to("/login")
-      end
-    end
-
-    def filter_params(*safe_params)
-      safe_params.flatten!
-      params.dup.keep_if { |k, v| safe_params.include?(k) }
     end
 
     def flash
@@ -350,10 +281,6 @@ module Identity
 
       @cookie.clear
       redirect to(url)
-    end
-
-    def full_sso_path
-      "#{Config.sso_base_url}/#{@cookie.sso_entity}"
     end
 
     def safe_redirect?(url)
