@@ -248,9 +248,7 @@ module Identity::Helpers
       @cookie.refresh_token           = auth["refresh_token"].try(:[], "token")
       @cookie.user_id                 = auth["user"]["id"]
 
-      if Identity::Config.sso_base_url
-        @cookie.sso_entity = auth["sso_entity"]
-      end
+      @cookie.sso_entity = Identity::Config.sso_base_url ? auth["sso_entity"] : nil
 
       # some basic sanity checks
       raise "missing=access_token"  unless @cookie.access_token

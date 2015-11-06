@@ -552,6 +552,15 @@ describe Identity::Auth do
           last_response.headers["Location"]
       end
     end
+
+    describe "for users that have previously used an SSO" do
+      it "removes the sso_entity cookie when successfully logging in" do
+        post "/login", { email:  "kerry@heroku.com", password: "abcdefgh" },
+          { "HTTP_X_FORWARDED_FOR" => "8.7.6.5", "rack.session" => { "foo" => "bar", "sso_entity" => "initech"  } }
+
+        assert_equal last_request.env['rack.session']['sso_entity'], nil
+      end
+    end
   end
 
   describe "for accounts with two-factor and sms recovery enabled" do
