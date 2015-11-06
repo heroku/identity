@@ -1,6 +1,5 @@
 module Identity::Errors
   class LoginRequired < StandardError; end
-  class SSORequired < StandardError; end
 
   class PasswordExpired < StandardError
     attr_accessor :message

@@ -17,7 +17,6 @@ module Identity
         auth, _ = JWT.decode(token, shared_key)
         write_authentication_to_cookie auth
 
-        puts @cookie.authorize_params.inspect
         # If the user has an active client oauth request, try to finish it.
         # Otherwise, send the user to dashboard.
         if auth_params = @cookie.authorize_params
