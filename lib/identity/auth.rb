@@ -231,6 +231,8 @@ module Identity
       elsif !@cookie.access_token || params[:prompt] == "login"
         # Have users login if they don't have a session, or the client
         # has requested an explicit login
+        flash[:link_account] = true
+        @cookie.post_signup_url = request.url
         @cookie.authorize_params = get_authorize_params
         redirect to("/login")
       else
