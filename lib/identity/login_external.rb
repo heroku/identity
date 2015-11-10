@@ -16,7 +16,14 @@ module Identity
         token = params[:token]
         auth, _ = JWT.decode(token, shared_key)
         write_authentication_to_cookie auth
-        redirect to(Config.dashboard_url)
+
+        # If the user has an active client oauth request, try to finish it.
+        # Otherwise, send the user to dashboard.
+        if auth_params = @cookie.authorize_params
+          call_authorize(auth_params)
+        else
+          redirect to(Config.dashboard_url)
+        end
       end
 
       error JWT::DecodeError do

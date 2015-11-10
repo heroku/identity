@@ -107,6 +107,20 @@ describe Identity::Auth do
       assert_match %r{/account/password/reset\z}, last_response.headers["Location"]
     end
 
+    describe "when I have previously logged in via SSO" do
+      let(:rack_env) do
+        { "rack.session" => { "sso_entity" => "initech" } }
+      end
+
+      it "redirects to the sso entity" do
+        post "/oauth/authorize", { client_id: "dashboard" }, rack_env
+
+        assert_equal 302, last_response.status
+        assert_equal "https://sso.heroku.com/initech",
+                     last_response.headers["Location"]
+      end
+    end
+
     describe "for a delinquent account" do
       it "redirects to `Location` for a client that does not `ignore_deliquent`" do
         stub_heroku_api do
@@ -401,27 +415,6 @@ describe Identity::Auth do
         end
       end
     end
-
-    describe "when a user is federated" do
-      before do
-        @authorize_params = { client_id: SecureRandom.uuid }
-      end
-
-      let(:rack_env) do
-        {
-          "rack.session" => {
-            "authorize_params" => MultiJson.encode(@authorize_params),
-            "sso_entity" => "entity"
-          }
-        }
-      end
-
-      it "redirects to the sso page" do
-        get "/login", {}, rack_env
-        follow_redirect!
-        assert_equal "https://sso.heroku.com/entity", last_request.url
-      end
-    end
   end
 
   describe "POST /login" do
@@ -560,6 +553,16 @@ describe Identity::Auth do
           last_response.headers["Location"]
       end
     end
+
+    describe "for users that have previously used an SSO" do
+      it "removes the sso_entity cookie when successfully logging in" do
+        post "/login", { email:  "kerry@heroku.com", password: "abcdefgh" },
+             "HTTP_X_FORWARDED_FOR" => "8.7.6.5",
+             "rack.session" => { "foo" => "bar", "sso_entity" => "initech"  }
+
+        assert_equal last_request.env["rack.session"]["sso_entity"], nil
+      end
+    end
   end
 
   describe "for accounts with two-factor and sms recovery enabled" do
@@ -604,27 +607,6 @@ describe Identity::Auth do
       delete "/logout", url: "https://example.com"
       assert_equal 302, last_response.status
       assert_match %r{/login$}, last_response.headers["Location"]
-    end
-
-    describe "when a user is federated" do
-      before do
-        @authorize_params = { client_id: SecureRandom.uuid }
-      end
-
-      let(:rack_env) do
-        {
-          "rack.session" => {
-            "authorize_params" => MultiJson.encode(@authorize_params),
-            "sso_entity" => "entity"
-          }
-        }
-      end
-
-      it "redirects to the sso page" do
-        delete "/logout", {}, rack_env
-        follow_redirect!
-        assert_equal "https://sso.heroku.com/entity", last_request.url
-      end
     end
   end
 
