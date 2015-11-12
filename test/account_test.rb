@@ -140,6 +140,17 @@ describe Identity::Account do
       assert_match %r{/login$}, last_response.headers["Location"]
     end
 
+    it "renders a not found page when there's a 404 error from API" do
+      stub_heroku_api do
+        post "/password-resets/:token/actions/finalize" do
+          [ 404, MultiJson.encode({ message: "Not Found" }) ]
+        end
+      end
+      post "/account/password/reset/c45685917ef644198a0fececa10d479a",
+        password: "1234567890ab", password_confirmation: "1234567890ab"
+      assert_equal 404, last_response.status
+    end
+
     [ 403, 422 ].each do |error_code|
       it "redirects back to reset page when there's a #{error_code} error" do
         stub_heroku_api do

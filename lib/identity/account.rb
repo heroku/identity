@@ -142,7 +142,7 @@ module Identity
             "If you don't receive an email, and it's not in your spam folder "\
             "this could mean you signed up with a different address."
           slim :"account/password/reset", layout: :"layouts/purple"
-        rescue Excon::Errors::NotFound, Excon::Errors::UnprocessableEntity => e
+        rescue Excon::Errors::ClientError => e
           flash[:error] = decode_error(e.response.body)
           redirect to("/account/password/reset")
         end
@@ -170,8 +170,9 @@ module Identity
           flash[:success] = "Your password has been changed."
           redirect to("/login")
         rescue Excon::Errors::NotFound => e
+          status 404
           slim :"account/password/not_found", layout: :"layouts/purple"
-        rescue Excon::Errors::Forbidden, Excon::Errors::UnprocessableEntity => e
+        rescue Excon::Errors::ClientError => e
           Identity.log(
             password_reset_error: true,
             error_body:           e.response.body,
