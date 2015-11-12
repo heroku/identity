@@ -106,6 +106,7 @@ module Identity
           flash[:error] = "This link can't be used with your current login."
           redirect to("/login")
         rescue Excon::Errors::NotFound, Excon::Errors::UnprocessableEntity
+          status 404
           slim :"account/email/not_found", layout: :"layouts/purple"
         # it seems that the user's access token is no longer valid, refresh
         rescue Excon::Errors::Unauthorized

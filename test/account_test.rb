@@ -92,7 +92,7 @@ describe Identity::Account do
         end
       end
       get "/account/email/confirm/c45685917ef644198a0fececa10d479a"
-      assert_equal 200, last_response.status
+      assert_equal 404, last_response.status
       assert_match(/couldn't find that e-mail/, last_response.body)
     end
   end
