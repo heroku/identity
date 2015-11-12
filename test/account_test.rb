@@ -135,8 +135,8 @@ describe Identity::Account do
     it "changes a password and redirects to login" do
       stub_heroku_api
       post "/account/password/reset/c45685917ef644198a0fececa10d479a",
-        password:              "1234567890ab",
-        password_confirmation: "1234567890ab"
+           password:              "1234567890ab",
+           password_confirmation: "1234567890ab"
       assert_equal 302, last_response.status
       assert_match %r{/login$}, last_response.headers["Location"]
     end
@@ -144,12 +144,12 @@ describe Identity::Account do
     it "renders a not found page when there's a 404 error from API" do
       stub_heroku_api do
         post "/password-resets/:token/actions/finalize" do
-          [ 404, MultiJson.encode(message: "Not Found") ]
+          [404, MultiJson.encode(message: "Not Found")]
         end
       end
       post "/account/password/reset/c45685917ef644198a0fececa10d479a",
-        password:              "1234567890ab",
-        password_confirmation: "1234567890ab"
+           password:              "1234567890ab",
+           password_confirmation: "1234567890ab"
       assert_equal 404, last_response.status
     end
 
@@ -157,12 +157,12 @@ describe Identity::Account do
       it "redirects back to reset page when there's a #{error_code} error" do
         stub_heroku_api do
           post "/password-resets/:token/actions/finalize" do
-            [ error_code, MultiJson.encode(message: "a #{error_code} error") ]
+            [error_code, MultiJson.encode(message: "a #{error_code} error")]
           end
         end
         post "/account/password/reset/c45685917ef644198a0fececa10d479a",
-          password:              "1234567890ab",
-          password_confirmation: "1234567890ab"
+              password:              "1234567890ab",
+              password_confirmation: "1234567890ab"
         assert_equal 302, last_response.status
         assert_match %r{/account/password/reset/c45685917ef644198a0fececa10d479a$}, last_response.headers["Location"]
         follow_redirect!
