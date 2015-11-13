@@ -21,7 +21,8 @@ describe Identity::Helpers::API do
         id:    "wat",
         error: "something weird"
       }
-      assert_equal "id wat; error something weird", decode_error(MultiJson.encode(error))
+      assert_equal "id wat; error something weird",
+                   decode_error(MultiJson.encode(error))
     end
 
     it "falls through in the case of decoding errors" do
