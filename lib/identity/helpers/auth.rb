@@ -43,16 +43,18 @@ module Identity::Helpers
         authorizations = MultiJson.decode(res.body)
 
         authorization = authorizations.detect { |a|
-          a["client"] && a["client"]["id"] == client_id &&
-            a["scope"] == (params["scope"] || ["global"])
+          a["client"] &&
+          a["client"]["id"] == client_id &&
+          a["scope"] == (params["scope"] || ["global"])
         }
 
         # fall back to legacy_id (for now)
         if !authorization
           authorization = authorizations.detect { |a|
-            a["client"] && a["client"]["legacy_id"] &&
-              a["client"]["legacy_id"] == client_id &&
-              a["scope"]               == (params["scope"] || ["global"])
+            a["client"] &&
+            a["client"]["legacy_id"] &&
+            a["client"]["legacy_id"] == client_id &&
+            a["scope"] == (params["scope"] || ["global"])
           }
           if authorization
             log(:legacy_client_id, client_id: authorization["client"]["id"])
