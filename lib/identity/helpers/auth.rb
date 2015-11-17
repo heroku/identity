@@ -52,7 +52,7 @@ module Identity::Helpers
           authorization = authorizations.detect { |a|
             a["client"] && a["client"]["legacy_id"] &&
               a["client"]["legacy_id"] == client_id &&
-              a["scope"] == (params["scope"] || ["global"])
+              a["scope"]               == (params["scope"] || ["global"])
           }
           if authorization
             log(:legacy_client_id, client_id: authorization["client"]["id"])
