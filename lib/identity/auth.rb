@@ -98,6 +98,10 @@ module Identity
           @client = e.client
           @scope  = @cookie && @cookie.authorize_params["scope"] || nil
           slim :"clients/authorize", layout: :"layouts/purple"
+        # catch-all for generic 4xx errors
+        rescue Excon::Errors::ClientError => e
+          flash[:error] = decode_error(e.response.body)
+          redirect to("/login")
         end
       end
     end
@@ -164,7 +168,7 @@ module Identity
         begin
           res = log :create_token, by_proxy: true,
             session_id: @cookie.session_id do
-            req = Rack::Auth::Basic::Request.new(request.env)
+            Rack::Auth::Basic::Request.new(request.env)
             # no credentials are required here because the code segment of the
             # exchange is state that's linked to a user in the API
             api = HerokuAPI.new(ip: request.ip, request_ids: request_ids,
@@ -210,13 +214,14 @@ module Identity
 
           MultiJson.encode(response)
         # Handle 4xx errors from API
+        rescue Identity::Errors::SuspendedAccount => e
+          content_type(:json)
+          [403, e.message]
+        # catch-all for generic 4xx errors
         rescue Excon::Errors::ClientError => e
           # pass the whole API error through to the client
           content_type(:json)
           [e.response.status, e.response.body]
-        rescue Identity::Errors::SuspendedAccount => e
-          content_type(:json)
-          [403, e.message]
         end
       end
     end
