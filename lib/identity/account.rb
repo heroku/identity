@@ -78,8 +78,8 @@ module Identity
           @client = e.client
           @scope  = @cookie && @cookie.authorize_params["scope"] || nil
           slim :"clients/authorize", layout: :"layouts/purple"
-        # some problem occurred with the signup
-        rescue Excon::Errors::UnprocessableEntity => e
+        # catch-all for generic 4xx errors
+        rescue Excon::Errors::ClientError => e
           flash[:error] = decode_error(e.response.body)
           redirect to("/account/accept/#{params[:id]}/#{params[:token]}")
         end
@@ -120,6 +120,10 @@ module Identity
         rescue Identity::Errors::LoginRequired
           @cookie.redirect_url = request.env["PATH_INFO"]
           redirect to("/login")
+        # catch-all for generic 4xx errors
+        rescue Excon::Errors::ClientError => e
+          flash[:error] = decode_error(e.response.body)
+          redirect to("/login")
         end
       end
 
@@ -143,6 +147,7 @@ module Identity
             "If you don't receive an email, and it's not in your spam folder "\
             "this could mean you signed up with a different address."
           slim :"account/password/reset", layout: :"layouts/purple"
+        # catch-all for generic 4xx errors
         rescue Excon::Errors::ClientError => e
           flash[:error] = decode_error(e.response.body)
           redirect to("/account/password/reset")
@@ -173,6 +178,7 @@ module Identity
         rescue Excon::Errors::NotFound => e
           status 404
           slim :"account/password/not_found", layout: :"layouts/purple"
+        # catch-all for generic 4xx errors
         rescue Excon::Errors::ClientError => e
           Identity.log(
             password_reset_error: true,
@@ -202,9 +208,9 @@ module Identity
 
         begin
           api = HerokuAPI.new(options)
-          res = api.post(path: "/users/~/sms-number/actions/recover",
-            expects: 201)
-        rescue Excon::Errors::UnprocessableEntity => e
+          api.post(path: "/users/~/sms-number/actions/recover", expects: 201)
+        # catch-all for generic 4xx errors
+        rescue Excon::Errors::ClientError => e
           flash[:error] = decode_error(e.response.body)
           redirect to("/login/two-factor")
         end
