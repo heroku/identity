@@ -15,10 +15,11 @@ module Identity::Helpers
           "X-Heroku-Legacy-Ids" => "true"
         })
 
-      halt 400, "Need client_id" unless params["client_id"]
+      client_id = params["client_id"]
+      halt 400, "Need client_id" if client_id.nil? || client_id.empty?
 
-      res = log :get_client, client_id: params["client_id"] do
-        api.get(path: "/oauth/clients/#{params["client_id"]}", expects: 200)
+      res = log :get_client, client_id: client_id do
+        api.get(path: "/oauth/clients/#{client_id}", expects: 200)
       end
       client = MultiJson.decode(res.body)
 
@@ -42,16 +43,18 @@ module Identity::Helpers
         authorizations = MultiJson.decode(res.body)
 
         authorization = authorizations.detect { |a|
-          a["client"] && a["client"]["id"] == params["client_id"] &&
-            a["scope"] == (params["scope"] || ["global"])
+          a["client"] &&
+          a["client"]["id"] == client_id &&
+          a["scope"] == (params["scope"] || ["global"])
         }
 
         # fall back to legacy_id (for now)
         if !authorization
           authorization = authorizations.detect { |a|
-            a["client"] && a["client"]["legacy_id"] &&
-              a["client"]["legacy_id"] == params["client_id"] &&
-              a["scope"] == (params["scope"] || ["global"])
+            a["client"] &&
+            a["client"]["legacy_id"] &&
+            a["client"]["legacy_id"] == client_id &&
+            a["scope"] == (params["scope"] || ["global"])
           }
           if authorization
             log(:legacy_client_id, client_id: authorization["client"]["id"])

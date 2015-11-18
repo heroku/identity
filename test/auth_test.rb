@@ -214,6 +214,12 @@ describe Identity::Auth do
         assert_equal 200, last_response.status
         assert_match /\bAllow\b/, last_response.body
       end
+
+      it "requires an actual client id" do
+        post "/login", email: "kerry@heroku.com", password: "abcdefgh"
+        post "/oauth/authorize", client_id: ""
+        assert_equal 400, last_response.status
+      end
     end
   end
 
