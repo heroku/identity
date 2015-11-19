@@ -515,16 +515,16 @@ describe Identity::Auth do
       assert_match %r{/account/password/reset\z}, last_response.headers["Location"]
     end
 
-    it "redirects to login on forbidded responses that are not two-factor related" do
+    it "redirects to login on forbidden responses that are not 2fa related" do
       stub_heroku_api do
-        post("/oauth/authorizations") {
-          err = MultiJson.encode({
-            id: "forbidden",
+        post("/oauth/authorizations") do
+          err = MultiJson.encode(
+            id:      "forbidden",
             message: "Vorboten"
-          })
+          )
           response = OpenStruct.new(body: err, headers: {})
           raise Excon::Errors::Forbidden.new("Forbidden", nil, response)
-        }
+        end
       end
 
       post "/login", email: "kerry@heroku.com", password: "abcdefgh"
