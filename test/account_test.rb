@@ -174,7 +174,7 @@ describe Identity::Account do
   describe "GET /signup" do
     it "redirects to the root of the signup app" do
       get "/signup"
-      assert_equal 302, last_response.status
+      assert_equal 301, last_response.status
       assert_equal "#{Identity::Config.signup_url}?from=id", last_response.headers["Location"]
     end
   end
@@ -182,7 +182,7 @@ describe Identity::Account do
   describe "GET /signup/:slug" do
     it "redirects to the same slug in the signup app" do
       get "/signup/foo"
-      assert_equal 302, last_response.status
+      assert_equal 301, last_response.status
       assert_equal "#{Identity::Config.signup_url}/foo?from=id",
         last_response.headers["Location"]
     end
@@ -199,7 +199,7 @@ describe Identity::Account do
         "redirect-url" => url
       }
       encoded_params = URI.encode_www_form(expected_params)
-      assert_equal 302, last_response.status
+      assert_equal 301, last_response.status
       assert_equal "#{Identity::Config.signup_url}/foo?#{encoded_params}",
         last_response.headers["Location"]
     end
