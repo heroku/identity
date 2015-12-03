@@ -267,7 +267,7 @@ module Identity
     end
 
     # Redirects to the signup app adding a special param
-    def redirect_to_signup_app(next_path, code=302)
+    def redirect_to_signup_app(next_path, code = 302)
       current_params = CGI.parse(URI.parse(request.fullpath).query.to_s)
       append_params  = { from: 'id' }
       if redirect_url = @cookie.post_signup_url
