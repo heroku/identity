@@ -61,11 +61,11 @@ h1.logo {
     span {
       display: inline-block;
       height: 50px;
-      width: 140px;
+      width: 70px;
       text-align: center;
       margin: 0 3px -22px;
       @include hide-text();
-      @include retina-background('../logo-sfdc', png, 140px);
+      @include retina-background('../logo-sfdc', png, 70px);
       background-repeat: no-repeat;
     }
   }
