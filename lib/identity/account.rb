@@ -225,11 +225,11 @@ module Identity
     end
 
     get "/signup" do
-      redirect_to_signup_app("")
+      redirect_to_signup_app("", 301)
     end
 
     get "/signup/:slug" do |slug|
-      redirect_to_signup_app("/#{params[:slug]}")
+      redirect_to_signup_app("/#{params[:slug]}", 301)
     end
 
     private
@@ -267,14 +267,14 @@ module Identity
     end
 
     # Redirects to the signup app adding a special param
-    def redirect_to_signup_app(next_path)
+    def redirect_to_signup_app(next_path, code = 302)
       current_params = CGI.parse(URI.parse(request.fullpath).query.to_s)
       append_params  = { from: 'id' }
       if redirect_url = @cookie.post_signup_url
         append_params["redirect-url"] = redirect_url
       end
       next_params = URI.encode_www_form(current_params.merge(append_params))
-      redirect to("#{Config.signup_url}#{next_path}?#{next_params}")
+      redirect to("#{Config.signup_url}#{next_path}?#{next_params}"), code
     end
   end
 end
