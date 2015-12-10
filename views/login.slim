@@ -28,4 +28,5 @@
     | New to Heroku? &nbsp;
     span Sign Up
 
-a href="/account/password/reset" Forgot your password?
+a href="#{Identity::Config.sso_base_url}/login" Log in via SSO
+a style="margin-left: 25px" href="/account/password/reset" Forgot your password?
