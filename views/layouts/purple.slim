@@ -16,6 +16,8 @@ html
     script src="/assets/#{Identity::Config.release}/purple.js" type="text/javascript"
     script src="/assets/#{Identity::Config.release}/modernizr.min.js" type="text/javascript"
     meta name="viewport" content="width=device-width, initial-scale=1"
+    - if @meta_description
+      meta name="description" content=@meta_description
 
   body id=@body_id
     .page-wrap.gradient-primary
