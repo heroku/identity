@@ -7,12 +7,7 @@ div#reset_password.panel
   form.panel-body.panel-left role="form" method="post"
     input type="hidden" name=Rack::Csrf.field value=Rack::Csrf.token(env)
 
-    - if flash[:notice]
-      p
-        = flash[:notice]
-    - if flash[:error]
-      p
-        = flash[:error]
+    == render :slim, :"_flash", layout: false
 
     - if !flash[:notice]
       - if !flash[:error]
