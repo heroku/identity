@@ -11,7 +11,7 @@ module Identity
     end
 
     def encode(payload)
-      payload = JSON.parse(JSON.generate(payload)) # make sure all keys are string
+      payload = JSON.parse(JSON.generate(payload)) # make sure all keys are strings
       Fernet.generate(@keys.first) do |generator|
         generator.data = { "data" => payload }
       end
@@ -46,7 +46,7 @@ module Identity
       verifier.enforce_ttl = false
       verifier.verify_token(cipher)
 
-      raise "cipher invalid" unless verifier.valid?
+      return nil unless verifier.valid?
 
       verifier.data["data"]
     end
