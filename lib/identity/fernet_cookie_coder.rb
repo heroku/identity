@@ -8,12 +8,10 @@ module Identity
     end
 
     def encode(raw)
+      # use Marshal instead of JSON to avoid trouble with string/symbol
+      # conversions
       data = Base64.urlsafe_encode64(Marshal.dump(raw))
-      Fernet.generate(@keys.first) do |generator|
-        # use Marshal instead of JSON to avoid trouble with string/symbol
-        # conversions
-        generator.data = { "session" => data }
-      end
+      Fernet.generate(@keys.first, data)
     end
 
     def decode(cipher)
@@ -24,6 +22,8 @@ module Identity
           plain = decode_with_key(cipher, key)
         rescue OpenSSL::Cipher::CipherError
         end
+
+        break if plain
       end
       raise "no valid encryption key for cipher" if !plain
       plain
@@ -39,9 +39,9 @@ module Identity
     def decode_with_key(cipher, key)
       verifier = Fernet.verifier(key, cipher)
       verifier.enforce_ttl = false
-      verifier.verify_token(cipher)
-      raise "cipher invalid" unless verifier.valid?
-      Marshal.load(Base64.urlsafe_decode64(verifier.data["session"]))
+      return nil unless verifier.valid?
+
+      Marshal.load(Base64.urlsafe_decode64(verifier.message))
     end
   end
 end
