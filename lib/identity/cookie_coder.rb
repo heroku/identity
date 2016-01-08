@@ -11,6 +11,7 @@ module Identity
     end
 
     def encode(payload)
+      payload = JSON.parse(JSON.generate(payload)) # make sure all keys are string
       Fernet.generate(@keys.first) do |generator|
         generator.data = { "data" => payload }
       end

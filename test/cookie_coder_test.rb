@@ -2,11 +2,11 @@ require_relative "test_helper"
 
 describe Identity::CookieCoder do
   it "encryptes a cookie, then descripts a cookie" do
-    data = { "user" => { "id" => "1234", "email" => "example@herou.com", "full_name" => "Full Name" }}
+    data = { user: { id: "1234", email: "example@herou.com", full_name: "Full Name" }}
     coder = Identity::CookieCoder.new("my-key" * 20)
     cipher = coder.encode(data)
 
-    assert_equal data, coder.decode(cipher)
+    assert_equal JSON.parse(JSON.generate(data)), coder.decode(cipher)
   end
 
   it "encrypts with the first given key" do
