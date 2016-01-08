@@ -11,7 +11,8 @@ module Identity
     end
 
     def encode(payload)
-      payload = JSON.parse(JSON.generate(payload)) # make sure all keys are strings
+      # make sure all keys are strings
+      payload = JSON.parse(JSON.generate(payload))
       Fernet.generate(@keys.first) do |generator|
         generator.data = { "data" => payload }
       end
@@ -33,9 +34,13 @@ module Identity
       raise "no valid encryption key for cipher" unless plain
 
       plain
-    rescue Exception => e
-      Identity.log(:exception, class: e.class.name, message: e.message,
-                   fernet: true, backtrace: e.backtrace.inspect)
+    rescue => e
+      Identity.log(:exception,
+                   class: e.class.name,
+                   message: e.message,
+                   fernet: true,
+                   backtrace: e.backtrace.inspect
+                  )
       {}
     end
 

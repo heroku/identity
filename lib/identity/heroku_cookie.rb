@@ -61,7 +61,9 @@ module Identity
       def user_info
         {
           user: {
-            id: @cookie.user_id, email: @cookie.user_email, full_name: @cookie.user_full_name
+            id: @cookie.user_id,
+            email: @cookie.user_email,
+            full_name: @cookie.user_full_name
           }
         }
       end
