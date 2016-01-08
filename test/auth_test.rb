@@ -457,6 +457,16 @@ describe Identity::Auth do
       assert_includes response_cookie, "heroku_session=1;"
       assert_includes response_cookie,
         "heroku_session_nonce=8bb579ed-e3a4-41ed-9c1c-719e96618f71;"
+
+      assert response_cookie =~ /^heroku_user_session=(.+)$/, "it should contain heroku_user_session"
+      cipher = CGI::unescape($1.split(";")[0]) # current version of `fernet` barks about URL encoded string
+      coder = Identity::CookieCoder.new(
+        Identity::Config.heroku_root_domain_cookie_encryption_key)
+      payload = coder.decode(cipher)
+
+      assert_equal "06dcaabe-f7cd-473a-aa10-df54045ff69c", payload["user"]["id"]
+      assert_equal "email@heroku.com", payload["user"]["email"]
+      assert_equal "Full Name", payload["user"]["full_name"]
     end
 
     it "redirects to login on rate limited" do
@@ -620,6 +630,7 @@ describe Identity::Auth do
       delete "/logout"
       assert_includes response_cookie, "heroku_session=;"
       assert_includes response_cookie, "heroku_session_nonce=;"
+      assert_includes response_cookie, "heroku_user_session=;"
     end
 
     it "redirects to a given url if it's safe" do

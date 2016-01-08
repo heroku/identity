@@ -21,6 +21,7 @@ module Identity
         if @cookie && @cookie.session_id
           set_heroku_cookie(headers, "heroku_session", "1")
           set_heroku_cookie(headers, "heroku_session_nonce", @cookie.session_id)
+          set_heroku_cookie(headers, "heroku_user_session", encrypted_user_info)
 
           log :write_heroku_cookie,
             nonce: @cookie.session_id,
@@ -28,6 +29,7 @@ module Identity
         else
           delete_heroku_cookie(headers, "heroku_session")
           delete_heroku_cookie(headers, "heroku_session_nonce")
+          delete_heroku_cookie(headers, "heroku_user_session")
 
           log :delete_heroku_cookie,
             oauth_dance_id: request.cookies["oauth_dance_id"]
@@ -51,6 +53,27 @@ module Identity
           expires: Time.now + Config.cookie_expire_after,
           path:    "/",
           value:   value
+        )
+      end
+
+      private
+
+      def user_info
+        {
+          user: {
+            id: @cookie.user_id, email: @cookie.user_email, full_name: @cookie.user_full_name
+          }
+        }
+      end
+
+      def encrypted_user_info
+        cookie_coder.encode(user_info)
+      end
+
+      def cookie_coder
+        @cookie_coder ||= CookieCoder.new(
+          Config.heroku_root_domain_cookie_encryption_key,
+          Config.old_heroku_root_domain_cookie_encryption_key
         )
       end
     end
