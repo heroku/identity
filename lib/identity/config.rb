@@ -3,7 +3,19 @@ module Identity
     extend self
 
     def cookie_encryption_key
-      ENV["COOKIE_ENCRYPTION_KEY"] || raise("missing=COOKIE_ENCRYPTION_KEY")
+      ENV.fetch("COOKIE_ENCRYPTION_KEY")
+    end
+
+    def old_cookie_encryption_key
+      ENV["OLD_COOKIE_ENCRYPTION_KEY"]
+    end
+
+    def heroku_root_domain_cookie_encryption_key
+      ENV.fetch("HEROKU_ROOT_DOMAIN_COOKIE_ENCRYPTION_KEY")
+    end
+
+    def old_heroku_root_domain_cookie_encryption_key
+      ENV["OLD_HEROKU_ROOT_DOMAIN_COOKIE_ENCRYPTION_KEY"]
     end
 
     def cookie_expire_after
@@ -44,10 +56,6 @@ module Identity
 
     def login_external_secret
       ENV["LOGIN_EXTERNAL_SECRET"]
-    end
-
-    def old_cookie_encryption_key
-      ENV["OLD_COOKIE_ENCRYPTION_KEY"]
     end
 
     def rollbar_access_token
