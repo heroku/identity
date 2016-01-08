@@ -1,6 +1,7 @@
 module Identity::Helpers
   module Auth
     include Log
+    include API
 
     # Performs the authorization step of the OAuth dance against the Heroku
     # API.
