@@ -4,7 +4,7 @@ describe Identity::CookieCoder do
   secret = "Pw/Xv58CsV8FVUQldtbHRZBoGqv8pJ1u55JdlhsRp9A="
   another_secret = "r1auRylYrR9WM3dhRkfXRwQ5nxcNGR2lBkCLgXl94gU="
 
-  it "encryptes a cookie, then descripts a cookie" do
+  it "encryptes a cookie, then descrypts a cookie" do
     data = {
       user: {
         id: "1234",
