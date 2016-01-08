@@ -2,9 +2,9 @@ require "base64"
 
 module Identity
   # CookieCoder encodes and decodes payload before setting it to cookie
-  # Different from FernetCookieCoder, it converts Ruby objects to JSON
-  # format before encrypting using HMAC with Fernet. The encrypted cookie
-  # is meant to consumed by other programming languages other than Ruby.
+  # Different from FernetCookieCoder, it doesn't use Ruby Marshal.
+  # The encrypted cookie is meant to consumed by other programming
+  # languages other than Ruby.
   class CookieCoder
     def initialize(*keys)
       @keys = keys.compact
