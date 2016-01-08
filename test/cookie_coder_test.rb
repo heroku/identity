@@ -38,6 +38,6 @@ describe Identity::CookieCoder do
     cipher = coder.encode(data)
     coder = Identity::CookieCoder.new(another_secret, secret)
 
-    assert_equal data, coder.decode(cipher)
+    assert_equal JSON.parse(JSON.generate(data)), coder.decode(cipher)
   end
 end
