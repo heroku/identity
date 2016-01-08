@@ -459,7 +459,7 @@ describe Identity::Auth do
         "heroku_session_nonce=8bb579ed-e3a4-41ed-9c1c-719e96618f71;"
 
       assert response_cookie =~ /^heroku_user_session=(.+)$/,
-        "it should contain heroku_user_session"
+             "it should contain heroku_user_session"
       # current version of `fernet` barks about URL encoded string
       cipher = CGI::unescape($1.split(";")[0])
       coder = Identity::CookieCoder.new(

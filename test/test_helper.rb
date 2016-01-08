@@ -1,6 +1,6 @@
 # seed the environment
 ENV["COOKIE_ENCRYPTION_KEY"] = "another-super-secret-ultra-secure-key"
-ENV["HEROKU_ROOT_DOMAIN_COOKIE_ENCRYPTION_KEY"] = "another-super-secret-ultra-secure-key1"
+ENV["HEROKU_ROOT_DOMAIN_COOKIE_ENCRYPTION_KEY"] = "my-key" * 50
 ENV["DASHBOARD_URL"]         = "https://dashboard.heroku.com"
 ENV["SSO_BASE_URL"]          = "https://sso.heroku.com"
 ENV["HEROKU_API_URL"]        = "https://api.heroku.com"
