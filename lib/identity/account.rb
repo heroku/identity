@@ -234,38 +234,6 @@ module Identity
 
     private
 
-    def generate_referral_slug(original_slug)
-      referral = nil
-      secret = nil
-      secret = ENV['REFERRAL_SECRET'] if ENV.has_key? 'REFERRAL_SECRET'
-      token = request.cookies["ref"]
-      uri = Addressable::URI.new
-
-      if token && secret
-        begin
-          verifier = Fernet.verifier(secret, token)
-          referral = CGI.escape(verifier.data["referrer"])
-        rescue Exception => e
-          Identity.log(:referral_slug_error => true,
-            :exception => e.class.name, :message => e.message)
-        end
-      end
-
-      uri.query_values = {
-        :utm_campaign => request.cookies["utm_campaign"],
-        :utm_source   => request.cookies["utm_source"],
-        :utm_medium   => request.cookies["utm_medium"],
-        :referral     => referral,
-      }
-
-      # no tracking code, just return the original slug
-      if uri.query_values.all? { |k, v| v.nil? }
-        return original_slug
-      else
-        return "#{original_slug}?#{uri.query}"
-      end
-    end
-
     # Redirects to the signup app adding a special param
     def redirect_to_signup_app(next_path, code = 302)
       current_params = CGI.parse(URI.parse(request.fullpath).query.to_s)
