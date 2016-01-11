@@ -29,10 +29,13 @@ module Identity
       end
       raise "no valid encryption key for cipher" if !plain
       plain
-    # fernet throws random exceptions :{ eat it for now
+      # fernet throws random exceptions :{ eat it for now
     rescue Exception => e
-      Identity.log(:exception, class: e.class.name, message: e.message,
-        fernet: true, backtrace: e.backtrace.inspect)
+      Identity.log(:exception,
+                   class: e.class.name,
+                   message: e.message,
+                   fernet: true,
+                   backtrace: e.backtrace.inspect)
       {}
     end
 
@@ -47,18 +50,20 @@ module Identity
     end
 
     def decode_with_legacy_fernet(cipher, key)
-      begin
-        legacy_verifier = LegacyFernet.verifier(key, cipher)
-        legacy_verifier.enforce_ttl = false
-        legacy_verifier.verify_token(cipher)
-        if legacy_verifier.valid?
-          Identity.log(:legacy, message: "Decoding with legacy fernet", legacy_fernet: true)
-          return Marshal.load(Base64.urlsafe_decode64(legacy_verifier.data["session"]))
-        end
-      rescue
-        # mute any exception and let latest fernet to try again
-        # see `decode_with_latest_fernet`
+      legacy_verifier = LegacyFernet.verifier(key, cipher)
+      legacy_verifier.enforce_ttl = false
+      legacy_verifier.verify_token(cipher)
+      if legacy_verifier.valid?
+        Identity.log(:legacy,
+                     message: "Decoding with legacy fernet",
+                     legacy_fernet: true)
+        return Marshal.load(
+          Base64.urlsafe_decode64(legacy_verifier.data["session"])
+        )
       end
+    rescue
+      # mute any exception and let latest fernet to try again
+      # see `decode_with_latest_fernet`
     end
 
     def decode_with_latest_fernet(cipher, key)
