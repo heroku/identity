@@ -26,4 +26,18 @@ describe Identity::FernetCookieCoder do
     coder = Identity::FernetCookieCoder.new(another_secret, secret)
     assert_equal data, coder.decode(cipher)
   end
+
+  it "decrypts with legacy fernet" do
+    data = { access_token: "5ff6ad27-1946-4abb-9f25-ad4e37014ea7" }
+    legacy_cipher = generate_legacy_cipher(secret, data)
+    coder = Identity::FernetCookieCoder.new(secret)
+    assert_equal data, coder.decode(legacy_cipher)
+  end
+
+  def generate_legacy_cipher(key, raw)
+    data = Base64.urlsafe_encode64(Marshal.dump(raw))
+    LegacyFernet.generate(key) do |generator|
+      generator.data = { "session" => data }
+    end
+  end
 end

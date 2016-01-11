@@ -8,6 +8,7 @@ gem "coffee-script"
 gem "excon"
 gem "fernet"
 gem "jwt"
+gem "legacy-fernet", github: "heroku/fernet-rb", branch: "legacy_v1.5"
 gem "multi_json"
 gem "oj" # fast json
 gem "pry"

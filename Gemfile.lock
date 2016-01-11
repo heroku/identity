@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/heroku/fernet-rb.git
+  revision: 91ff503b76420d6d2323dd21a3d7b47de2d28e07
+  branch: legacy_v1.5
+  specs:
+    legacy-fernet (1.5)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -113,6 +120,7 @@ DEPENDENCIES
   excon
   fernet
   jwt
+  legacy-fernet!
   minitest
   multi_json
   oj

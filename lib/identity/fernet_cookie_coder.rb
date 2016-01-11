@@ -11,6 +11,8 @@ module Identity
       # use Marshal instead of JSON to avoid trouble with string/symbol
       # conversions
       data = Base64.urlsafe_encode64(Marshal.dump(raw))
+
+      # for new session, we always encode with the latest `fernet`
       Fernet.generate(@keys.first, data)
     end
 
@@ -37,6 +39,29 @@ module Identity
     private
 
     def decode_with_key(cipher, key)
+      # There can be URL encoded characters
+      # from the cookies
+      cipher = CGI::unescape(cipher)
+      decode_with_latest_fernet(cipher, key) ||
+        decode_with_legacy_fernet(cipher, key)
+    end
+
+    def decode_with_legacy_fernet(cipher, key)
+      begin
+        legacy_verifier = LegacyFernet.verifier(key, cipher)
+        legacy_verifier.enforce_ttl = false
+        legacy_verifier.verify_token(cipher)
+        if legacy_verifier.valid?
+          Identity.log(:legacy, message: "Decoding with legacy fernet", legacy_fernet: true)
+          return Marshal.load(Base64.urlsafe_decode64(legacy_verifier.data["session"]))
+        end
+      rescue
+        # mute any exception and let latest fernet to try again
+        # see `decode_with_latest_fernet`
+      end
+    end
+
+    def decode_with_latest_fernet(cipher, key)
       verifier = Fernet.verifier(key, cipher)
       verifier.enforce_ttl = false
       return nil unless verifier.valid?
