@@ -466,7 +466,6 @@ describe Identity::Auth do
         Identity::Config.heroku_root_domain_cookie_encryption_key)
       payload = coder.decode(cipher)
 
-      assert_equal "06dcaabe-f7cd-473a-aa10-df54045ff69c", payload["user"]["id"]
       assert_equal "email@heroku.com", payload["user"]["email"]
       assert_equal "Full Name", payload["user"]["full_name"]
     end
