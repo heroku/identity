@@ -12,10 +12,8 @@ module Identity
 
     def encode(payload)
       # make sure all keys are strings
-      payload = JSON.parse(JSON.generate(payload))
-      Fernet.generate(@keys.first) do |generator|
-        generator.data = { "data" => payload }
-      end
+      payload = JSON.generate(payload)
+      Fernet.generate(@keys.first, payload)
     end
 
     def decode(cipher)
@@ -49,11 +47,10 @@ module Identity
     def decode_with_key(cipher, key)
       verifier = Fernet.verifier(key, cipher)
       verifier.enforce_ttl = false
-      verifier.verify_token(cipher)
 
       return nil unless verifier.valid?
 
-      verifier.data["data"]
+      JSON.parse(verifier.message)
     end
   end
 end
