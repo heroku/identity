@@ -96,7 +96,9 @@ class HerokuAPIStub < Sinatra::Base
       },
       refresh_token: nil,
       user: {
-        id: "06dcaabe-f7cd-473a-aa10-df54045ff69c"
+        id: "06dcaabe-f7cd-473a-aa10-df54045ff69c",
+        email: "email@heroku.com",
+        full_name: "Full Name"
       },
     }
 

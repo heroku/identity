@@ -3,15 +3,27 @@ module Identity
     extend self
 
     def cookie_encryption_key
-      ENV["COOKIE_ENCRYPTION_KEY"] || raise("missing=COOKIE_ENCRYPTION_KEY")
+      ENV.fetch("COOKIE_ENCRYPTION_KEY")
+    end
+
+    def old_cookie_encryption_key
+      ENV["OLD_COOKIE_ENCRYPTION_KEY"]
+    end
+
+    def heroku_root_domain_cookie_encryption_key
+      ENV.fetch("HEROKU_ROOT_DOMAIN_COOKIE_ENCRYPTION_KEY")
+    end
+
+    def old_heroku_root_domain_cookie_encryption_key
+      ENV["OLD_HEROKU_ROOT_DOMAIN_COOKIE_ENCRYPTION_KEY"]
     end
 
     def cookie_expire_after
-      (ENV["COOKIE_EXPIRE_AFTER"] || 2592000).to_i
+      ENV.fetch("COOKIE_EXPIRE_AFTER", 2592000).to_i
     end
 
     def dashboard_url
-      ENV["DASHBOARD_URL"] || raise("missing=DASHBOARD_URL")
+      ENV.fetch("DASHBOARD_URL")
     end
 
     def sso_base_url
@@ -19,19 +31,19 @@ module Identity
     end
 
     def heroku_api_url
-      ENV["HEROKU_API_URL"] || raise("missing=HEROKU_API_URL")
+      ENV.fetch("HEROKU_API_URL")
     end
 
     def heroku_oauth_id
-      ENV["HEROKU_OAUTH_ID"] || raise("missing=HEROKU_OAUTH_ID")
+      ENV.fetch("HEROKU_OAUTH_ID")
     end
 
     def heroku_oauth_secret
-      ENV["HEROKU_OAUTH_SECRET"] || raise("missing=HEROKU_OAUTH_SECRET")
+      ENV.fetch("HEROKU_OAUTH_SECRET")
     end
 
     def heroku_cookie_domain
-      ENV["HEROKU_COOKIE_DOMAIN"] || ".heroku.com"
+      ENV.fetch("HEROKU_COOKIE_DOMAIN", ".heroku.com")
     end
 
     def mixpanel_token
@@ -44,10 +56,6 @@ module Identity
 
     def login_external_secret
       ENV["LOGIN_EXTERNAL_SECRET"]
-    end
-
-    def old_cookie_encryption_key
-      ENV["OLD_COOKIE_ENCRYPTION_KEY"]
     end
 
     def rollbar_access_token
@@ -71,7 +79,7 @@ module Identity
     end
 
     def release
-      @release ||= ENV["RELEASE"] || "1"
+      @release ||= ENV.fetch("RELEASE",  "1")
     end
 
     def root
@@ -79,7 +87,7 @@ module Identity
     end
 
     def signup_url
-      ENV["SIGNUP_URL"] || raise("missing=SIGNUP_URL")
+      ENV.fetch("SIGNUP_URL")
     end
 
     # useful for staging environments with less-than-valid certs

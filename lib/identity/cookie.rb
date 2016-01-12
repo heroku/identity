@@ -124,5 +124,21 @@ module Identity
     def user_id=(id)
       @session["user_id"] = id
     end
+
+    def user_email
+      @session["user_email"]
+    end
+
+    def user_email=(email)
+      @session["user_email"] = email
+    end
+
+    def user_full_name
+      @session["user_full_name"]
+    end
+
+    def user_full_name=(id)
+      @session["user_full_name"] = id
+    end
   end
 end

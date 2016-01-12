@@ -250,6 +250,8 @@ module Identity::Helpers
       @cookie.access_token_expires_at = expires_at
       @cookie.refresh_token           = auth["refresh_token"].try(:[], "token")
       @cookie.user_id                 = auth["user"]["id"]
+      @cookie.user_email              = auth["user"]["email"]
+      @cookie.user_full_name          = auth["user"]["full_name"]
 
       @cookie.sso_entity = if Identity::Config.sso_base_url
                              auth["sso_entity"]
