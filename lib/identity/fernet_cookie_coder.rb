@@ -18,6 +18,11 @@ module Identity
 
     def decode(cipher)
       return {} if cipher == nil
+
+      # There can be URL encoded characters
+      # from the cookies
+      cipher = CGI::unescape(cipher)
+
       plain = nil
       @keys.each do |key|
         begin
@@ -42,9 +47,6 @@ module Identity
     private
 
     def decode_with_key(cipher, key)
-      # There can be URL encoded characters
-      # from the cookies
-      cipher = CGI::unescape(cipher)
       decode_with_latest_fernet(cipher, key) ||
         decode_with_legacy_fernet(cipher, key)
     end

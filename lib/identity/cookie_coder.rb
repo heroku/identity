@@ -19,6 +19,10 @@ module Identity
     def decode(cipher)
       return {} if cipher == nil
 
+      # There can be URL encoded characters
+      # from the cookies
+      cipher = CGI::unescape(cipher)
+
       plain = nil
       @keys.each do |key|
         begin
