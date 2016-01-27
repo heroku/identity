@@ -20,7 +20,7 @@ body {
   padding-top: 60px;
   .content {
     margin-bottom: 90px;
-    > a {
+    p, a {
       color: $gray-light;
       color: fade-out(white, .2);
     }
