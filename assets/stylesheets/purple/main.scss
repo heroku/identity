@@ -18,12 +18,11 @@ body {
   height: 100%;
   text-align: center;
   padding-top: 60px;
-  .content {
+  .content,
+  .content > a {
     margin-bottom: 90px;
-    p, a {
-      color: $gray-light;
-      color: fade-out(white, .2);
-    }
+    color: $gray-light;
+    color: fade-out(#ffffff, 0.2);
   }
 }
 
