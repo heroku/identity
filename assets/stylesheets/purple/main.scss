@@ -22,7 +22,7 @@ body {
   .content > a {
     margin-bottom: 90px;
     color: $gray-light;
-    color: fade-out(#ffffff, 0.2);
+    color: fade-out($white, 0.2);
   }
 }
 
