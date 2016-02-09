@@ -49,9 +49,7 @@ module Identity
           method:          request.request_method,
           module:          self.class.name,
           request_id:      env["REQUEST_IDS"],
-          route_signature: env["HTTP_X_ROUTE_SIGNATURE"],
-          session_id:      @cookie ? @cookie.session_id : nil,
-          user_id:         @cookie ? @cookie.user_id : nil,
+          route_signature: env["HTTP_X_ROUTE_SIGNATURE"]
         }
       end
 
