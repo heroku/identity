@@ -262,5 +262,16 @@ module Identity::Helpers
       raise "missing=access_token"  unless @cookie.access_token
       raise "missing=expires_in"    unless @cookie.access_token_expires_at
     end
+
+    def destroy_session
+      api = HerokuAPI.new(user: nil, pass: @cookie.access_token,
+        ip: request.ip, request_ids: request_ids, version: 3)
+      # tells API to destroy the session for Identity's current tokens, and
+      # all the tokens that were provisioned through this session
+      log :destroy_session, session_id: @cookie.session_id do
+        api.delete(path: "/oauth/sessions/#{@cookie.session_id}",
+          expects: [200, 401])
+      end
+    end
   end
 end
