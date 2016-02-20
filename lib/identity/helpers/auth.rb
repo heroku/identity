@@ -264,7 +264,7 @@ module Identity::Helpers
     end
 
     def destroy_session
-      api = HerokuAPI.new(user: nil, pass: @cookie.access_token,
+      api = Identity::HerokuAPI.new(user: nil, pass: @cookie.access_token,
         ip: request.ip, request_ids: request_ids, version: 3)
       # tells API to destroy the session for Identity's current tokens, and
       # all the tokens that were provisioned through this session
