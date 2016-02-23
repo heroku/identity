@@ -546,6 +546,57 @@ describe Identity::Auth do
       assert_match /Vorboten/, last_response.body
     end
 
+    describe "exising sessions" do
+      let(:session_id) { "1234" }
+      let(:rack_env) do
+        {
+          "rack.session" => {
+            "oauth_session_id" => session_id, "access_token" => "5678"
+          }
+        }
+      end
+
+      it "clears an existing session" do
+        post "/login",
+          {email: "kerry@heroku.com", password: "abcdefgh"}, rack_env
+
+        assert_match /^heroku_user_session=(.+)$/, response_cookie,
+              "it should contain a new session"
+        refute_match /^heroku_user_session=#{session_id}$/, response_cookie,
+              "it should not contain the old session"
+      end
+
+      it "ignores missing sessions" do
+        stub_heroku_api do
+          delete "/oauth/sessions/:id" do |id|
+            status 404
+          end
+        end
+
+        post "/login",
+          {email: "kerry@heroku.com", password: "abcdefgh"}, rack_env
+
+        assert_equal 302, last_response.status
+        assert_equal Identity::Config.dashboard_url,
+          last_response.headers["Location"]
+      end
+
+      it "ignores unauthorized sessions" do
+        stub_heroku_api do
+          delete "/oauth/sessions/:id" do |id|
+            status 401
+          end
+        end
+
+        post "/login",
+          {email: "kerry@heroku.com", password: "abcdefgh"}, rack_env
+
+        assert_equal 302, last_response.status
+        assert_equal Identity::Config.dashboard_url,
+          last_response.headers["Location"]
+      end
+    end
+
     describe "for accounts with two-factor enabled" do
       before do
         stub_heroku_api do

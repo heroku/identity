@@ -309,7 +309,7 @@ module Identity
 
     def destroy_existing_session
       # if the cookie already has a session, destroy it first
-      destroy_session if @cookie.session_id
+      destroy_session unless @cookie.session_id.nil?
     rescue Excon::Errors::NotFound
       # ignore, session is already gone
     end
