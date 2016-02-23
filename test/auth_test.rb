@@ -557,9 +557,19 @@ describe Identity::Auth do
       end
 
       it "clears an existing session" do
+        session_deleted = false
+
+        stub_heroku_api do
+          delete "/oauth/sessions/:id" do |id|
+            session_deleted = true
+            status 200
+          end
+        end
+
         post "/login",
           {email: "kerry@heroku.com", password: "abcdefgh"}, rack_env
 
+        assert session_deleted
         assert_match /^heroku_user_session=(.+)$/, response_cookie,
               "it should contain a new session"
         refute_match /^heroku_user_session=#{session_id}$/, response_cookie,
