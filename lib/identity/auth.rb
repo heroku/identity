@@ -306,6 +306,5 @@ module Identity
     rescue URI::InvalidURIError
       false
     end
-
   end
 end

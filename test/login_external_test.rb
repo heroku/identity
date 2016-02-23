@@ -101,7 +101,7 @@ describe Identity::Account do
           session_deleted = false
 
           stub_heroku_api do
-            delete "/oauth/sessions/:id" do |id|
+            delete "/oauth/sessions/:id" do
               session_deleted = true
               status 200
             end
@@ -116,9 +116,9 @@ describe Identity::Account do
           assert_equal 302, last_response.status
           assert session_deleted, "old session must be deleted"
           assert_match /^heroku_user_session=(.+)$/, response_cookie,
-            "it should contain a new session"
+                       "it should contain a new session"
           refute_match /^heroku_user_session=#{session_id}$/, response_cookie,
-            "it should not contain the old session"
+                       "it should not contain the old session"
         end
       end
     end

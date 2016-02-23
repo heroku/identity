@@ -560,50 +560,50 @@ describe Identity::Auth do
         session_deleted = false
 
         stub_heroku_api do
-          delete "/oauth/sessions/:id" do |id|
+          delete "/oauth/sessions/:id" do
             session_deleted = true
             status 200
           end
         end
 
         post "/login",
-          {email: "kerry@heroku.com", password: "abcdefgh"}, rack_env
+             { email: "doug@heroku.com", password: "abcdefgh" }, rack_env
 
         assert session_deleted, "old session must be deleted"
         assert_match /^heroku_user_session=(.+)$/, response_cookie,
-              "it should contain a new session"
+                     "it should contain a new session"
         refute_match /^heroku_user_session=#{session_id}$/, response_cookie,
-              "it should not contain the old session"
+                     "it should not contain the old session"
       end
 
       it "ignores missing sessions" do
         stub_heroku_api do
-          delete "/oauth/sessions/:id" do |id|
+          delete "/oauth/sessions/:id" do
             status 404
           end
         end
 
         post "/login",
-          {email: "kerry@heroku.com", password: "abcdefgh"}, rack_env
+             { email: "doug@heroku.com", password: "abcdefgh" }, rack_env
 
         assert_equal 302, last_response.status
         assert_equal Identity::Config.dashboard_url,
-          last_response.headers["Location"]
+                     last_response.headers["Location"]
       end
 
       it "ignores unauthorized sessions" do
         stub_heroku_api do
-          delete "/oauth/sessions/:id" do |id|
+          delete "/oauth/sessions/:id" do
             status 401
           end
         end
 
         post "/login",
-          {email: "kerry@heroku.com", password: "abcdefgh"}, rack_env
+             { email: "doug@heroku.com", password: "abcdefgh" }, rack_env
 
         assert_equal 302, last_response.status
         assert_equal Identity::Config.dashboard_url,
-          last_response.headers["Location"]
+                     last_response.headers["Location"]
       end
     end
 
