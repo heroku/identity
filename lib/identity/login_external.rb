@@ -15,6 +15,7 @@ module Identity
       get do
         token = params[:token]
         auth, _ = JWT.decode(token, shared_key)
+        destroy_session
         write_authentication_to_cookie auth
 
         # If the user has an active client oauth request, try to finish it.

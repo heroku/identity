@@ -52,7 +52,7 @@ module Identity
             user, pass = params[:email], params[:password]
           end
 
-          destroy_existing_session
+          destroy_session
 
           perform_oauth_dance(user, pass, code)
 
@@ -305,13 +305,6 @@ module Identity
       ].include?(uri.host)
     rescue URI::InvalidURIError
       false
-    end
-
-    def destroy_existing_session
-      # if the cookie already has a session, destroy it first
-      destroy_session unless @cookie.session_id.nil?
-    rescue Excon::Errors::NotFound
-      # ignore, session is already gone
     end
 
   end
