@@ -86,6 +86,47 @@ describe Identity::Account do
                        last_response.headers["Location"]
         end
       end
+
+      describe "existing sessions" do
+        let(:session_id) { "1234" }
+        let(:rack_env) do
+          {
+            "rack.session" => {
+              "oauth_session_id" => session_id, "access_token" => "5678"
+            }
+          }
+        end
+
+        it "clears an existing session" do
+          session_deleted = false
+
+          stub_heroku_api do
+            delete "/oauth/sessions/:id" do
+              session_deleted = true
+              status 200
+            end
+          end
+
+          any_instance_of(Identity::LoginExternal) do |finalize|
+            mock(finalize).write_authentication_to_cookie(jwt_data)
+          end
+
+          get "/login/external?token=#{token}", {}, rack_env
+
+          assert_equal 302, last_response.status
+          assert session_deleted, "old session must be deleted"
+          assert_match /^heroku_user_session=(.+)$/, response_cookie,
+                       "it should contain a new session"
+          refute_match /^heroku_user_session=#{session_id}$/, response_cookie,
+                       "it should not contain the old session"
+        end
+      end
     end
+  end
+
+  private
+
+  def response_cookie
+    last_response.headers["Set-Cookie"]
   end
 end

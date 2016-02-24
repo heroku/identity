@@ -52,6 +52,8 @@ module Identity
             user, pass = params[:email], params[:password]
           end
 
+          destroy_session
+
           perform_oauth_dance(user, pass, code)
 
           # in special cases, we may have a redirect URL to go to after login
@@ -118,14 +120,7 @@ module Identity
 
       delete do
         begin
-          api = HerokuAPI.new(user: nil, pass: @cookie.access_token,
-            ip: request.ip, request_ids: request_ids, version: 3)
-          # tells API to destroy the session for Identity's current tokens, and
-          # all the tokens that were provisioned through this session
-          log :destroy_session, session_id: @cookie.session_id do
-            api.delete(path: "/oauth/sessions/#{@cookie.session_id}",
-              expects: [200, 401])
-          end
+          destroy_session
         ensure
           logout
         end
