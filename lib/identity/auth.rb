@@ -278,17 +278,6 @@ module Identity
       }[oauth_client_id] || "login"
     end
 
-    def logout
-      url = if params[:url] && safe_redirect?(params[:url])
-              params[:url]
-            else
-              "/login"
-            end
-
-      @cookie.clear
-      redirect to(url)
-    end
-
     def safe_redirect?(url)
       uri = URI.parse(url)
       # possibly move this to a config var if it starts ballooning out of
