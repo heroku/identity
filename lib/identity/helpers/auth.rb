@@ -292,6 +292,5 @@ module Identity::Helpers
       @cookie.clear
       redirect to(url)
     end
-
   end
 end
