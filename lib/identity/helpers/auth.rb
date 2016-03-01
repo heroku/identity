@@ -281,5 +281,16 @@ module Identity::Helpers
         )
       end
     end
+
+    def logout
+      url = if params[:url] && safe_redirect?(params[:url])
+              params[:url]
+            else
+              "/login"
+            end
+
+      @cookie.clear
+      redirect to(url)
+    end
   end
 end
