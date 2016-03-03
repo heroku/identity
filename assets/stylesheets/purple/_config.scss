@@ -5,8 +5,8 @@ $margin: 40px;
 
 //Colors
 $gray-light: #CBCBD2;
-$gray: #7D7D8E;
-$gray-dark: #3F3F44;
+$gray: darken($gray-light, 25%);
+$gray-dark: #3f3f44;
 $purple-light: #72649f;
 $purple: #79589F;
 $white: #ffffff;

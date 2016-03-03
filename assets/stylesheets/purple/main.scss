@@ -21,7 +21,8 @@ body {
   .content,
   .content > a {
     margin-bottom: 90px;
-    color: $gray-dark;
+    color: $gray-light;
+    color: fade-out($white, 0.2);
   }
 }
 
@@ -265,6 +266,9 @@ form {
       strong {
         color: #444;
       }
+    }
+    p {
+      color: $gray-dark;
     }
   }
 }
