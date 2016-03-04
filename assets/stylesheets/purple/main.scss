@@ -21,7 +21,6 @@ body {
   .content,
   .content > a {
     margin-bottom: 90px;
-    color: $gray-light;
     color: fade-out($white, 0.2);
   }
 }
