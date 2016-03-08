@@ -291,6 +291,7 @@ module Identity
         "devcenter-staging.heroku.com",
         "discussion.heroku.com",
         "discussion-staging.heroku.com",
+        "elements.heroku.com",
       ].include?(uri.host)
     rescue URI::InvalidURIError
       false
