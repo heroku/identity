@@ -218,7 +218,6 @@ module Identity::Helpers
         @cookie.authorize_params = authorize_params
         @client = e.client
         @scope  = @cookie && @cookie.authorize_params["scope"] || nil
-        @deny_url = build_uri(@client["redirect_uri"], error: "access_denied")
         slim :"clients/authorize", layout: :"layouts/purple"
       # for example, "invalid scope"
       rescue Excon::Errors::UnprocessableEntity => e
@@ -242,6 +241,11 @@ module Identity::Helpers
           p["scope"] = p["scope"].split(/[, ]+/).sort.uniq if p["scope"]
         end
       end
+    end
+
+    def client_deny_url
+      base = @client && @client["redirect_uri"] || "https://id.heroku.com"
+      build_uri(base, error: "access_denied")
     end
 
     def write_authentication_to_cookie(auth)
