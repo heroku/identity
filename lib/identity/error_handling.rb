@@ -6,6 +6,7 @@ module Identity
       # doesn't know how to respond to our V3 "Accept"; display unavailable
       Excon::Errors::NotAcceptable,
       Excon::Errors::ServiceUnavailable,
+      Excon::Errors::GatewayTimeout,
       Excon::Errors::SocketError,
       Excon::Errors::Timeout
     ]
