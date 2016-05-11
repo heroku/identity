@@ -22,7 +22,7 @@ module Identity
     use Identity::CSRF, skip: [
       # skip CSRF for POST /oauth/token (the second step of a standard OAuth
       # flow)
-      "POST:/oauth/.*",
+      "POST:/oauth/token",
 
       # skip CSRF for POST /account/accept/ok (where users confirm their account
       # and set their password) so Dev Center can submit this form from a
