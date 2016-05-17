@@ -72,5 +72,9 @@ module Identity
         slim :"design/index"
       end
     end
+
+    def client_deny_url
+      "https://id.heroku.com/#deny"
+    end
   end
 end
