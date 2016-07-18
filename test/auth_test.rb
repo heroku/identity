@@ -140,7 +140,7 @@ describe Identity::Auth do
 
           assert_equal 302, last_response.status
           assert_equal "https://dashboard.heroku.com/oauth/callback/heroku" +
-                         "?code=454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
+                       "?code=454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
                        last_response.headers["Location"]
         end
       end
