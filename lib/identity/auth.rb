@@ -255,8 +255,7 @@ module Identity
                                     ip: request.ip,
                                     request_ids: request_ids,
                                     version: 3)
-      res = api.get(path: "/account")
-      return res.status != 200
+      api.get(path: "/account").status != 200
     end
 
     def flash
