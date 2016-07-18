@@ -248,7 +248,7 @@ module Identity
       # If the user uses SSO and SSO is configured in Identity, continue on to
       # check if their access token is valid.
       return false unless @cookie.sso_entity && Config.sso_base_url
-      return true if !@cookie.access_token
+      return true unless @cookie.access_token
 
       # Check if their current access token is valid.
       api = Identity::HerokuAPI.new(pass: @cookie.access_token,
