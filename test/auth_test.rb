@@ -119,6 +119,54 @@ describe Identity::Auth do
         assert_equal "https://sso.heroku.com/initech",
                      last_response.headers["Location"]
       end
+
+      describe "with a valid token" do
+        let(:rack_env) do
+          {
+            "rack.session" => {
+              "sso_entity" => "initech",
+              "access_token" => "1234",
+              "access_token_expires_at" => (Time.now.getlocal + 3600).to_s
+            }
+          }
+        end
+
+        it "authorizes when i have a valid access token" do
+          stub_heroku_api do
+            get("/account") { status(200) }
+          end
+
+          post "/oauth/authorize", { client_id: "dashboard" }, rack_env
+
+          assert_equal 302, last_response.status
+          assert_equal "https://dashboard.heroku.com/oauth/callback/heroku?code=454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
+                       last_response.headers["Location"]
+        end
+      end
+
+      describe "with an invalid token" do
+        let(:rack_env) do
+          {
+            "rack.session" => {
+              "sso_entity" => "initech",
+              "access_token" => "1234",
+              "access_token_expires_at" => (Time.now.getlocal + 3600).to_s
+            }
+          }
+        end
+
+        it "redirects to the sso entity LKSJDFLKJS" do
+          stub_heroku_api do
+            get("/account") { status(401) }
+          end
+
+          post "/oauth/authorize", { client_id: "dashboard" }, rack_env
+
+          assert_equal 302, last_response.status
+          assert_equal "https://sso.heroku.com/initech",
+                       last_response.headers["Location"]
+        end
+      end
     end
 
     describe "for a delinquent account" do
