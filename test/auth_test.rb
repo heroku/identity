@@ -156,7 +156,7 @@ describe Identity::Auth do
           }
         end
 
-        it "redirects to the sso entity LKSJDFLKJS" do
+        it "redirects to the sso entity" do
           stub_heroku_api do
             get("/account") { status(401) }
           end
