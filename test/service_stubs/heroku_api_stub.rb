@@ -98,8 +98,8 @@ class HerokuAPIStub < Sinatra::Base
         redirect_uri:       AUTHORIZATION[:client][:redirect_uri],
       },
       grant: {
-          code:       AUTHORIZATION[:grant][:code],
-          expires_in: 300,
+        code:       AUTHORIZATION[:grant][:code],
+        expires_in: 300,
       },
       refresh_token: nil,
       user: {
