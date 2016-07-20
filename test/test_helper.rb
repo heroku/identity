@@ -23,6 +23,7 @@ require "webmock/minitest"
 
 require_relative "../lib/identity"
 require_relative "service_stubs"
+require_relative "identity_assertions"
 
 WebMock.disable_net_connect!
 
