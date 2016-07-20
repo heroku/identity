@@ -3,6 +3,13 @@ require "sinatra/base"
 require "sinatra/namespace"
 
 class HerokuAPIStub < Sinatra::Base
+  AUTHORIZATION = {
+    client: {
+      redirect_uri: "https://dashboard.heroku.com/oauth/callback/heroku"
+    },
+    grant: { code: "454118bc-902d-4a2c-9d5b-e2a2abb91f6e" }
+  }
+
   register Sinatra::Namespace
 
   configure do
@@ -88,11 +95,11 @@ class HerokuAPIStub < Sinatra::Base
         id:                 123,
         ignores_delinquent: false,
         name:               "dashboard",
-        redirect_uri:       "https://dashboard.heroku.com/oauth/callback/heroku",
+        redirect_uri:       AUTHORIZATION[:client][:redirect_uri],
       },
       grant: {
-          code:       "454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
-          expires_in: 300,
+        code:       AUTHORIZATION[:grant][:code],
+        expires_in: 300,
       },
       refresh_token: nil,
       user: {

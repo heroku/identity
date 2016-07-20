@@ -228,8 +228,7 @@ module Identity
     private
 
     def redirect_or_authorize
-      if @cookie.sso_entity && Config.sso_base_url
-        # If the user is using SSO, have them auth with the SSO service
+      if redirect_to_sso?
         @cookie.authorize_params = get_authorize_params
         redirect to("#{Config.sso_base_url}/#{@cookie.sso_entity}")
       elsif !@cookie.access_token || params[:prompt] == "login"
@@ -243,6 +242,20 @@ module Identity
         # Otherwise, perform the authorization
         call_authorize
       end
+    end
+
+    def redirect_to_sso?
+      # If the user uses SSO and SSO is configured in Identity, continue on to
+      # check if their access token is valid.
+      return false unless @cookie.sso_entity && Config.sso_base_url
+      return true unless @cookie.access_token
+
+      # Check if their current access token is valid.
+      api = Identity::HerokuAPI.new(pass: @cookie.access_token,
+                                    ip: request.ip,
+                                    request_ids: request_ids,
+                                    version: 3)
+      api.get(path: "/account").status != 200
     end
 
     def flash

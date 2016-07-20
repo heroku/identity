@@ -30,10 +30,7 @@ describe Identity::Auth do
 
       follow_redirect!
       post "/oauth/authorize", client_id: "dashboard"
-      assert_equal 302, last_response.status
-      assert_equal "https://dashboard.heroku.com/oauth/callback/heroku" +
-        "?code=454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
-        last_response.headers["Location"]
+      assert_response_redirects_with_oauth_callback
     end
 
     it "stores and replays an authorization attempt when not logged in" do
@@ -43,20 +40,15 @@ describe Identity::Auth do
 
       follow_redirect!
       post "/login", email: "kerry@heroku.com", password: "abcdefgh"
-      assert_equal 302, last_response.status
-      assert_equal "https://dashboard.heroku.com/oauth/callback/heroku" +
-        "?code=454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
-        last_response.headers["Location"]
+      assert_response_redirects_with_oauth_callback
     end
 
     it "passes state" do
       post "/login", email: "kerry@heroku.com", password: "abcdefgh"
 
       post "/oauth/authorize", client_id: "dashboard", state: "my-state"
-      assert_equal 302, last_response.status
-      assert_equal "https://dashboard.heroku.com/oauth/callback/heroku" +
-        "?code=454118bc-902d-4a2c-9d5b-e2a2abb91f6e&state=my-state",
-        last_response.headers["Location"]
+
+      assert_response_redirects_with_oauth_callback state: "my-state"
     end
 
     it "redirects to login when a user is suspended" do
@@ -119,6 +111,52 @@ describe Identity::Auth do
         assert_equal "https://sso.heroku.com/initech",
                      last_response.headers["Location"]
       end
+
+      describe "with a valid token" do
+        let(:rack_env) do
+          {
+            "rack.session" => {
+              "sso_entity" => "initech",
+              "access_token" => "1234",
+              "access_token_expires_at" => (Time.now.getlocal + 3600).to_s
+            }
+          }
+        end
+
+        it "authorizes when i have a valid access token" do
+          stub_heroku_api do
+            get("/account") { status(200) }
+          end
+
+          post "/oauth/authorize", { client_id: "dashboard" }, rack_env
+
+          assert_response_redirects_with_oauth_callback
+        end
+      end
+
+      describe "with an invalid token" do
+        let(:rack_env) do
+          {
+            "rack.session" => {
+              "sso_entity" => "initech",
+              "access_token" => "1234",
+              "access_token_expires_at" => (Time.now.getlocal + 3600).to_s
+            }
+          }
+        end
+
+        it "redirects to the sso entity" do
+          stub_heroku_api do
+            get("/account") { status(401) }
+          end
+
+          post "/oauth/authorize", { client_id: "dashboard" }, rack_env
+
+          assert_equal 302, last_response.status
+          assert_equal "https://sso.heroku.com/initech",
+                       last_response.headers["Location"]
+        end
+      end
     end
 
     describe "for a delinquent account" do
@@ -152,11 +190,8 @@ describe Identity::Auth do
         end
         post "/login", email: "kerry@heroku.com", password: "abcdefgh"
         post "/oauth/authorize", client_id: "dashboard"
-        assert_equal 302, last_response.status
-        assert_equal "https://dashboard.heroku.com/oauth/callback/heroku" +
-          "?code=454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
-          last_response.headers["Location"]
-        end
+        assert_response_redirects_with_oauth_callback
+      end
     end
 
     describe "for an untrusted client" do
@@ -165,7 +200,7 @@ describe Identity::Auth do
           get("/oauth/clients/:id") {
             MultiJson.encode({
               trusted: false,
-              redirect_uri: "https://dashboard.heroku.com/oauth/callback/heroku"
+              redirect_uri: HerokuAPIStub::AUTHORIZATION[:client][:redirect_uri]
             })
           }
         end
@@ -186,10 +221,7 @@ describe Identity::Auth do
 
         # then again to confirm
         post "/oauth/authorize", authorize: "Allow"
-        assert_equal 302, last_response.status
-        assert_equal "https://dashboard.heroku.com/oauth/callback/heroku" +
-          "?code=454118bc-902d-4a2c-9d5b-e2a2abb91f6e",
-          last_response.headers["Location"]
+        assert_response_redirects_with_oauth_callback
       end
 
       it "contains a button that denies access" do
@@ -199,8 +231,8 @@ describe Identity::Auth do
         post "/oauth/authorize", client_id: "untrusted"
 
         #check that the deny link points to the right place
-        assert last_response.body.include? \
-          "https://dashboard.heroku.com/oauth/callback/heroku?error=access_denied"
+        uri = HerokuAPIStub::AUTHORIZATION[:client][:redirect_uri]
+        assert last_response.body.include?("#{uri}?error=access_denied")
       end
 
       it "does not create an authorization if a user confirms via GET" do
