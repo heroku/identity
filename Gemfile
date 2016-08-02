@@ -28,7 +28,6 @@ gem "sprockets-sass"
 gem "yui-compressor"
 
 group :development, :test do
-  #gem "debugger"
   gem "capybara"
   gem "minitest"
   gem "rack-test"
