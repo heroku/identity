@@ -32,10 +32,6 @@ module Identity
       respond_with_asset(@assets["purple.css"])
     end
 
-    get "/favicon.ico" do
-      respond_with_asset(@assets["favicon.ico"])
-    end
-
     (%w{ico jpg png} + %w{eot svg ttf woff}).each do |format|
       get "/assets/*.#{format}" do |image|
         name = "#{image}.#{format}"
