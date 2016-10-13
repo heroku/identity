@@ -242,6 +242,7 @@ module Identity
         append_params["redirect-url"] = redirect_url
       end
       next_params = URI.encode_www_form(current_params.merge(append_params))
+      next_path = next_path.gsub(/[\r\n]/, "")
       redirect to("#{Config.signup_url}#{next_path}?#{next_params}"), code
     end
   end

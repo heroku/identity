@@ -203,6 +203,20 @@ describe Identity::Account do
       assert_equal "#{Identity::Config.signup_url}/foo?#{encoded_params}",
         last_response.headers["Location"]
     end
+
+    it "scrub cr character" do
+      get "/signup/%0dSet-Cookie:mycookie=myvalue"
+      assert_equal 301, last_response.status
+      assert_equal "#{Identity::Config.signup_url}/Set-Cookie:mycookie=myvalue?from=id",
+        last_response.headers["Location"]
+    end
+
+    it "scrub crlf characters" do
+      get "/signup/%0d%0aSet-Cookie:mycookie=myvalue"
+      assert_equal 301, last_response.status
+      assert_equal "#{Identity::Config.signup_url}/Set-Cookie:mycookie=myvalue?from=id",
+        last_response.headers["Location"]
+    end
   end
 
   describe "GET /account/two-factor/recovery" do
