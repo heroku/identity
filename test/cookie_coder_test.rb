@@ -7,6 +7,7 @@ describe Identity::CookieCoder do
   it "encryptes a cookie, then descrypts a cookie" do
     data = {
       user: {
+        id: "1234",
         email: "example@herou.com",
         full_name: "Full Name"
       }
@@ -20,6 +21,7 @@ describe Identity::CookieCoder do
   it "encrypts with the first given key" do
     data = {
       user: {
+        id: "1234",
         email: "example@herou.com",
         full_name: "Full Name"
       }
@@ -33,6 +35,7 @@ describe Identity::CookieCoder do
   it "enables graceful encryption key rotation" do
     data = {
       user: {
+        id: "1234",
         email: "example@herou.com",
         full_name: "Full Name"
       }
