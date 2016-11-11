@@ -1,3 +1,7 @@
+# NOTICE:
+
+This repo is no longer used by Heroku.
+
 # Identity
 
 [![Build Status](https://travis-ci.org/heroku/identity.svg)](https://travis-ci.org/heroku/identity)
