@@ -73,26 +73,27 @@ h1.logo {
 }
 
 .legal {
+  list-style: none;
   margin-top: 40px;
   padding: 0;
-  list-style: none;
   text-align: center;
 
   li {
-    margin: 5px;
     display: inline-block;
+    margin: 5px;
   }
 
-  li, a {
+  li,
+  a {
     font-size: 12px;
     font-weight: bold;
     text-transform: none;
     letter-spacing: 0;
-    color: fade-out(white, .4);
+    color: fade-out($white, .4);
   }
 
   a:hover {
-    color: fade-out(white, .2);
+    color: fade-out($white, .2);
   }
 }
 
