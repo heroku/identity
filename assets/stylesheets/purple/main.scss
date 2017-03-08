@@ -61,7 +61,7 @@ h1.logo {
     font-size: 10px;
     span {
       display: inline-block;
-      height: 50px;
+      height: 49px;
       width: 70px;
       text-align: center;
       margin: 0 3px -22px;
@@ -69,6 +69,30 @@ h1.logo {
       @include retina-background('../logo-sfdc', png, 70px);
       background-repeat: no-repeat;
     }
+  }
+}
+
+.legal {
+  margin-top: 40px;
+  padding: 0;
+  list-style: none;
+  text-align: center;
+
+  li {
+    margin: 5px;
+    display: inline-block;
+  }
+
+  li, a {
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: none;
+    letter-spacing: 0;
+    color: fade-out(white, .4);
+  }
+
+  a:hover {
+    color: fade-out(white, .2);
   }
 }
 
