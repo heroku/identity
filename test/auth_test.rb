@@ -128,7 +128,17 @@ describe Identity::Auth do
             get("/account") { status(200) }
           end
 
-          post "/oauth/authorize", { client_id: "dashboard" }, rack_env
+          post "/oauth/authorize", { client_id: "dashboard", scope: "global" }, rack_env
+
+          assert_response_redirects_with_oauth_callback
+        end
+
+        it "handles scope param as array" do
+          stub_heroku_api do
+            get("/account") { status(200) }
+          end
+
+          post "/oauth/authorize", { client_id: "dashboard", scope: ["global"] }, rack_env
 
           assert_response_redirects_with_oauth_callback
         end

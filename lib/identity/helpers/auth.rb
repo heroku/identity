@@ -238,7 +238,10 @@ module Identity::Helpers
         @cookie.authorize_params || {}
       else
         filter_params(%w{client_id response_type scope state prompt}).tap do |p|
-          p["scope"] = p["scope"].split(/[, ]+/).sort.uniq if p["scope"]
+          if scope = p["scope"]
+            scope = scope.split(",") if String === scope
+            p["scope"] = scope.sort.uniq
+          end
         end
       end
     end
